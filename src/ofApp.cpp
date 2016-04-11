@@ -23,6 +23,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    
     ofBackground(0);
 //    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
     ofSetColor(255, 255, 255);
@@ -32,9 +33,9 @@ void ofApp::draw(){
     for (int i = 0; i < numPoints; i++) {
         ofDrawEllipse(riverLocations.at(i).x, riverLocations.at(i).y, 2, 2);
     }
-    
-    ofSetColor(255, 255, 255);
-    ofFill();
+//    
+//    ofSetColor(255, 255, 255);
+//    ofFill();
     
     for (int i = 0; i < numPoints; i++) {
         ofDrawEllipse(pointList.at(i).x, pointList.at(i).y + 500, 4, 4);
@@ -166,7 +167,7 @@ void ofApp::updateRiver() {
     int w = 1280;  //river width
     int h = 220;  //river height
     //Allocate array for filling pixels data
-    unsigned char *imgRiverData = new unsigned char[w * h];
+    unsigned char *imgRiverData = new unsigned char[w * h * 3];
     
     //Fill array for each pixel (x,y)
     float thisFrame = ofGetFrameNum()*0.015;
@@ -184,18 +185,19 @@ void ofApp::updateRiver() {
             c.setHsb(170, 250, 100 + sat, 255);
             
             //set the rgba values to the array
-            // int index = 3 * ( x + w * y );
-            // imgRiverData[ index ] = c.r;
-            // imgRiverData[ index + 1 ] = c.g;
-            // imgRiverData[ index + 2 ] = c.b;
-            // imgRiverData[ index + 3 ] = 255;
-             float grey = hueList.at(xyToPixelArray) * 15;
-             imgRiverData[xyToPixelArray] = grey;
+             int index = 3 * ( x + y * w );
+             imgRiverData[ index ] = c.r;
+             imgRiverData[ index + 1 ] = c.g;
+             imgRiverData[ index + 2 ] = c.b;
+//             imgRiverData[ index + 3 ] = 255;
+//             float grey = 100 + hueList.at(xyToPixelArray) * 20;
+//             imgRiverData[xyToPixelArray] = grey;
 
         }
     }
     // Load array to image
-    imgRiver.setFromPixels( imgRiverData, w, h, OF_IMAGE_GRAYSCALE );
+    imgRiver.setFromPixels( imgRiverData, w, h, OF_IMAGE_COLOR );
+//    imgRiver.setFromPixels( imgRiverData, w, h, OF_IMAGE_GRAYSCALE );
 //    imgRiver.setFromPixels(imgRiverData);
 //    imgRiver.setFromPixels(const ofPixels_<unsigned char> &pixels)
     // Array is not needed anymore, so clear memory
