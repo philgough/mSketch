@@ -106,9 +106,11 @@ void ofApp::mousePressed(int x, int y, int button){
 //
 //
 ////--------------------------------------------------------------
-//
+
 void ofApp::ppSetup() {
-    PoissonPoints pp = PoissonPoints(10, 200, 40, 1280, 220);
+    int riv_w = 1280;
+    int riv_h = 220;
+    PoissonPoints pp = PoissonPoints(10, 200, 40, riv_w, riv_h);
     
     widthScale = 1;
     
@@ -118,8 +120,6 @@ void ofApp::ppSetup() {
     }
     
     cout << "setup river background" << endl;
-    int riv_w = 1280;
-    int riv_h = 220;
     
     
     for (int i = 0; i < numPoints; i++) {
@@ -146,7 +146,7 @@ void ofApp::ppSetup() {
                 }// end if
             }// end for i
 
-            int xyToPixelArray = x * y * int(riv_w);
+            int xyToPixelArray = x + y * int(riv_w);
             // colour to draw to image
             voronoiPixelAssignments.push_back(closestLocation);
             distList.push_back(distToClosestLocation);
@@ -180,21 +180,25 @@ void ofApp::updateRiver() {
             // set the hue according to the closest location
             float hue = hueList.at(xyToPixelArray);
             // set the saturation according to the closest location
-            float sat = satList.at(xyToPixelArray);
+            float sat = satList.at(xyToPixelArray) * 3;
             // set the colour using HSB
             c.setHsb(170, 250, 100 + sat, 255);
             
             //set the rgba values to the array
-             int index = 3 * ( x + y * w );
-             imgRiverData[ index ] = c.r;
-             imgRiverData[ index + 1 ] = c.g;
-             imgRiverData[ index + 2 ] = c.b;
-//             imgRiverData[ index + 3 ] = 255;
-//             float grey = 100 + hueList.at(xyToPixelArray) * 20;
-//             imgRiverData[xyToPixelArray] = grey;
+            int index = 3 * ( x + y * w );
+            // set red pixel colour
+            imgRiverData[ index ] = c.r;
+            // set green
+            imgRiverData[ index + 1 ] = c.g;
+            // set blue
+            imgRiverData[ index + 2 ] = c.b;
+            // imgRiverData[ index + 3 ] = 255;
+            // float grey = 100 + hueList.at(xyToPixelArray) * 20;
+            // imgRiverData[xyToPixelArray] = grey;
 
         }
     }
+
     // Load array to image
     imgRiver.setFromPixels( imgRiverData, w, h, OF_IMAGE_COLOR );
 //    imgRiver.setFromPixels( imgRiverData, w, h, OF_IMAGE_GRAYSCALE );
