@@ -2,10 +2,12 @@
 
 #include "ofMain.h"
 #include "PoissonPoints.hpp"
+#include "ofxVoronoi.h"
+#include "kinect_cogs.hpp"
 
 class ofApp : public ofBaseApp{
-
 	public:
+//        ofApp();
 		void setup();
 		void update();
 		void draw();
@@ -14,7 +16,7 @@ class ofApp : public ofBaseApp{
 //		void keyReleased(int key);
 //		void mouseMoved(int x, int y );
 //		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
+//		void mousePressed(int x, int y, int button);
 //		void mouseReleased(int x, int y, int button);
 //		void mouseEntered(int x, int y);
 //		void mouseExited(int x, int y);
@@ -43,9 +45,18 @@ class ofApp : public ofBaseApp{
     void ppSetup();
     void setupRiverbed();
     void updateRiver();
+    void drawRiver();
+    void drawBenthic();
     
     float widthScale;
+
+    ofxVoronoi voronoiRiver;
     
+    ofxVoronoi voronoiBenthic;
     
+    vector<ofPoint> riverPoints;
+    bool isBorder(ofPoint _pt);
+    
+    vector <class Cogs> kinectCogs;// = Cogs(500, 500);
     
 };

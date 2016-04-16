@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		041759F11CC1F1B400D7D960 /* kinect_cogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 041759EF1CC1F1B400D7D960 /* kinect_cogs.cpp */; };
+		04BF4B511CBF276900914B4E /* ofxVoronoi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B361CBF276900914B4E /* ofxVoronoi.cpp */; };
+		04BF4B521CBF276900914B4E /* c_loops_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B3A1CBF276900914B4E /* c_loops_2d.cpp */; };
+		04BF4B531CBF276900914B4E /* cell_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B3C1CBF276900914B4E /* cell_2d.cpp */; };
+		04BF4B541CBF276900914B4E /* cell_nc_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B3E1CBF276900914B4E /* cell_nc_2d.cpp */; };
+		04BF4B551CBF276900914B4E /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B401CBF276900914B4E /* common.cpp */; };
+		04BF4B561CBF276900914B4E /* container_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B431CBF276900914B4E /* container_2d.cpp */; };
+		04BF4B571CBF276900914B4E /* ctr_boundary_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B451CBF276900914B4E /* ctr_boundary_2d.cpp */; };
+		04BF4B581CBF276900914B4E /* v_base_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B481CBF276900914B4E /* v_base_2d.cpp */; };
+		04BF4B591CBF276900914B4E /* v_base_wl_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B4A1CBF276900914B4E /* v_base_wl_2d.cpp */; };
+		04BF4B5A1CBF276900914B4E /* v_compute_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B4B1CBF276900914B4E /* v_compute_2d.cpp */; };
+		04BF4B5B1CBF276900914B4E /* wall_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF4B4E1CBF276900914B4E /* wall_2d.cpp */; };
+		04BFEE7B1CBE70CF00CEE361 /* VoronoiDiagramGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BFEE791CBE70CF00CEE361 /* VoronoiDiagramGenerator.cpp */; };
 		04D060751CB8E29300B33ADB /* PoissonPoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04D060731CB8E29300B33ADB /* PoissonPoints.cpp */; };
 		04D060781CB8EAFC00B33ADB /* SinglePoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04D060761CB8EAFC00B33ADB /* SinglePoint.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
@@ -44,6 +57,36 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		041759EF1CC1F1B400D7D960 /* kinect_cogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kinect_cogs.cpp; sourceTree = "<group>"; };
+		041759F01CC1F1B400D7D960 /* kinect_cogs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kinect_cogs.hpp; sourceTree = "<group>"; };
+		04BF4B361CBF276900914B4E /* ofxVoronoi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxVoronoi.cpp; sourceTree = "<group>"; };
+		04BF4B371CBF276900914B4E /* ofxVoronoi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxVoronoi.h; sourceTree = "<group>"; };
+		04BF4B3A1CBF276900914B4E /* c_loops_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = c_loops_2d.cpp; sourceTree = "<group>"; };
+		04BF4B3B1CBF276900914B4E /* c_loops_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = c_loops_2d.h; sourceTree = "<group>"; };
+		04BF4B3C1CBF276900914B4E /* cell_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cell_2d.cpp; sourceTree = "<group>"; };
+		04BF4B3D1CBF276900914B4E /* cell_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cell_2d.h; sourceTree = "<group>"; };
+		04BF4B3E1CBF276900914B4E /* cell_nc_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cell_nc_2d.cpp; sourceTree = "<group>"; };
+		04BF4B3F1CBF276900914B4E /* cell_nc_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cell_nc_2d.h; sourceTree = "<group>"; };
+		04BF4B401CBF276900914B4E /* common.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
+		04BF4B411CBF276900914B4E /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		04BF4B421CBF276900914B4E /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		04BF4B431CBF276900914B4E /* container_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = container_2d.cpp; sourceTree = "<group>"; };
+		04BF4B441CBF276900914B4E /* container_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = container_2d.h; sourceTree = "<group>"; };
+		04BF4B451CBF276900914B4E /* ctr_boundary_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ctr_boundary_2d.cpp; sourceTree = "<group>"; };
+		04BF4B461CBF276900914B4E /* ctr_boundary_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ctr_boundary_2d.h; sourceTree = "<group>"; };
+		04BF4B471CBF276900914B4E /* rad_option.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rad_option.h; sourceTree = "<group>"; };
+		04BF4B481CBF276900914B4E /* v_base_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = v_base_2d.cpp; sourceTree = "<group>"; };
+		04BF4B491CBF276900914B4E /* v_base_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = v_base_2d.h; sourceTree = "<group>"; };
+		04BF4B4A1CBF276900914B4E /* v_base_wl_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = v_base_wl_2d.cpp; sourceTree = "<group>"; };
+		04BF4B4B1CBF276900914B4E /* v_compute_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = v_compute_2d.cpp; sourceTree = "<group>"; };
+		04BF4B4C1CBF276900914B4E /* v_compute_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = v_compute_2d.h; sourceTree = "<group>"; };
+		04BF4B4D1CBF276900914B4E /* voro++_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "voro++_2d.h"; sourceTree = "<group>"; };
+		04BF4B4E1CBF276900914B4E /* wall_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wall_2d.cpp; sourceTree = "<group>"; };
+		04BF4B4F1CBF276900914B4E /* wall_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wall_2d.h; sourceTree = "<group>"; };
+		04BF4B501CBF276900914B4E /* worklist_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = worklist_2d.h; sourceTree = "<group>"; };
+		04BFEE781CBE70CF00CEE361 /* ofxVoronoi2D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxVoronoi2D.h; sourceTree = "<group>"; };
+		04BFEE791CBE70CF00CEE361 /* VoronoiDiagramGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VoronoiDiagramGenerator.cpp; sourceTree = "<group>"; };
+		04BFEE7A1CBE70CF00CEE361 /* VoronoiDiagramGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VoronoiDiagramGenerator.h; sourceTree = "<group>"; };
 		04D060731CB8E29300B33ADB /* PoissonPoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PoissonPoints.cpp; sourceTree = "<group>"; };
 		04D060741CB8E29300B33ADB /* PoissonPoints.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PoissonPoints.hpp; sourceTree = "<group>"; };
 		04D060761CB8EAFC00B33ADB /* SinglePoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SinglePoint.cpp; sourceTree = "<group>"; };
@@ -70,6 +113,83 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04BF4B341CBF276900914B4E /* ofxVoronoi */ = {
+			isa = PBXGroup;
+			children = (
+				04BF4B351CBF276900914B4E /* src */,
+				04BF4B381CBF276900914B4E /* libs */,
+			);
+			name = ofxVoronoi;
+			sourceTree = "<group>";
+		};
+		04BF4B351CBF276900914B4E /* src */ = {
+			isa = PBXGroup;
+			children = (
+				04BF4B361CBF276900914B4E /* ofxVoronoi.cpp */,
+				04BF4B371CBF276900914B4E /* ofxVoronoi.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxVoronoi/src;
+			sourceTree = "<group>";
+		};
+		04BF4B381CBF276900914B4E /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				04BF4B391CBF276900914B4E /* Voro++2D */,
+			);
+			name = libs;
+			path = ../../../addons/ofxVoronoi/libs;
+			sourceTree = "<group>";
+		};
+		04BF4B391CBF276900914B4E /* Voro++2D */ = {
+			isa = PBXGroup;
+			children = (
+				04BF4B3A1CBF276900914B4E /* c_loops_2d.cpp */,
+				04BF4B3B1CBF276900914B4E /* c_loops_2d.h */,
+				04BF4B3C1CBF276900914B4E /* cell_2d.cpp */,
+				04BF4B3D1CBF276900914B4E /* cell_2d.h */,
+				04BF4B3E1CBF276900914B4E /* cell_nc_2d.cpp */,
+				04BF4B3F1CBF276900914B4E /* cell_nc_2d.h */,
+				04BF4B401CBF276900914B4E /* common.cpp */,
+				04BF4B411CBF276900914B4E /* common.h */,
+				04BF4B421CBF276900914B4E /* config.h */,
+				04BF4B431CBF276900914B4E /* container_2d.cpp */,
+				04BF4B441CBF276900914B4E /* container_2d.h */,
+				04BF4B451CBF276900914B4E /* ctr_boundary_2d.cpp */,
+				04BF4B461CBF276900914B4E /* ctr_boundary_2d.h */,
+				04BF4B471CBF276900914B4E /* rad_option.h */,
+				04BF4B481CBF276900914B4E /* v_base_2d.cpp */,
+				04BF4B491CBF276900914B4E /* v_base_2d.h */,
+				04BF4B4A1CBF276900914B4E /* v_base_wl_2d.cpp */,
+				04BF4B4B1CBF276900914B4E /* v_compute_2d.cpp */,
+				04BF4B4C1CBF276900914B4E /* v_compute_2d.h */,
+				04BF4B4D1CBF276900914B4E /* voro++_2d.h */,
+				04BF4B4E1CBF276900914B4E /* wall_2d.cpp */,
+				04BF4B4F1CBF276900914B4E /* wall_2d.h */,
+				04BF4B501CBF276900914B4E /* worklist_2d.h */,
+			);
+			path = "Voro++2D";
+			sourceTree = "<group>";
+		};
+		04BFEE761CBE70CF00CEE361 /* ofxVoronoi2D */ = {
+			isa = PBXGroup;
+			children = (
+				04BFEE771CBE70CF00CEE361 /* src */,
+			);
+			name = ofxVoronoi2D;
+			sourceTree = "<group>";
+		};
+		04BFEE771CBE70CF00CEE361 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				04BFEE781CBE70CF00CEE361 /* ofxVoronoi2D.h */,
+				04BFEE791CBE70CF00CEE361 /* VoronoiDiagramGenerator.cpp */,
+				04BFEE7A1CBE70CF00CEE361 /* VoronoiDiagramGenerator.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxVoronoi2D/src;
+			sourceTree = "<group>";
+		};
 		6948EE371B920CB800B5AC1A /* local_addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +200,8 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				04BFEE761CBE70CF00CEE361 /* ofxVoronoi2D */,
+				04BF4B341CBF276900914B4E /* ofxVoronoi */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -115,6 +237,8 @@
 				04D060741CB8E29300B33ADB /* PoissonPoints.hpp */,
 				04D060761CB8EAFC00B33ADB /* SinglePoint.cpp */,
 				04D060771CB8EAFC00B33ADB /* SinglePoint.hpp */,
+				041759EF1CC1F1B400D7D960 /* kinect_cogs.cpp */,
+				041759F01CC1F1B400D7D960 /* kinect_cogs.hpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -215,9 +339,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04BFEE7B1CBE70CF00CEE361 /* VoronoiDiagramGenerator.cpp in Sources */,
+				04BF4B5B1CBF276900914B4E /* wall_2d.cpp in Sources */,
+				04BF4B531CBF276900914B4E /* cell_2d.cpp in Sources */,
+				04BF4B541CBF276900914B4E /* cell_nc_2d.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				04BF4B551CBF276900914B4E /* common.cpp in Sources */,
+				04BF4B571CBF276900914B4E /* ctr_boundary_2d.cpp in Sources */,
+				04BF4B511CBF276900914B4E /* ofxVoronoi.cpp in Sources */,
+				04BF4B581CBF276900914B4E /* v_base_2d.cpp in Sources */,
+				04BF4B591CBF276900914B4E /* v_base_wl_2d.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				04D060751CB8E29300B33ADB /* PoissonPoints.cpp in Sources */,
+				04BF4B561CBF276900914B4E /* container_2d.cpp in Sources */,
+				04BF4B521CBF276900914B4E /* c_loops_2d.cpp in Sources */,
+				04BF4B5A1CBF276900914B4E /* v_compute_2d.cpp in Sources */,
+				041759F11CC1F1B400D7D960 /* kinect_cogs.cpp in Sources */,
 				04D060781CB8EAFC00B33ADB /* SinglePoint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -406,6 +543,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cc.openFrameworks.ofapp;
 				PRODUCT_NAME = "phd-installationDebug";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -461,6 +599,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cc.openFrameworks.ofapp;
 				PRODUCT_NAME = "phd-installationDebug";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
 			};

@@ -1,3 +1,4 @@
 ofxKinect
 ofxOsc
 ofxVectorGraphics
+ofxVoronoi
