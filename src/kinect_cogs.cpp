@@ -8,29 +8,50 @@
 
 #include "kinect_cogs.hpp"
 #include "PoissonPoints.hpp"
-//
+
 Cogs::Cogs (int c_width, int c_height) {
     fbo.allocate(c_width, c_height);
 
     inner = 60.0;
     outer = 62.0;
 
-    drawCogs();
+//    drawCogs();
 
-    PoissonPoints cogPP = *new PoissonPoints(1000, 80, 40, 500, 500);
-    for (int i = 0; i < cogPP.numLocations(); i++)
+    PoissonPoints cogPP = PoissonPoints(5000, 60, 40, 500, 500);
+//    cout << cogPP.numLocations() << endl;
+    
+    for (int i = 0; i < cogPP.pp.size(); i++)
     {
-        variableVar.push_back(sin(i));
+//        variableVar.push_back(sin(i));
+        cogLocations.push_back(cogPP.pp.at(i).location);
+        
+//        cout << cogPP.getPPLocation(i).x << cogPP.getPPLocation(i).y << endl;
     }
-//
+
 }
-//
-//
-void Cogs::drawCogs() {
+
+
+void Cogs::drawCogs(float x, float y) {
+//    cout << "drawing cogs" << endl;
+    fbo.begin();
+    for (int i = 0; i < cogLocations.size(); i++) {
+        ofPushMatrix();
+//        drawOneCog();
+        ofSetColor(255);
+        ofFill();
+        ofDrawCircle(0, 0, 2);
+        ofTranslate(cogLocations.at(i).x, cogLocations.at(i).y);
+        ofPopMatrix();
+    }
+    fbo.end();
+    fbo.draw(x, y);
+}
+
+
+void Cogs::drawOneCog () {
 
     // start the shape
-    fbo.begin();
-    ofSetColor(0, 10);
+    ofSetColor(255);
     ofFill();
     ofSetColor(ofColor::fromHsb(40, 100, 80));
     // start the outer contour
@@ -77,6 +98,6 @@ void Cogs::drawCogs() {
             
     }
     // finish off the shape
-    fbo.end();
+    
 
 }

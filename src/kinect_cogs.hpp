@@ -23,17 +23,18 @@ public:
     Cogs (int c_width, int c_height);
 
     
-    void drawCogs();
+    void drawCogs(float x, float y);
 
     ofFbo fbo;
+//    vector<class PoissonPoints> cogPP;
 
 private:
     float inner;
     float outer;
 
-    vector<float> variableVar;
-
-    vector<class PoissonPoints> cogPP;
+//    vector<float> variableVar;
+    vector<ofVec2f> cogLocations;
+    void drawOneCog(); 
 };
 
 #endif /* kinect_cogs_hpp */
