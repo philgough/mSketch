@@ -46,8 +46,7 @@ void ofApp::draw(){
     ofDrawBitmapString(ofGetFrameRate(), 20, 20);
 
     for (int i = 0; i < kinectCogs.size(); i++) {
-        kinectCogs.at(i).drawCogs(10, 10);
-//        kinectCogs.at(i).fbo.draw(0, 0);
+        kinectCogs.at(i).drawCogs(100, 10);
     }
 }
 

@@ -17,7 +17,7 @@ Cogs::Cogs (int c_width, int c_height) {
 
 //    drawCogs();
 
-    PoissonPoints cogPP = PoissonPoints(5000, 60, 40, 500, 500);
+    PoissonPoints cogPP = PoissonPoints(100, 60, 40, 500, 500);
 //    cout << cogPP.numLocations() << endl;
     
     for (int i = 0; i < cogPP.pp.size(); i++)
@@ -33,14 +33,14 @@ Cogs::Cogs (int c_width, int c_height) {
 
 void Cogs::drawCogs(float x, float y) {
 //    cout << "drawing cogs" << endl;
+    
     fbo.begin();
+    ofBackground(0, 0, 0);
+    ofSeedRandom(500);
     for (int i = 0; i < cogLocations.size(); i++) {
         ofPushMatrix();
-//        drawOneCog();
-        ofSetColor(255);
-        ofFill();
-        ofDrawCircle(0, 0, 2);
         ofTranslate(cogLocations.at(i).x, cogLocations.at(i).y);
+        drawOneCog(ofRandom(0.25, 1.1));
         ofPopMatrix();
     }
     fbo.end();
@@ -48,56 +48,58 @@ void Cogs::drawCogs(float x, float y) {
 }
 
 
-void Cogs::drawOneCog () {
+void Cogs::drawOneCog (float r) {
 
-    // start the shape
     ofSetColor(255);
     ofFill();
-    ofSetColor(ofColor::fromHsb(40, 100, 80));
-    // start the outer contour
-    for (int i = 0.0; i < 360; i += 10)
+    vector<ofPoint> outerPoints;
+    for (float i = 0.0; i < 360; i += 10.0)
+        
     {
-        float ifVal = (i % 4)/1.0;
+        float ifVal = (int(i) % int(4));
         if (ifVal < 2)
         {
-            float x = inner * sin(ofDegToRad(i));
-            float y = inner * cos(ofDegToRad(i));
-            ofVertex( x, y );
-            float u = outer * sin(ofDegToRad(i));
-            float v = outer * cos(ofDegToRad(i));
-            ofVertex( u, v );
+            float x = inner * sin(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            float y = inner * cos(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            outerPoints.push_back(ofPoint( x, y ));
+            float u = outer * sin(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            float v = outer * cos(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            outerPoints.push_back(ofPoint( u, v ));
         } else
         {
-            float x = outer * sin(ofDegToRad(i));
-            float y = outer * cos(ofDegToRad(i));
-            ofVertex( x, y );
-            float u = inner * sin(ofDegToRad(i));
-            float v = inner * cos(ofDegToRad(i));
-            ofVertex( u, v );
+            float x = outer * sin(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            float y = outer * cos(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            outerPoints.push_back(ofPoint( x, y ));
+            float u = inner * sin(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            float v = inner * cos(ofDegToRad(i + ofGetFrameNum()*sin(r))) * r;
+            outerPoints.push_back(ofPoint( u, v ));
         }
     }
     
     // start the inner cutouts
+    vector<ofPoint> innerPoints;
     for (float i = 1; i < 5; i++)
     {
-        ofNextContour();
+//        ofNextContour();
         float startValue = 130 + 90 * i;
         float endValue = 50 + 90 * i;
         for (float j = startValue; j > endValue; j-= 2) {
-            float x = (inner - 10) * sin(ofDegToRad(j));
-            float y = (inner - 10) * cos(ofDegToRad(j));
-            ofVertex(x, y);
+            float x = (inner - 10) * sin(ofDegToRad(j + ofGetFrameNum()*sin(r))) * r;
+            float y = (inner - 10) * cos(ofDegToRad(j + ofGetFrameNum()*sin(r))) * r;
+            innerPoints.push_back(ofPoint(x, y));
         }
         
-        for (float k = startValue; k > endValue; k -= 10)
-        {
-            float x = 8 * sin(ofDegToRad(k));
-            float y = 8 * cos(ofDegToRad(k));
-            ofVertex(x, y);
-        }
-            
     }
-    // finish off the shape
+    
+    ofMesh mesh;
+    ofSetColor(ofColor::fromHsb(40, 255, 200, 100));
+    mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
+    mesh.addVertices(outerPoints);
+    mesh.draw();
+    mesh.clear();
+//    mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
+    mesh.addVertices(innerPoints);
+    mesh.draw();
     
 
 }

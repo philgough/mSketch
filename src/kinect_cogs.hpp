@@ -34,7 +34,7 @@ private:
 
 //    vector<float> variableVar;
     vector<ofVec2f> cogLocations;
-    void drawOneCog(); 
+    void drawOneCog(float r);
 };
 
 #endif /* kinect_cogs_hpp */
