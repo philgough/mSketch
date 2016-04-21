@@ -35,7 +35,9 @@ void Cogs::drawCogs(float x, float y) {
 //    cout << "drawing cogs" << endl;
     
     fbo.begin();
-    ofBackground(0, 0, 0);
+//    ofBackground(0, 0, 0, 0);
+    
+    ofBackgroundGradient(ofColor::fromHsb(165, 201, 117), ofColor::fromHsb(20, 255, 207), OF_GRADIENT_LINEAR);
     ofSeedRandom(500);
     for (int i = 0; i < cogLocations.size(); i++) {
         ofPushMatrix();
@@ -46,7 +48,7 @@ void Cogs::drawCogs(float x, float y) {
     fbo.end();
     fbo.draw(x, y);
 }
-
+ 	
 
 void Cogs::drawOneCog (float r) {
 
@@ -92,12 +94,11 @@ void Cogs::drawOneCog (float r) {
     }
     
     ofMesh mesh;
-    ofSetColor(ofColor::fromHsb(40, 255, 200, 100));
+    ofSetColor(ofColor::fromHsb(40, 255, 200, 200));
     mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
     mesh.addVertices(outerPoints);
     mesh.draw();
     mesh.clear();
-//    mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
     mesh.addVertices(innerPoints);
     mesh.draw();
     

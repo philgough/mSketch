@@ -3,7 +3,9 @@
 #include "ofMain.h"
 #include "PoissonPoints.hpp"
 #include "ofxVoronoi.h"
-#include "kinect_cogs.hpp"
+//#include "kinect_cogs.hpp"
+
+#include "ofxOpenNI.h"
 
 class ofApp : public ofBaseApp{
 	public:
@@ -57,6 +59,32 @@ class ofApp : public ofBaseApp{
     vector<ofPoint> riverPoints;
     bool isBorder(ofPoint _pt);
     
-    vector <class Cogs> kinectCogs;// = Cogs(500, 500);
+    
+    
+//    vector <class Cogs> kinectCogs;// = Cogs(500, 500);
+    
+    
+    
+    
+    
+    // land layer
+    ofImage topBgA;
+    ofImage topBgB;
+    
+    void drawLand();
+    
+    // colours for changing background gradient on top level
+//    float sh1, ss1, sb1, sh2, ss2, sb2, eh1, es1, eb1, eh2, es2, eb2;
+    ofImage landBG1, landBG2;
+    ofImage sky1, sky2, sky3, sky4;
+    
+    
+    void openniSetup();
+    void drawSkele();
+    void drawHands();
+    void userEvent(ofxOpenNIUserEvent & event);
+    
+    ofxOpenNI openNIDevice;
+
     
 };
