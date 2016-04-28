@@ -191,9 +191,9 @@ void ofApp::openniSetup() {
 void ofApp::update(){
     
     // update the kinect position every second frame
-    if (ofGetFrameNum() % 2 == 0) {
+//    if (ofGetFrameNum() % 2 == 0) {
         openNIDevice.update();
-    }
+//    }
     
     // add some new circles
     if((int)ofRandom(0, 40) == 0 && circles.size() < 25) {
@@ -401,7 +401,7 @@ void ofApp::drawHands() {
             float dist = ofDist(x, y, x2, y2);
             //                    cout << dist << endl;
             if (dist < 40 && pollutionOffset.at(j) < -15) {
-                pollutionOffset.at(j) += 3;
+                pollutionOffset.at(j) += 7;
             }
         }
 
@@ -409,8 +409,9 @@ void ofApp::drawHands() {
         
         
 //        cout << x << ", " << y << endl;
-        lines.back().addVertex(x, y);
-
+        lines.back().addVertex(x - 4, y);
+        lines.back().addVertex(x, y + 4);
+        lines.back().addVertex(x + 4, y);
         
     }
     shared_ptr <ofxBox2dEdge> edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
