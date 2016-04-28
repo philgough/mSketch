@@ -12,50 +12,33 @@ void ofApp::setup(){
 //    ofBackground(0, 0, 0);
     cout << "starting application" << endl;
 
-    
+    // river/benthic layers
     ppSetup();
-    
-//    ofBackground(0);
-
-    
-    
-    // frameBuffer object for kinect blobs
-//     kinectCogs.push_back(Cogs(500, 500));
     
     
     // land layer
-    // hsb values
-//    sh1 = 204 * 255 / 360;
-//    ss1 =  96 * 2.55;
-//    sb1 =  59 * 2.55;
-//    
-//    eh1 = 210 * 255 / 360;
-//    es1 =  16 * 2.55;
-//    eb1 =  95 * 2.55;
-//    
-//    sh2 = 356 * 255 / 360;
-//    ss2 = 67 * 2.55;
-//    sb2 = 90 * 2.55;
-//    
-//    eh2 = 245 * 255 / 360;
-//    es2 = 80 * 2.55;
-//    eb2 = 39 * 2.55;
     landBG1.load("LandBG_1.png");
-    landBG2.load("LandBG_2.png");
+    landBG2.load("LandBG_1.png");
+    landFG1.load("LandFG_1.png");
+    landFG2.load("LandFG_2.png");
     sky1.load("Sky_1.png");
     sky2.load("Sky_2.png");
     sky3.load("Sky_3.png");
     
 
-    
+    // kinect
     openniSetup();
-
     
+    // pollution particles
+    box2d.init();
+    box2d.setGravity(0, 3);
+//    box2d.createBounds();
+    box2d.createGround(ofPoint(0, 1080), ofPoint(1920, 1080));
 }
 
 
 
-
+// set up backgrounds
 void ofApp::ppSetup() {
     int riv_w = 1920;
     int riv_h = 360;
@@ -142,18 +125,19 @@ void ofApp::ppSetup() {
 
 void ofApp::openniSetup() {
     openNIDevice.setup();
-    openNIDevice.addImageGenerator();
+//    openNIDevice.addImageGenerator();
     openNIDevice.addDepthGenerator();
     openNIDevice.setRegister(true);
     openNIDevice.setMirror(true);
-    openNIDevice.addUserGenerator();
-    openNIDevice.setMaxNumUsers(2);
+//    openNIDevice.addUserGenerator();
+//    openNIDevice.setMaxNumUsers(2);
 
     
     
     openNIDevice.addHandsGenerator();
     openNIDevice.addAllHandFocusGestures();
     openNIDevice.setMaxNumHands(4);
+    
     
     for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
         ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true, true);
@@ -162,15 +146,14 @@ void ofApp::openniSetup() {
         // bool _bUseMaskTexture = true, bool _bUseDepthPixels = false, bool _bUseDepthTexture = false,
         // int _pointCloudDrawSize = 2, int _pointCloudResolution = 2
         openNIDevice.addDepthThreshold(depthThreshold);
-        
     }
     
     openNIDevice.start();
     
     // set properties for all user masks and point clouds
     //openNIDevice.setUseMaskPixelsAllUsers(true); // if you just want pixels, use this set to true
-    openNIDevice.setUseMaskTextureAllUsers(true); // this turns on mask pixels internally AND creates mask textures efficiently
-    openNIDevice.setUsePointCloudsAllUsers(false);
+//    openNIDevice.setUseMaskTextureAllUsers(true); // this turns on mask pixels internally AND creates mask textures efficiently
+//    openNIDevice.setUsePointCloudsAllUsers(false);
 //    openNIDevice.setPointCloudDrawSizeAllUsers(2); // size of each 'point' in the point cloud
 //    openNIDevice.setPointCloudResolutionAllUsers(6); // resolution of the mesh created for the point cloud eg., this will use every second depth pixel
     
@@ -186,7 +169,30 @@ void ofApp::update(){
     if (ofGetFrameNum() % 2 == 0) {
         openNIDevice.update();
     }
+    
+    // add some new circles
+    if((int)ofRandom(0, 20) == 0) {
+        shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
+        c.get()->setPhysics(0.3, 0.6, 0.012);
+        c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), 501, 10);
+        c.get()->setVelocity(ofRandom(7)-3.5, ofRandom(3)); // shoot them down!
+        circles.push_back(c);
+    }
+    
+
+    // remove if out of bounds
+
+    for (int i  = 0; i < circles.size(); i++) {
+        if (circles[i].get() -> getPosition().y < 500) {
+            circles.at(i)->destroy();
+        }
+        
+    }
+
+    box2d.update();
+
 }
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -202,18 +208,19 @@ void ofApp::draw(){
     drawLand();
     // kinect functions
     drawHands();
-    drawSkele();
+ 
     
+    // draw particle elements
+    drawBox2d();
+    
+    ofSetColor(255, 255, 255);
     ofFill();
     ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    
+    
+    string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
+    ofDrawBitmapString(msg, 20, 60);
 
-        
-    
-//    for (int i = 0; i < kinectCogs.size(); i++) {
-//        kinectCogs.at(i).drawCogs(100, 10);
-//    }
-    
-    
 }
 
 
@@ -311,94 +318,102 @@ void ofApp::drawLand() {
     //    topBuffer.end();
     //    topBuffer.draw(0, 0);
 }
-
-
-void ofApp::drawSkele() {
-    
-//    ofSetColor(255, 255, 255);
-    
-//        ofPushMatrix();
-//        // draw debug (ie., image, depth, skeleton)
-//        openNIDevice.drawDebug();
-//        ofPopMatrix();
-    
+//
+//
+//void ofApp::drawSkele() {
+//    
+////    ofSetColor(255, 255, 255);
+//    
+////        ofPushMatrix();
+////        // draw debug (ie., image, depth, skeleton)
+////        openNIDevice.drawDebug();
+////        ofPopMatrix();
+//
 //    ofFbo topBuffer;
-//    topBuffer.allocate(1920, 500);
+//    topBuffer.allocate(1920, 1080);
 //    topBuffer.begin();
-//    ofBackground(0);
-    
-    ofPushMatrix();
-//        // use a blend mode so we can see 'through' the mask(s)
-//    ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
-    
-    // get number of current users
-    int numUsers = openNIDevice.getNumTrackedUsers();
-    
-    // iterate through users
-    for (int i = 0; i < numUsers; i++){
-            
-        // get a reference to this user
-        ofPushMatrix();
-        ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
-            
-        // draw the mask texture for this user
-//        ofScale(.5, .5);
+//    // add a transparent background
+//    ofBackground(0,0,0,0);
+//    
+////    sky1.draw(0, 0);
+////    landBG1.draw(0, 0);
+//    // draw the foreground we want to see
+//
+//    landFG1.draw(0, 0);
+//    
+//    ofPushMatrix();
+//    // use a blend mode so we can see 'through' the mask(s)
+//    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+//    
+//    // get number of current users
+//    int numUsers = openNIDevice.getNumTrackedUsers();
+//    
+//    // iterate through users
+//    for (int i = 0; i < numUsers; i++){
+//            
+//        // get a reference to this user
+//        ofPushMatrix();
+//        ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+//            
+//        // draw the mask texture for this user
+////        ofScale(.5, .5);
 //        user.drawMask();
-        
-        // you can also access the pixel and texture references individually:
-        
-        // TEXTURE REFERENCE
-        ofTexture & tex = user.getMaskTextureReference();
-        // do something with texture...
-        tex.draw(400, 240);
-        
-        // PIXEL REFERENCE
-        //ofPixels & pix = user.getMaskPixels();
-        // do something with the pixels...
-            
-        // and point clouds:
-            
-        // move it a bit more central
-        ofTranslate(320, 240);
-//        user.drawPointCloud();
-        
-        // you can also access the mesh:
-            
-        // MESH REFERENCE
-//        ofMesh & mesh = user.getPointCloud();
-        // do something with the point cloud mesh
-//        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-//        mesh.addVertices(cells[i].pts);
-//        mesh.draw(OF_MESH_FILL);
-        openNIDevice.drawSkeleton(i);
-
-        
-        ofPopMatrix();
-            
-    }
-        
+////        user.getCenter()
+//        // you can also access the pixel and texture references individually:
+//        
+//        // TEXTURE REFERENCE
+////        ofTexture & tex = user.getMaskTextureReference();
+//        // do something with texture...
+////        tex.blur();
+////        tex.draw(0, 0, ofGetWidth(), 800);
+//        
+//        // PIXEL REFERENCE
+//        //ofPixels & pix = user.getMaskPixels();
+//        // do something with the pixels...
+//            
+//        // and point clouds:
+//            
+//        // move it a bit more central
+//        ofTranslate(320, 120);
+////        user.drawPointCloud();
+//        
+//        // you can also access the mesh:
+//            
+//        // MESH REFERENCE
+////        ofMesh & mesh = user.getPointCloud();
+//        // do something with the point cloud mesh
+////        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+////        mesh.addVertices(cells[i].pts);
+////        mesh.draw(OF_MESH_FILL);
+////        openNIDevice.drawSkeleton(i);
+//
+//        
+//        ofPopMatrix();
+//            
+//    }
+//        
 //    ofDisableBlendMode();
-    ofPopMatrix();
-    
+//    ofPopMatrix();
+//    
 //    topBuffer.end();
-//    ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
-//    topBuffer.draw(0, 0, 1920, 500);
-//    ofDisableBlendMode();
-    
-    
-    // draw some info regarding frame counts etc
-//    ofSetColor(0, 255, 0);
-//    string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
-    
-    
-    
-//    topBuffer.end();
-//    ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_SCREEN);
+//    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 //    topBuffer.draw(0, 0);
-//    openNIDevice.drawDebug();
-
-    
-}
+//    ofDisableBlendMode();
+//    
+//    
+//    // draw some info regarding frame counts etc
+////    ofSetColor(0, 255, 0);
+////    string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
+//    
+//    
+//    
+////    topBuffer.end();
+////    ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_SCREEN);
+////    topBuffer.draw(0, 0);
+////    openNIDevice.drawDebug();
+//
+//    
+//}
 
 
 void ofApp::drawHands() {
@@ -407,10 +422,15 @@ void ofApp::drawHands() {
 //    openNIDevice.drawDebug();
 //    ofPopMatrix();
 //    cout << openNIDevice.getNumTrackedHands() << endl;
-    ofPushMatrix();
+//    ofPushMatrix();
     
 //    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     // iterate through users
+    
+    
+    lines.clear();
+    edges.clear();
+    lines.push_back(ofPolyline());
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
         
         // get a reference to this user
@@ -423,41 +443,112 @@ void ofApp::drawHands() {
         ofSetColor(80, 80, 80);
         ofFill();
 //        ofDrawRectangle(handPosition.x, handPosition.y, 2, 2);
-        ofDrawCircle(ofMap(handPosition.x, 0, 640, 0, ofGetWidth()), ofMap(handPosition.y, 0, 480, 500, 860), 8);
-        cout << i << handPosition << endl;
+        // map x position of hands from the kinect dimensions to the dimensions of the app
+        float x = ofMap(handPosition.x, 0, 640, -40, ofGetWidth() + 40);
+        // map y position of hands from the kinect dimensions to the appropriate dimensions on the app
+        float y = ofMap(handPosition.y, 0, 480, 400, 2000);
+        ofDrawCircle(x, y, 8);
+        lines.back().addVertex(x, y);
+//        cout << i << handPosition << endl;
         // set depthThresholds based on handPosition
-        ofxOpenNIDepthThreshold & depthThreshold = openNIDevice.getDepthThreshold(i); // we just use hand index for the depth threshold index
-        
-        // draw ROI over the depth image
-        ofSetColor(255,255,255);
-        depthThreshold.drawROI();
-        
-        // draw depth and mask textures below the depth image at 0.5 scale
-        // you could instead just do pixel maths here for finger tracking etc
-        // by using depthThreshold.getDepthPixels() and/or depthThreshold.getMaskPixels()
-        // and turn off the textures in the initial setup/addDepthTexture calls
-        
-        ofPushMatrix();
-        ofTranslate(320 * i, 480);
-        ofScale(0.5, 0.5);
-        depthThreshold.drawDepth();
-        depthThreshold.drawMask();
-        ofPopMatrix();
+//        ofxOpenNIDepthThreshold & depthThreshold = openNIDevice.getDepthThreshold(i); // we just use hand index for the depth threshold index
+//        
+//        // draw ROI over the depth image
+//        ofSetColor(255,255,255);
+//        depthThreshold.drawROI();
+//        
+//        // draw depth and mask textures below the depth image at 0.5 scale
+//        // you could instead just do pixel maths here for finger tracking etc
+//        // by using depthThreshold.getDepthPixels() and/or depthThreshold.getMaskPixels()
+//        // and turn off the textures in the initial setup/addDepthTexture calls
+//        
+//        ofPushMatrix();
+//        ofTranslate(320 * i, 480);
+//        ofScale(0.5, 0.5);
+//        depthThreshold.drawDepth();
+//        depthThreshold.drawMask();
+//        ofPopMatrix();
         
         // i think this is pretty good but might be a frame behind???
         
+        
+        
+    }
+    shared_ptr <ofxBox2dEdge> edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
+    lines.back().simplify();
+    
+    for (int i=0; i<lines.back().size(); i++) {
+        edge.get()->addVertex(lines.back()[i]);
     }
     
-    ofDisableBlendMode();
-    ofPopMatrix();
+    
+    edge.get()->create(box2d.getWorld());
+    edges.push_back(edge);
+    
+    
+    lines.push_back(ofPolyline());
+    lines.back().addVertex(2, 0);
+    lines.back().addVertex(2, 840);
+    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
+    lines.back().simplify();
+    
+    for (int i=0; i<lines.back().size(); i++) {
+        edge.get()->addVertex(lines.back()[i]);
+    }
+    
+    
+    edge.get()->create(box2d.getWorld());
+    edges.push_back(edge);
+    
+    lines.push_back(ofPolyline());
+    lines.back().addVertex(1918, 0);
+    lines.back().addVertex(1918, 840);
+    // add the line as an edge to the circles interact with it.
+    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
+    lines.back().simplify();
+    
+    for (int i=0; i<lines.back().size(); i++) {
+        edge.get()->addVertex(lines.back()[i]);
+    }
+
+    
+    edge.get()->create(box2d.getWorld());
+    edges.push_back(edge);
+    
+    
+//    ofDisableBlendMode();
+//    ofPopMatrix();
     
     
 
 }
 
-////--------------------------------------------------------------x
+
+
+void ofApp::drawBox2d() {
+    
+    // some circles :)
+    ofSetColor(151, 122, 93, 120);
+    for (int i=0; i<circles.size(); i++) {
+        ofFill();
+//        ofSetHexColor(0xc0dd3b);
+        circles[i].get()->draw();
+    }
+    
+    ofSetHexColor(0x444342);
+    ofNoFill();
+    for (int i=0; i<lines.size(); i++) {
+        lines[i].draw();
+    }
+    for (int i=0; i<edges.size(); i++) {
+        edges[i].get()->draw();
+    }
+
+}
+
+////--------------------------------------------------------------
 //void ofApp::keyPressed(int key){
-//
+//    blendMode = key % 6;
 //}
 //
 ////--------------------------------------------------------------

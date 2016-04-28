@@ -7,6 +7,8 @@
 
 #include "ofxOpenNI.h"
 
+#include "ofxBox2d.h"
+
 class ofApp : public ofBaseApp{
 	public:
 //        ofApp();
@@ -76,9 +78,10 @@ class ofApp : public ofBaseApp{
     // colours for changing background gradient on top level
 //    float sh1, ss1, sb1, sh2, ss2, sb2, eh1, es1, eb1, eh2, es2, eb2;
     ofImage landBG1, landBG2;
+    ofImage landFG1, landFG2;
     ofImage sky1, sky2, sky3, sky4;
     
-    
+    // kinect
     void openniSetup();
     void drawSkele();
     void drawHands();
@@ -86,5 +89,19 @@ class ofApp : public ofBaseApp{
     
     ofxOpenNI openNIDevice;
 
+
+    // particles
+    ofxBox2d                               box2d;   // the box2d world
+    vector   <shared_ptr<ofxBox2dCircle> > circles; // default box2d circles
+//    vector   <shared_ptr<ofxBox2dRect> >   boxes;   // defalut box2d rects
+
+    // line for the circles to interact with
+    vector <ofPolyline>                    lines;
+    vector <shared_ptr<ofxBox2dEdge> >      edges;
+
+    void drawBox2d();
+    
+//    bool shouldRemove(ofxBox2dCircle c);
+    
     
 };
