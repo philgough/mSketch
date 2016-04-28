@@ -38,11 +38,11 @@ void ofApp::setup(){
 
 
 
-// set up backgrounds
+// set up backgrounds for river and benthic layer
 void ofApp::ppSetup() {
     int riv_w = 1920;
     int riv_h = 360;
-    PoissonPoints pp = PoissonPoints(5000, 10, 40, riv_w, riv_h);
+    PoissonPoints pp = PoissonPoints(5000, 15, 40, riv_w, riv_h);
     
     widthScale = 9;
     
@@ -71,7 +71,7 @@ void ofApp::ppSetup() {
         
         ofPoint bv = ofPoint(pointList.at(i).x, pointList.at(i).y);
         benthicPoints.push_back(bv);
-        
+        pollutionOffset.push_back(0.0);
         
     }
     
@@ -164,14 +164,39 @@ void ofApp::openniSetup() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    // update the kinect position every second frame
     if (ofGetFrameNum() % 2 == 0) {
         openNIDevice.update();
     }
     
     // add some new circles
-    if((int)ofRandom(0, 20) == 0) {
+    if((int)ofRandom(0, 40) == 0 && circles.size() < 25) {
         shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
         c.get()->setPhysics(0.3, 0.6, 0.012);
         c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), 501, 10);
@@ -179,19 +204,56 @@ void ofApp::update(){
         circles.push_back(c);
     }
     
-
-    // remove if out of bounds
+    
+    vector   <shared_ptr<ofxBox2dCircle> > tempCircles; // default box2d circles
 
     for (int i  = 0; i < circles.size(); i++) {
-        if (circles[i].get() -> getPosition().y < 500) {
-            circles.at(i)->destroy();
+        float x =circles[i].get() -> getPosition().x;
+        float y =circles[i].get() -> getPosition().y;
+        if (y > 500 && x > 0 && x < ofGetWidth()) {
+            tempCircles.push_back(circles.at(i));
+            if (y > 860) {
+                for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
+                    
+                    float x2 = voronoiBenthic.getPoints().at(j).x;
+                    float y2 = voronoiBenthic.getPoints().at(j).y + 860;
+                    
+                    float dist = ofDist(x, y, x2, y2);
+                    if (dist < 40 && pollutionOffset.at(j) > -175) {
+                        pollutionOffset.at(j) -= 1;
+                    }
+                }
+            }
         }
-        
     }
-
+    circles = tempCircles;
+    tempCircles.clear();
+    
+    // update the physics engine
     box2d.update();
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //--------------------------------------------------------------
@@ -206,6 +268,7 @@ void ofApp::draw(){
     //
     ofSetColor(255, 255, 255);
     drawLand();
+
     // kinect functions
     drawHands();
  
@@ -215,11 +278,11 @@ void ofApp::draw(){
     
     ofSetColor(255, 255, 255);
     ofFill();
-    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+//    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
     
     
-    string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
-    ofDrawBitmapString(msg, 20, 60);
+    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(-1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size()));
+    ofDrawBitmapString(msg, 20, 20);
 
 }
 
@@ -280,8 +343,8 @@ void ofApp::drawBenthic() {
     vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
     for(int i=0; i<cells.size(); i++) {
         float h = 20 + sin(i) * 3;
-        float s = 200;
-        float b = 130;
+        float s = 200 + pollutionOffset.at(i);
+        float b = 130 + pollutionOffset.at(i) / 3;
         ofSetColor(ofColor::fromHsb(h, s, b));
         
         ofMesh mesh;
@@ -303,130 +366,11 @@ void ofApp::drawLand() {
     
     sky1.draw(0, 0);
     landBG1.draw(0, 0);
-    
-    //    float sh3, ss3, sb3, eh3, es3, eb3;
-    //    float cosValue = cos(ofDegToRad(ofGetFrameNum()/1));
-    ////    cout << cosValue << endl;
-    //    sh3 = ofMap(cosValue, -1, 1, sh1, sh2);
-    //    ss3 = ofMap(cosValue, -1, 1, ss1, ss2);
-    //    sb3 = ofMap(cosValue, -1, 1, sb1, sb2);
-    //    eh3 = ofMap(cosValue, -1, 1, eh1, eh2);
-    //    es3 = ofMap(cosValue, -1, 1, es1, es2);
-    //    eb3 = ofMap(cosValue, -1, 1, eb1, eb2);
-    //
-    //    ofBackgroundGradient( ofColor::fromHsb(eh1, eh2, eh3), ofColor::fromHsb(sh3, ss3, sb3), OF_GRADIENT_LINEAR);
-    //    topBuffer.end();
-    //    topBuffer.draw(0, 0);
 }
-//
-//
-//void ofApp::drawSkele() {
-//    
-////    ofSetColor(255, 255, 255);
-//    
-////        ofPushMatrix();
-////        // draw debug (ie., image, depth, skeleton)
-////        openNIDevice.drawDebug();
-////        ofPopMatrix();
-//
-//    ofFbo topBuffer;
-//    topBuffer.allocate(1920, 1080);
-//    topBuffer.begin();
-//    // add a transparent background
-//    ofBackground(0,0,0,0);
-//    
-////    sky1.draw(0, 0);
-////    landBG1.draw(0, 0);
-//    // draw the foreground we want to see
-//
-//    landFG1.draw(0, 0);
-//    
-//    ofPushMatrix();
-//    // use a blend mode so we can see 'through' the mask(s)
-//    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-//    
-//    // get number of current users
-//    int numUsers = openNIDevice.getNumTrackedUsers();
-//    
-//    // iterate through users
-//    for (int i = 0; i < numUsers; i++){
-//            
-//        // get a reference to this user
-//        ofPushMatrix();
-//        ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
-//            
-//        // draw the mask texture for this user
-////        ofScale(.5, .5);
-//        user.drawMask();
-////        user.getCenter()
-//        // you can also access the pixel and texture references individually:
-//        
-//        // TEXTURE REFERENCE
-////        ofTexture & tex = user.getMaskTextureReference();
-//        // do something with texture...
-////        tex.blur();
-////        tex.draw(0, 0, ofGetWidth(), 800);
-//        
-//        // PIXEL REFERENCE
-//        //ofPixels & pix = user.getMaskPixels();
-//        // do something with the pixels...
-//            
-//        // and point clouds:
-//            
-//        // move it a bit more central
-//        ofTranslate(320, 120);
-////        user.drawPointCloud();
-//        
-//        // you can also access the mesh:
-//            
-//        // MESH REFERENCE
-////        ofMesh & mesh = user.getPointCloud();
-//        // do something with the point cloud mesh
-////        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-////        mesh.addVertices(cells[i].pts);
-////        mesh.draw(OF_MESH_FILL);
-////        openNIDevice.drawSkeleton(i);
-//
-//        
-//        ofPopMatrix();
-//            
-//    }
-//        
-//    ofDisableBlendMode();
-//    ofPopMatrix();
-//    
-//    topBuffer.end();
-//    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-//    topBuffer.draw(0, 0);
-//    ofDisableBlendMode();
-//    
-//    
-//    // draw some info regarding frame counts etc
-////    ofSetColor(0, 255, 0);
-////    string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
-//    
-//    
-//    
-////    topBuffer.end();
-////    ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_SCREEN);
-////    topBuffer.draw(0, 0);
-////    openNIDevice.drawDebug();
-//
-//    
-//}
-
 
 void ofApp::drawHands() {
 
-//    ofPushMatrix();
 //    openNIDevice.drawDebug();
-//    ofPopMatrix();
-//    cout << openNIDevice.getNumTrackedHands() << endl;
-//    ofPushMatrix();
-    
-//    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-    // iterate through users
-    
     
     lines.clear();
     edges.clear();
@@ -440,38 +384,33 @@ void ofApp::drawHands() {
         ofPoint & handPosition = hand.getPosition();
         
         // draw a rect at the position
-        ofSetColor(80, 80, 80);
+        ofSetColor(25, 180, 95);
         ofFill();
 //        ofDrawRectangle(handPosition.x, handPosition.y, 2, 2);
         // map x position of hands from the kinect dimensions to the dimensions of the app
-        float x = ofMap(handPosition.x, 0, 640, -40, ofGetWidth() + 40);
+        float x = ofMap(handPosition.x, 0, 640, -80, ofGetWidth() + 80);
         // map y position of hands from the kinect dimensions to the appropriate dimensions on the app
-        float y = ofMap(handPosition.y, 0, 480, 400, 2000);
+        float y = ofMap(handPosition.y, 0, 480, 360, 2050);
         ofDrawCircle(x, y, 8);
+        
+        for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
+            
+            float x2 = voronoiBenthic.getPoints().at(j).x;
+            float y2 = voronoiBenthic.getPoints().at(j).y + 860;
+            
+            float dist = ofDist(x, y, x2, y2);
+            //                    cout << dist << endl;
+            if (dist < 40 && pollutionOffset.at(j) < -15) {
+                pollutionOffset.at(j) += 3;
+            }
+        }
+
+        
+        
+        
+//        cout << x << ", " << y << endl;
         lines.back().addVertex(x, y);
-//        cout << i << handPosition << endl;
-        // set depthThresholds based on handPosition
-//        ofxOpenNIDepthThreshold & depthThreshold = openNIDevice.getDepthThreshold(i); // we just use hand index for the depth threshold index
-//        
-//        // draw ROI over the depth image
-//        ofSetColor(255,255,255);
-//        depthThreshold.drawROI();
-//        
-//        // draw depth and mask textures below the depth image at 0.5 scale
-//        // you could instead just do pixel maths here for finger tracking etc
-//        // by using depthThreshold.getDepthPixels() and/or depthThreshold.getMaskPixels()
-//        // and turn off the textures in the initial setup/addDepthTexture calls
-//        
-//        ofPushMatrix();
-//        ofTranslate(320 * i, 480);
-//        ofScale(0.5, 0.5);
-//        depthThreshold.drawDepth();
-//        depthThreshold.drawMask();
-//        ofPopMatrix();
-        
-        // i think this is pretty good but might be a frame behind???
-        
-        
+
         
     }
     shared_ptr <ofxBox2dEdge> edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
@@ -486,41 +425,35 @@ void ofApp::drawHands() {
     edges.push_back(edge);
     
     
-    lines.push_back(ofPolyline());
-    lines.back().addVertex(2, 0);
-    lines.back().addVertex(2, 840);
-    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
-    lines.back().simplify();
+//    lines.push_back(ofPolyline());
+//    lines.back().addVertex(2, 0);
+//    lines.back().addVertex(2, 840);
+//    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
+//    lines.back().simplify();
+//    
+//    for (int i=0; i<lines.back().size(); i++) {
+//        edge.get()->addVertex(lines.back()[i]);
+//    }
+//    
+//    
+//    edge.get()->create(box2d.getWorld());
+//    edges.push_back(edge);
+//    
+//    lines.push_back(ofPolyline());
+//    lines.back().addVertex(1918, 0);
+//    lines.back().addVertex(1918, 840);
+//    // add the line as an edge to the circles interact with it.
+//    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
+//    lines.back().simplify();
+//    
+//    for (int i=0; i<lines.back().size(); i++) {
+//        edge.get()->addVertex(lines.back()[i]);
+//    }
+//
+//    
+//    edge.get()->create(box2d.getWorld());
+//    edges.push_back(edge);
     
-    for (int i=0; i<lines.back().size(); i++) {
-        edge.get()->addVertex(lines.back()[i]);
-    }
-    
-    
-    edge.get()->create(box2d.getWorld());
-    edges.push_back(edge);
-    
-    lines.push_back(ofPolyline());
-    lines.back().addVertex(1918, 0);
-    lines.back().addVertex(1918, 840);
-    // add the line as an edge to the circles interact with it.
-    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
-    lines.back().simplify();
-    
-    for (int i=0; i<lines.back().size(); i++) {
-        edge.get()->addVertex(lines.back()[i]);
-    }
-
-    
-    edge.get()->create(box2d.getWorld());
-    edges.push_back(edge);
-    
-    
-//    ofDisableBlendMode();
-//    ofPopMatrix();
-    
-    
-
 }
 
 

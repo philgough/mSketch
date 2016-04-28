@@ -54,6 +54,7 @@ class ofApp : public ofBaseApp{
     
     float widthScale;
 
+    // river
     ofxVoronoi voronoiRiver;
     
     ofxVoronoi voronoiBenthic;
@@ -61,7 +62,7 @@ class ofApp : public ofBaseApp{
     vector<ofPoint> riverPoints;
     bool isBorder(ofPoint _pt);
     
-    
+    vector <float> pollutionOffset;
     
 //    vector <class Cogs> kinectCogs;// = Cogs(500, 500);
     
