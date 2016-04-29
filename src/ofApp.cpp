@@ -33,7 +33,7 @@ void ofApp::setup(){
     box2d.init();
     box2d.setGravity(0, 3);
 //    box2d.createBounds();
-    box2d.createGround(ofPoint(0, 1080), ofPoint(1920, 1080));
+    box2d.createGround(ofPoint(0, ofGetHeight()), ofPoint(1920, ofGetHeight()));
 }
 
 
@@ -276,10 +276,14 @@ void ofApp::draw(){
     // draw particle elements
     drawBox2d();
     
+    
+    
     ofSetColor(255, 255, 255);
     ofFill();
 //    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
     
+    
+    landFG1.draw(0, 0);
     
     string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(-1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size()));
     ofDrawBitmapString(msg, 20, 20);
@@ -356,6 +360,7 @@ void ofApp::drawBenthic() {
         //        ofSetColor(ofColor::fromHsb(0, 0, 255.));
         //        ofFill();
         //        ofDrawCircle(cells[i].pt, 2);
+        
     }
     ofPopMatrix();
 }
@@ -369,12 +374,15 @@ void ofApp::drawLand() {
 }
 
 void ofApp::drawHands() {
-
-//    openNIDevice.drawDebug();
+    ofSetColor(0, 0, 0);
+    ofFill();
+    ofRect(1800, 20, 192, 144);
+    ofSetColor(255, 255, 255);
+    openNIDevice.drawDebug(1800, 20, 192, 144);
     
     lines.clear();
     edges.clear();
-    lines.push_back(ofPolyline());
+	    lines.push_back(ofPolyline());
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
         
         // get a reference to this user
@@ -383,10 +391,9 @@ void ofApp::drawHands() {
         // get hand position
         ofPoint & handPosition = hand.getPosition();
         
-        // draw a rect at the position
+        // draw a circle at the position
         ofSetColor(25, 180, 95);
         ofFill();
-//        ofDrawRectangle(handPosition.x, handPosition.y, 2, 2);
         // map x position of hands from the kinect dimensions to the dimensions of the app
         float x = ofMap(handPosition.x, 0, 640, -80, ofGetWidth() + 80);
         // map y position of hands from the kinect dimensions to the appropriate dimensions on the app

@@ -104,4 +104,10 @@ class ofApp : public ofBaseApp{
 //    bool shouldRemove(ofxBox2dCircle c);
     
     
+    
+    
+    // organisms
+    vector <ofPoint> organismLocations;
+    
+    
 };
