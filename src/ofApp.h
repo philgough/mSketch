@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "PoissonPoints.hpp"
 #include "ofxVoronoi.h"
-//#include "kinect_cogs.hpp"
+#include "organisms.hpp"
 
 #include "ofxOpenNI.h"
 
@@ -58,14 +58,15 @@ class ofApp : public ofBaseApp{
     ofxVoronoi voronoiRiver;
     
     ofxVoronoi voronoiBenthic;
-    
+
+    vector <ofPolyline> benthicPoly;
+
     vector<ofPoint> riverPoints;
     bool isBorder(ofPoint _pt);
     
     vector <float> pollutionOffset;
-    
-//    vector <class Cogs> kinectCogs;// = Cogs(500, 500);
-    
+    int riv_w = 1920;
+    int riv_h = 360;
     
     
     
@@ -107,7 +108,8 @@ class ofApp : public ofBaseApp{
     
     
     // organisms
-    vector <ofPoint> organismLocations;
-    
+    void organismSetup();
+    vector <Organism> organisms;
+//    vector <float> organismTypes;
     
 };

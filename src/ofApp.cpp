@@ -2,19 +2,14 @@
 
 
 ////--------------------------------------------------------------
-//
-//
-//ofImage imgRiver;
 
-//ofMesh mesh;
 
 void ofApp::setup(){
-//    ofBackground(0, 0, 0);
     cout << "starting application" << endl;
 
     // river/benthic layers
     ppSetup();
-    
+    organismSetup();
     
     // land layer
     landBG1.load("LandBG_1.png");
@@ -32,17 +27,22 @@ void ofApp::setup(){
     // pollution particles
     box2d.init();
     box2d.setGravity(0, 3);
-//    box2d.createBounds();
     box2d.createGround(ofPoint(0, ofGetHeight()), ofPoint(1920, ofGetHeight()));
 }
 
 
 
-// set up backgrounds for river and benthic layer
+
+
+
+
+
+// _____      setup the river backgound      __________ \\
+
+
 void ofApp::ppSetup() {
-    int riv_w = 1920;
-    int riv_h = 360;
-    PoissonPoints pp = PoissonPoints(5000, 15, 40, riv_w, riv_h);
+
+    PoissonPoints pp = PoissonPoints(5000, 12, 40, riv_w, riv_h);
     
     widthScale = 9;
     
@@ -117,46 +117,52 @@ void ofApp::ppSetup() {
 
     
     
+    // make a polyline for each cell
+    ofPolyline tempPoints;
     
+    vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
+    for(int i=0; i<pointList.size(); i++) {
+        for (int j = 0; j < cells[i].pts.size(); j++) {
+            // I have no idea why you need to take 860 off x here??
+            tempPoints.addVertex(ofPoint(cells[i].pts[j].x - 860, cells[i].pts[j].y) + 860);
+        }
+        tempPoints.close();
+        benthicPoly.push_back(tempPoints);
+        tempPoints.clear();
+    }
 }
 
+
+
+
+
+
+
+
+// _____      setup openni __________ \\
 
 
 
 void ofApp::openniSetup() {
     openNIDevice.setup();
-//    openNIDevice.addImageGenerator();
     openNIDevice.addDepthGenerator();
     openNIDevice.setRegister(true);
     openNIDevice.setMirror(true);
-//    openNIDevice.addUserGenerator();
-//    openNIDevice.setMaxNumUsers(2);
 
     
     
     openNIDevice.addHandsGenerator();
     openNIDevice.addAllHandFocusGestures();
-    openNIDevice.setMaxNumHands(4);
+    openNIDevice.setMaxNumHands(6);
     
     
     for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
         ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true, true);
-        // ofxOpenNIDepthThreshold is overloaded, has defaults and can take a lot of different parameters, eg:
-        // (ofxOpenNIROI OR) int _nearThreshold, int _farThreshold, bool _bUsePointCloud = false, bool _bUseMaskPixels = true,
-        // bool _bUseMaskTexture = true, bool _bUseDepthPixels = false, bool _bUseDepthTexture = false,
-        // int _pointCloudDrawSize = 2, int _pointCloudResolution = 2
         openNIDevice.addDepthThreshold(depthThreshold);
     }
     
     openNIDevice.start();
-    
-    // set properties for all user masks and point clouds
-    //openNIDevice.setUseMaskPixelsAllUsers(true); // if you just want pixels, use this set to true
-//    openNIDevice.setUseMaskTextureAllUsers(true); // this turns on mask pixels internally AND creates mask textures efficiently
-//    openNIDevice.setUsePointCloudsAllUsers(false);
-//    openNIDevice.setPointCloudDrawSizeAllUsers(2); // size of each 'point' in the point cloud
-//    openNIDevice.setPointCloudResolutionAllUsers(6); // resolution of the mesh created for the point cloud eg., this will use every second depth pixel
-    
+
     
 
 }
@@ -165,6 +171,24 @@ void ofApp::openniSetup() {
 
 
 
+
+// _____      setup the organisms __________ \\
+
+
+void ofApp::organismSetup() {
+    cout << "starting organism setup" << endl;
+    PoissonPoints tempPP = PoissonPoints(1000, 80, 20, riv_w, riv_h);
+    cout << "number of organisms: " << tempPP.pp.size() << endl;
+    for (int i = 0; i < tempPP.pp.size(); i++) {
+        Organism tempO = Organism(i, tempPP.pp.at(i).location , i % 4, "steve");
+        organisms.push_back(tempO);
+    }
+//    for (int i = 0; i < organisms.size(); i++) {
+//        organisms.at(i).drawOrganism();
+//    }
+    
+    cout << "end organism setup" << endl;
+}
 
 
 
@@ -210,14 +234,13 @@ void ofApp::update(){
     for (int i  = 0; i < circles.size(); i++) {
         float x =circles[i].get() -> getPosition().x;
         float y =circles[i].get() -> getPosition().y;
-        if (y > 500 && x > 0 && x < ofGetWidth()) {
+        if (y > 500 && x > -10 && x < ofGetWidth() + 10 && y < ofGetHeight()) {
             tempCircles.push_back(circles.at(i));
             if (y > 860) {
                 for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
-                    
-                    float x2 = voronoiBenthic.getPoints().at(j).x;
-                    float y2 = voronoiBenthic.getPoints().at(j).y + 860;
-                    
+                    float x2 = benthicPoly[j].getCentroid2D().x;
+                    float y2 = benthicPoly[j].getCentroid2D().y;
+
                     float dist = ofDist(x, y, x2, y2);
                     if (dist < 40 && pollutionOffset.at(j) > -175) {
                         pollutionOffset.at(j) -= 1;
@@ -268,7 +291,11 @@ void ofApp::draw(){
     //
     ofSetColor(255, 255, 255);
     drawLand();
-
+    
+    for (int i = 0; i < organisms.size(); i++ ) {
+        organisms.at(i).drawOrganism();
+    }
+    
     // kinect functions
     drawHands();
  
@@ -287,11 +314,14 @@ void ofApp::draw(){
     
     string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(-1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size()));
     ofDrawBitmapString(msg, 20, 20);
-
+    
 }
 
 
 
+
+
+// _____      draw the background    __________ \\
 
 
 void ofApp::drawRiver() {
@@ -316,33 +346,20 @@ void ofApp::drawRiver() {
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
         mesh.addVertices(cells[i].pts);
         mesh.draw(OF_MESH_FILL);
-        
-        //        mesh.clear();
-        //        for(int j = 0; j < cells[i].pts.size(); j++) {
-        //            mesh.addVertex(cells[i].pt);
-        //            mesh.addVertex(cells[i].pts[j]);
-        //        }
-        //        ofSetColor(120);
-        //        mesh.draw();
-        
-        //        // Draw cell points
-        //        ofSetColor(ofColor::fromHsb(0, 0, 255.));
-        //        ofFill();
-        //        ofDrawCircle(cells[i].pt, 2);
+
     }
     ofPopMatrix();
     
 }
 
+
+// _____      draw the riverbed    __________ \\
+
 void ofApp::drawBenthic() {
     
     ofPushMatrix();
     ofTranslate(0, 860);
-    ofRectangle bounds = voronoiBenthic.getBounds();
-    ofSetLineWidth(0);
-    ofNoFill();
-    ofSetColor(220);
-    ofDrawRectangle(bounds);
+
     
     vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
     for(int i=0; i<cells.size(); i++) {
@@ -356,16 +373,14 @@ void ofApp::drawBenthic() {
         mesh.addVertices(cells[i].pts);
         mesh.draw(OF_MESH_FILL);
         
-        //        // Draw cell points
-        //        ofSetColor(ofColor::fromHsb(0, 0, 255.));
-        //        ofFill();
-        //        ofDrawCircle(cells[i].pt, 2);
         
     }
     ofPopMatrix();
+
 }
 
 
+// _____      draw the top layer    __________ \\
 
 void ofApp::drawLand() {
     
@@ -373,12 +388,15 @@ void ofApp::drawLand() {
     landBG1.draw(0, 0);
 }
 
+
+// _____      draw the openni hands    __________ \\
+
 void ofApp::drawHands() {
     ofSetColor(0, 0, 0);
     ofFill();
-    ofRect(1800, 20, 192, 144);
+    ofDrawRectangle(1700, 20, 192, 144);
     ofSetColor(255, 255, 255);
-    openNIDevice.drawDebug(1800, 20, 192, 144);
+    openNIDevice.drawDebug(1700, 20, 192, 144);
     
     lines.clear();
     edges.clear();
@@ -432,39 +450,10 @@ void ofApp::drawHands() {
     edge.get()->create(box2d.getWorld());
     edges.push_back(edge);
     
-    
-//    lines.push_back(ofPolyline());
-//    lines.back().addVertex(2, 0);
-//    lines.back().addVertex(2, 840);
-//    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
-//    lines.back().simplify();
-//    
-//    for (int i=0; i<lines.back().size(); i++) {
-//        edge.get()->addVertex(lines.back()[i]);
-//    }
-//    
-//    
-//    edge.get()->create(box2d.getWorld());
-//    edges.push_back(edge);
-//    
-//    lines.push_back(ofPolyline());
-//    lines.back().addVertex(1918, 0);
-//    lines.back().addVertex(1918, 840);
-//    // add the line as an edge to the circles interact with it.
-//    edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
-//    lines.back().simplify();
-//    
-//    for (int i=0; i<lines.back().size(); i++) {
-//        edge.get()->addVertex(lines.back()[i]);
-//    }
-//
-//    
-//    edge.get()->create(box2d.getWorld());
-//    edges.push_back(edge);
-    
 }
 
 
+// _____      draw the pollution particles    __________ \\
 
 void ofApp::drawBox2d() {
     
@@ -506,12 +495,14 @@ void ofApp::drawBox2d() {
 
 //--------------------------------------------------------------
 //void ofApp::mousePressed(int x, int y, int button){
-//    int xyToPixelArray = x + y * 1280;
-//    cout << "pixelList: " << voronoiPixelAssignments.at(xyToPixelArray) << ", distLIst: " << distList.at(xyToPixelArray);
-//    cout << ", satList: " << satList.at(xyToPixelArray) << ", hueLIst: " << hueList.at(xyToPixelArray) << endl;
-//    
+////    int xyToPixelArray = x + y * 1280;
+////    cout << "pixelList: " << voronoiPixelAssignments.at(xyToPixelArray) << ", distLIst: " << distList.at(xyToPixelArray);
+////    cout << ", satList: " << satList.at(xyToPixelArray) << ", hueLIst: " << hueList.at(xyToPixelArray) << endl;
+//    for (int i = 0; i < benthicPoly.size(); i++) {
+//        if (benthicPoly.at(i).inside(x, y)){cout<< "clicked: " << i << endl;}
+//    }
 //}
-
+//
 ////--------------------------------------------------------------
 //void ofApp::mouseReleased(int x, int y, int button){
 //
@@ -546,9 +537,9 @@ void ofApp::drawBox2d() {
 //
 //
 ////--------------------------------------------------------------
-
-void ofApp::userEvent(ofxOpenNIUserEvent & event){
-    // show user event messages in the console
-    ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
-}
+//
+//void ofApp::userEvent(ofxOpenNIUserEvent & event){
+//    // show user event messages in the console
+//    ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
+//}
 

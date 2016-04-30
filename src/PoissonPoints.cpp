@@ -67,7 +67,7 @@ PoissonPoints::PoissonPoints(float tempMaxNumPoints, float tempMinDist, float te
         
     }
     
-bool PoissonPoints::activePoints() {
+    bool PoissonPoints::activePoints() {
         for (int i = 0; i < pp.size (); i++) {
             SinglePoint tpp = pp.at(i);
             if (tpp.active) {
