@@ -28,6 +28,8 @@ void ofApp::setup(){
     box2d.init();
     box2d.setGravity(0, 3);
     box2d.createGround(ofPoint(0, ofGetHeight()), ofPoint(1920, ofGetHeight()));
+    
+//    ofSetFrameRate(1);
 }
 
 
@@ -177,10 +179,11 @@ void ofApp::openniSetup() {
 
 void ofApp::organismSetup() {
     cout << "starting organism setup" << endl;
-    PoissonPoints tempPP = PoissonPoints(1000, 80, 20, riv_w, riv_h);
+    PoissonPoints tempPP = PoissonPoints(1000, 80, 40, riv_w, 180);
     cout << "number of organisms: " << tempPP.pp.size() << endl;
     for (int i = 0; i < tempPP.pp.size(); i++) {
-        Organism tempO = Organism(i, tempPP.pp.at(i).location , i % 4, "steve");
+        ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + 880);
+        Organism tempO = Organism(i, loc, i % 4, "steve");
         organisms.push_back(tempO);
     }
 //    for (int i = 0; i < organisms.size(); i++) {
@@ -281,20 +284,20 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
-//    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
-//    imgRiver.draw(0, 0);
-//    mesh.draw();
+
     drawRiver();
     drawBenthic();
-
+    
+    ofSetColor(255, 255, 255);
+    ofFill();
+    for (int i = 0; i < organisms.size(); i++ ) {
+        organisms.at(i).drawOrganism();
+    }
+    
     //
     ofSetColor(255, 255, 255);
     drawLand();
     
-    for (int i = 0; i < organisms.size(); i++ ) {
-        organisms.at(i).drawOrganism();
-    }
     
     // kinect functions
     drawHands();
@@ -345,7 +348,7 @@ void ofApp::drawRiver() {
         ofMesh mesh;
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
         mesh.addVertices(cells[i].pts);
-        mesh.draw(OF_MESH_FILL);
+        mesh.draw();
 
     }
     ofPopMatrix();
@@ -371,7 +374,7 @@ void ofApp::drawBenthic() {
         ofMesh mesh;
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
         mesh.addVertices(cells[i].pts);
-        mesh.draw(OF_MESH_FILL);
+        mesh.draw();
         
         
     }

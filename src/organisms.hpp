@@ -20,7 +20,7 @@
 class Organism {
 public:
     
-    Organism (int tempIndex, ofVec2f tempLocation, int type, string name);
+    Organism (int tempIndex, ofVec2f tempLocation, int tempType, string name);
     
     void drawOrganism();
     
@@ -29,6 +29,11 @@ private:
     ofVec2f location;
     int type;
     float health;
+    void addColours();
+    ofMesh shape;
+    
+    float noise;
+    
 };
 
 #endif /* organisms_hpp */
