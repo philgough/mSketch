@@ -191,6 +191,7 @@ void ofApp::organismSetup() {
 //    }
     
     cout << "end organism setup" << endl;
+
 }
 
 
@@ -216,6 +217,9 @@ void ofApp::organismSetup() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    
+    
     
     // update the kinect position every second frame
 //    if (ofGetFrameNum() % 2 == 0) {
@@ -257,6 +261,27 @@ void ofApp::update(){
     
     // update the physics engine
     box2d.update();
+    
+    
+    // update the organisms
+    for (int i = 0; i < organisms.size(); i++) {
+        // figure out which location is closest
+        float nearestDistance = 9000000001;
+        int closestCellIndex = 0;
+        
+        for (int j = 0; j < benthicPoly.size(); j++) {
+            
+            ofPoint centroid = benthicPoly.at(j).getCentroid2D();
+            float distance = ofDist(centroid.x, centroid.y, organisms.at(i).location.x, organisms.at(i).location.y);
+            if(distance < nearestDistance) {
+                nearestDistance = distance;
+                closestCellIndex = j;
+            }
+        }
+        
+        // update the organism
+        organisms[i].updateOrganism(&pollutionOffset[closestCellIndex]);
+    }
 
 }
 
@@ -403,7 +428,8 @@ void ofApp::drawHands() {
     
     lines.clear();
     edges.clear();
-	    lines.push_back(ofPolyline());
+    lines.push_back(ofPolyline());
+    
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
         
         // get a reference to this user
