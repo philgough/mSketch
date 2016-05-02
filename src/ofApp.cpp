@@ -30,6 +30,9 @@ void ofApp::setup(){
     box2d.createGround(ofPoint(0, ofGetHeight()), ofPoint(1920, ofGetHeight()));
     
 //    ofSetFrameRate(1);
+ 
+    
+    
 }
 
 
@@ -178,17 +181,28 @@ void ofApp::openniSetup() {
 
 
 void ofApp::organismSetup() {
+    CSVHeaders = {"env.cp", "z", "0.05", "0.95", "Phylum","Class","Order","Family","Genus","Final"};
+    
+    // random value for pH
+    phValue = ofRandom(2.6);
+    // this should be scaled to between  6.8 and 8.4
     cout << "starting organism setup" << endl;
+    
+    
     PoissonPoints tempPP = PoissonPoints(1000, 80, 40, riv_w, 180);
     cout << "number of organisms: " << tempPP.pp.size() << endl;
+    
+//    loadDataset();
+    
     for (int i = 0; i < tempPP.pp.size(); i++) {
         ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + 880);
-        Organism tempO = Organism(i, loc, i % 4, "steve");
+        
+        int type = i % 4;
+        
+        Organism tempO = Organism(i, loc, type, loadDataset(type, int(i/4)+1));
         organisms.push_back(tempO);
     }
-//    for (int i = 0; i < organisms.size(); i++) {
-//        organisms.at(i).drawOrganism();
-//    }
+
     
     cout << "end organism setup" << endl;
 
@@ -196,6 +210,77 @@ void ofApp::organismSetup() {
 
 
 
+// _____      retrieve data for organisms __________ \\
+
+
+map<string, string> ofApp::loadDataset(int type, int index) {
+    
+    
+    
+    ofxCsvRow row;
+    
+    string header;
+    map <string, string> tempMap;
+    
+    switch (type) {
+            // case 0 will be negative pH reaction
+        case 0:
+            csvData.load("csvFiles/phNegZ.csv", ",");
+            
+            row = csvData.getRow(index);
+            
+            for (int i = 0; i < csvData.getNumCols(); i++) {
+                header = csvData.getRow(0).at(i);
+                tempMap[header] = row.at(i);
+            }
+//            tempData.push_back(tempMap);
+            break;
+            
+            // case 1 will be positive pH reaction
+        case 1:
+            csvData.load("csvFiles/phPosZ.csv", ",");
+
+            row = csvData.getRow(index);
+            for (int i = 0; i < csvData.getNumCols(); i++) {
+                header = csvData.getRow(0).at(i);
+                tempMap[header] = row.at(i);
+            }
+//            tempData.push_back(tempMap);
+            break;
+            
+            // case 2 will be negative phosphorus (pollution) reaction
+        case 2:
+            csvData.load("csvFiles/phosNegZ.csv", ",");
+            
+            row = csvData.getRow(index);
+            for (int i = 0; i < csvData.getNumCols(); i++) {
+                header = csvData.getRow(0).at(i);
+                tempMap[header] = row.at(i);
+            }
+//            tempData.push_back(tempMap);
+            break;
+            
+            // case 3 will be positive phosphours (pollution) reaction
+        case 3:
+            csvData.load("csvFiles/phosPosZ.csv", ",");
+            
+            row = csvData.getRow(index);
+            for (int i = 0; i < csvData.getNumCols(); i++) {
+                header = csvData.getRow(0).at(i);
+                tempMap[header] = row.at(i);
+            }
+//            tempData.push_back(tempMap);
+            break;
+            
+        default:
+            cout << "loadDataset failed?" << endl;
+            return;
+            break;
+    }
+    
+    
+    return tempMap;
+}
 
 
 
@@ -219,7 +304,7 @@ void ofApp::organismSetup() {
 void ofApp::update(){
     
     
-    
+//    phValue = ofGetFrameNum() / 500.0;
     
     // update the kinect position every second frame
 //    if (ofGetFrameNum() % 2 == 0) {
@@ -280,7 +365,7 @@ void ofApp::update(){
         }
         
         // update the organism
-        organisms[i].updateOrganism(&pollutionOffset[closestCellIndex]);
+        organisms[i].updateOrganism(&pollutionOffset[closestCellIndex], &phValue);
     }
 
 }

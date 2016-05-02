@@ -9,6 +9,8 @@
 
 #include "ofxBox2d.h"
 
+#include "ofxCsv.h"
+
 class ofApp : public ofBaseApp{
 	public:
 //        ofApp();
@@ -110,6 +112,10 @@ class ofApp : public ofBaseApp{
     // organisms
     void organismSetup();
     vector <Organism> organisms;
-//    vector <float> organismTypes;
+    map<string, string> loadDataset(int type, int index);
+    vector <string> CSVHeaders;
+    ofxCsv csvData;
+
+    float phValue;
     
 };

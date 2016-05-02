@@ -17,8 +17,8 @@
 class Organism {
 public:
     
-    Organism (int tempIndex, ofVec2f tempLocation, int tempType, string name);
-    void updateOrganism(float* healthIndex);
+    Organism (int tempIndex, ofVec2f tempLocation, int tempType, map<string, string> tempData);
+    void updateOrganism(float* healthIndex, float *phVal);
     void drawOrganism();
     ofVec2f location;
     
@@ -33,6 +33,19 @@ private:
     float noisex, noisey, noiser;
     ofVec2f movementArea;
     float startAngle;
+    map<string, string> data;
+    // env.cp value;
+    float zVal;
+    float brightness;
+    
+    // calculate log values
+    float py(float i, float h, float k);
+    float qy(float i, float h, float k);
+    float ry(float i, float h, float k);
+    float sy(float i, float h, float k);
+
+    
+    
 };
 
 #endif /* organisms_hpp */
