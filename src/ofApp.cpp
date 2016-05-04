@@ -219,7 +219,7 @@ void ofApp::organismSetup() {
         
         int type = i % 4;
         
-        Organism tempO = Organism(i, loc, type, loadDataset(type, int(i/4)+1));
+        Organism tempO = Organism(i, loc, type, loadDataset(type, int(i/4)+1), &phValue);
         organisms.push_back(tempO);
     }
 
@@ -370,9 +370,9 @@ void ofApp::setupCharacters() {
     
     // string imageLoc, float tempX, float tempY, float scaleX, float scaleY, int tempid
     
-    Character Anthony = Character("faceA.png", ofGetWidth() - 200, 300, "csvFiles/textA.csv");
-    Character Kate = Character("faceK.png", 40, 80, "csvFiles/textK.csv");
-    Character Thomas = Character("faceT.png", 210, 80, "csvFiles/textT.csv");
+    Character Anthony = Character("faceA.png", ofGetWidth() - 200, 300, "csvFiles/textA.csv", 1500, 250, 200);
+    Character Kate = Character("faceK.png", 40, 80, "csvFiles/textK.csv", 200, 250, 200);
+    Character Thomas = Character("faceT.png", 210, 80, "csvFiles/textT.csv", 250, 250, 200);
     characters.push_back(Anthony);
     characters.push_back(Kate);
     characters.push_back(Thomas);
@@ -740,12 +740,13 @@ void ofApp::drawHands() {
         lines.back().addVertex(x - 4, y);
         lines.back().addVertex(x, y + 4);
         lines.back().addVertex(x + 4, y);
-        
-        for (int j = 0; j < organisms.size(); j++) {
-            float d = ofDist(organisms.at(j).location.x, organisms.at(j).location.y, x, y);
-//            cout << d << endl;
-            if (d < 40) {
-                organisms[i].callAnthony();
+        if (openNIDevice.getNumTrackedHands() < 2){
+            for (int k = 0; k < organisms.size(); k++) {
+                float e = ofDist(organisms.at(k).location.x, organisms.at(k).location.y, x, y);
+//              cout << d << endl;
+                if (e < 40) {
+                    organisms[k].callAnthony(&characters[0]);
+                }
             }
         }
         

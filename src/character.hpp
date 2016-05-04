@@ -14,11 +14,14 @@
 #include "ofMain.h"
 #include "triggers.hpp"
 #include "ofxCsv.h"
+#include "ofxTextBlock.h"
+
 class Character {
 public:
-    Character(string imageLoc, float tempX, float tempY, string textLoc);
+    Character(string imageLoc, float tempX, float tempY, string textFileName, float textxpos, float textypos, float tempTextWidth);
     void updateCharacter();
     void drawCharacter();
+    void describeOrganism(string name, int type);
     int timer;
 //
 private:
@@ -34,8 +37,8 @@ private:
 //    vector <string> messageList;
 //    vector<map <int, string>> messageList;
     
-    
-    
+    ofxTextBlock textBox;
+    float textWidth, textX, textY;
     ofxCsv messageList;
     
     vector <Trigger> autoTriggers;

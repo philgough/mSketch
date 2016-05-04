@@ -13,15 +13,17 @@
 
 #include "ofMain.h"
 #include "ofxVoronoi.h"
+#include "character.hpp"
 
 class Organism {
 public:
     
-    Organism (int tempIndex, ofVec2f tempLocation, int tempType, map<string, string> tempData);
+    Organism (int tempIndex, ofVec2f tempLocation, int tempType, map<string, string> tempData, float* phValue);
     void updateOrganism(float* healthIndex, float *phVal);
     void drawOrganism();
     ofVec2f location;
-    void callAnthony();
+    void callAnthony(Character* Anthony);
+    bool isBeingInspected;
     
 private:
     int index;
@@ -30,6 +32,8 @@ private:
     float health;
     void addColours();
     ofMesh shape;
+    float* phValue;
+    string name;
     
     float noisex, noisey, noiser;
     ofVec2f movementArea;
@@ -38,15 +42,7 @@ private:
     // env.cp value;
     float zVal;
     float brightness;
-    
-    // calculate log values
-    float py(float i, float h, float k);
-    float qy(float i, float h, float k);
-    float ry(float i, float h, float k);
-    float sy(float i, float h, float k);
-
-    
-    
+ 
 };
 
 #endif /* organisms_hpp */

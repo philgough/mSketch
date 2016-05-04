@@ -9,7 +9,7 @@
 #include "organisms.hpp"
 
 
-Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string, string> tempData) {
+Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string, string> tempData, float* phVal) {
     index = tempIndex;
     health = 1.0;
     location.set(tempLocation);
@@ -36,6 +36,31 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
     
     data = tempData;
     
+    string firstname = data["PHYLUM"];
+    string lastname = data["KINGDOM"];
+    if (data["CLASS"] != "") {
+        firstname = lastname;
+        lastname = data["CLASS"];
+    }
+    if (data["ORDER"] != "") {
+        firstname = lastname;
+        lastname = data["ORDER"];
+    }
+    if (data["FAMILY"] != "") {
+        firstname = lastname;
+        lastname = data["FAMILY"];
+    }
+    if (data["GENUS"] != "") {
+        firstname = lastname;
+        lastname = data["GENUS"];
+    }
+    if (data["FINAL"] != "") {
+        firstname = lastname;
+        lastname = data["FINAL"];
+    }
+    
+    name = firstname + " " + lastname;
+    
     zVal = stof(data["env.cp"]);
     if (type < 2) {
         zVal = ofMap(zVal, 6.8, 8.4, 0, 1);
@@ -44,6 +69,10 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
         zVal = ofMap(zVal, 0.0, 0.2, 0.0, 1.0);
     }
     brightness = 0;
+
+    
+    
+    isBeingInspected = false;
 }
 
 
@@ -62,30 +91,40 @@ void Organism::drawOrganism() {
         float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 * i  + (1.0+type)  * 12.5 * ofGetFrameNum()/20.0));
         shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
     }
-//    shape.disableColors();
+    
+//    if (isBeingInspected) {
+////        cout << "inspecting this organism:" << index << endl;
+//        for (int i=0; i<shape.getNumVertices(); i++) {
+//            shape.addColor(ofFloatColor::fromHsb(0, 1, 1));
+////            shape.addColor(ofFloatColor(0));
+//        }
+//    }
+//    else {
+//        for (int i=0; i<shape.getNumVertices(); i++) {
+////            shape.addColor(ofFloatColor(ofGetFrameNum()%255)/25.5);
+//            float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 + type * 12.5));
+//            shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
+//        }
+//    }
+    
     shape.setMode(OF_PRIMITIVE_LINE_LOOP);
     shape.draw();
     ofPopMatrix();
-    
-    
-    
+    isBeingInspected = false;
     
 }
 
 
 void Organism::addColours() {
-    
     for (int i=0; i<shape.getNumVertices(); i++) {
-//        if (type > 1) {shape.addColor(ofColor(0));}
-//        else {
         float h = (type+1.1 + index/100.02)/9.5+0.0125*sin(ofDegToRad(7.5 * i  + (1.0+type)  * 12.5 * ofGetFrameNum()/20.0));
         shape.addColor(ofFloatColor::fromHsb(h, 0.75 * health, .6));
-//        }
     }
 }
 
 
 void Organism::updateOrganism(float* healthIndex, float *phVal) {
+    
     // update health
     health = ofMap(*healthIndex, -175.0, 0.0, 0.0, 1.0);
     
@@ -133,19 +172,17 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //            health = 0;
             break;
             
-            
+//
         case 2:
             // phosphorus, negative reaction
             if (zVal < health) {
 //                health = py(health, .5, zVal);
 //                cout<< "negative pollution, z < health, " << zVal << " : " << health << " : " << *healthIndex << endl;
                 health = 0.95 + log(health - zVal);
-//                health = 0;
             }
             else {
 //                health = qy(health, .5, zVal);
                 health = 0.6 - log(zVal - health);
-                if (health > 1) {health = 0;}
                 
 //                cout<< "negative pollution, z > health, " << zVal << " : " << health << " : " << *healthIndex << endl;
 //                health = 0;
@@ -154,6 +191,7 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
             break;
             
         case 3:
+            cout << "case : 3, health:" << health << endl;
             // phosphorus, positive reaction
             if (zVal < health) {
 //                health = 0.0;
@@ -168,7 +206,6 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //                cout<< "positive pollution, z > health, " << zVal <<  " : " << health << endl;
                 
             }
-//            if (health < 0) {health = 0;}
 
             break;
             
@@ -186,24 +223,8 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 
 
 
-void Organism::callAnthony() {
-    switch (type) {
-        case 0:
-            cout << "negative reaction to pH" << endl;
-            break;
-            
-        case 1:
-            cout << "positive reaction to pH" << endl;
-            break;
-
-        case 2:
-            cout << "negative reaction to pollution" << endl;
-            break;
-        case 3:
-            cout << "positive reaction to pollution" << endl;
-            break;
-        default:
-            break;
-    }
+void Organism::callAnthony(Character* anthony) {
+    anthony->describeOrganism(name, type);
+    isBeingInspected = true;
 }
 
