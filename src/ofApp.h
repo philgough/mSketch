@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "PoissonPoints.hpp"
 #include "ofxVoronoi.h"
+#include "character.hpp"
 #include "organisms.hpp"
 
 #include "ofxOpenNI.h"
@@ -13,7 +14,6 @@
 
 #include "ofxTextBlock.h"
 
-#include "character.hpp"
 
 class ofApp : public ofBaseApp{
 	public:
@@ -136,10 +136,11 @@ class ofApp : public ofBaseApp{
     void setupImages();
 //    ofImage faceA, faceK, faceT;
     ofImage helloImage;
-    bool aHasSomethingToSay, kHasSomethingToSay, tHasSomethingToSay;
+//    bool aHasSomethingToSay, kHasSomethingToSay, tHasSomethingToSay;
 //    Character Anthony;
 //    Character Kate;
 //    Character Thomas;
+    vector <Character> characters;
     
     
     // things the characters to/say to the user

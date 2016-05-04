@@ -11,19 +11,37 @@
 
 #include <stdio.h>
 
-//#include "ofMain.h"
+#include "ofMain.h"
+#include "triggers.hpp"
+#include "ofxCsv.h"
+class Character {
+public:
+    Character(string imageLoc, float tempX, float tempY, string textLoc);
+    void updateCharacter();
+    void drawCharacter();
+    int timer;
 //
-//class Character {
-//public:
-//    Character(string imageLoc, float tempX, float tempY, float scaleX, float scaleY, int tempid);
-//    void updateCharacter();
-//    void drawCharacter();
-//    
-//private:
-//    ofImage face;
-//    float x, y;
+private:
+    ofImage face;
+    float x, y;
+    ofPoint drawPoint;
+    // scales
+    float sx, sy;
 //    int id;
-//    
-//};
+    bool drawNow;
+    
+    string displayMessage;
+//    vector <string> messageList;
+//    vector<map <int, string>> messageList;
+    
+    
+    
+    ofxCsv messageList;
+    
+    vector <Trigger> autoTriggers;
+    vector <Trigger> otherTriggers;
+    
+};
 
-#endif /* character_hpp */
+
+#endif /* characters_hpp */

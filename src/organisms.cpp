@@ -186,3 +186,24 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 
 
 
+void Organism::callAnthony() {
+    switch (type) {
+        case 0:
+            cout << "negative reaction to pH" << endl;
+            break;
+            
+        case 1:
+            cout << "positive reaction to pH" << endl;
+            break;
+
+        case 2:
+            cout << "negative reaction to pollution" << endl;
+            break;
+        case 3:
+            cout << "positive reaction to pollution" << endl;
+            break;
+        default:
+            break;
+    }
+}
+

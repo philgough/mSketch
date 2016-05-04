@@ -21,6 +21,7 @@ public:
     void updateOrganism(float* healthIndex, float *phVal);
     void drawOrganism();
     ofVec2f location;
+    void callAnthony();
     
 private:
     int index;

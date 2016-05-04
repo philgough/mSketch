@@ -46,6 +46,8 @@ void ofApp::setup(){
     welcomeStringA.push_back("Wave your hand to let me know when you're ready to get started.");
 
     timer = 0;
+    
+    setupCharacters();
 
 }
 
@@ -365,10 +367,16 @@ void ofApp::setupCharacters() {
     dayTimer = 0;
     talkingTimer = 0;
     
+    
     // string imageLoc, float tempX, float tempY, float scaleX, float scaleY, int tempid
-//    Anthony = Character("faceA.png", ofGetWidth() - 100, 300,.5,.5, 0);
-//    Kate = Character("faceK.png", 20, 120, .5, .5, 1);
-//    Thomas = Character("faceT.png", 100, 120, .5, .5, 1);
+    
+    Character Anthony = Character("faceA.png", ofGetWidth() - 200, 300, "csvFiles/textA.csv");
+    Character Kate = Character("faceK.png", 40, 80, "csvFiles/textK.csv");
+    Character Thomas = Character("faceT.png", 210, 80, "csvFiles/textT.csv");
+    characters.push_back(Anthony);
+    characters.push_back(Kate);
+    characters.push_back(Thomas);
+//    cout << "characters size: " << characters.size();
 }
 
 
@@ -475,20 +483,15 @@ void ofApp::updateMain(){
         // update the organism
         organisms[i].updateOrganism(&pollutionOffset[closestCellIndex], &phValue);
     }
+    updateCharacters();
 
 }
 
 
 void ofApp::updateCharacters() {
-    
-//    int t = ofGetElapsedTimeMillis();
-//    
-//    
-//    if (true) {
-//        aHasSomethingToSay = true;
-//        spokenMessage = "It's nearly time to go!";
-//        talkingTimer = t;
-//    }
+    for (int i = 0; i < characters.size(); i++) {
+        characters.at(i).updateCharacter();
+    }
     
 }
 
@@ -597,11 +600,13 @@ void ofApp::drawMain() {
     
     
     ofSetColor(255, 255, 255);
+    
     ofFill();
     
     
     landFG1.draw(0, 0);
-    
+    drawCharacters();
+
     
     
     float averagePollution = -1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size());
@@ -613,8 +618,8 @@ void ofApp::drawMain() {
     
 //    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(averagePollution/175);
 //    ofDrawBitmapString(msg, 20, 20);
- 
-//    drawCharacters();
+    
+//    cout << "characters size: " << characters.size() << endl;
 }
 
 
@@ -731,13 +736,18 @@ void ofApp::drawHands() {
             }
         }
 
-        
-        
-        
 //        cout << x << ", " << y << endl;
         lines.back().addVertex(x - 4, y);
         lines.back().addVertex(x, y + 4);
         lines.back().addVertex(x + 4, y);
+        
+        for (int j = 0; j < organisms.size(); j++) {
+            float d = ofDist(organisms.at(j).location.x, organisms.at(j).location.y, x, y);
+//            cout << d << endl;
+            if (d < 40) {
+                organisms[i].callAnthony();
+            }
+        }
         
     }
     shared_ptr <ofxBox2dEdge> edge = shared_ptr<ofxBox2dEdge>(new ofxBox2dEdge);
@@ -807,9 +817,9 @@ void ofApp::drawStars(float averagePollution) {
 
 
 void ofApp::drawCharacters() {
-//    Anthony.drawCharacter();
-//    Kate.drawCharacter();
-//    Thomas.drawCharacter();
+    for (int i = 0; i < characters.size(); i++) {
+        characters[i].drawCharacter();
+    }
 }
 
 
@@ -919,6 +929,7 @@ void ofApp::drawSwitch(int s) {
             
         case INTERACTIVE_PLAY_STATE:
             // draw main display
+            updateMain();
             drawMain();
             break;
             
@@ -939,6 +950,7 @@ void ofApp::drawSwitch(int s) {
 
 void ofApp::nextState() {
     cout << "selecting the next state" << endl;
+    int t = ofGetElapsedTimeMillis();
     switch(_masterState)
     {
         case WELCOME_SCREEN :
@@ -946,6 +958,9 @@ void ofApp::nextState() {
             _nextState = INTERACTIVE_PLAY_STATE;
             _masterState = FADE_OUT;
             dayTimer = 0;
+            for(int i = 0; i < characters.size(); i++) {
+                characters[i].timer = t;
+            }
             break;
             
         case INTERACTIVE_PLAY_STATE:
@@ -970,14 +985,14 @@ void ofApp::nextState() {
 
 void ofApp::fadeOut()
 {
-    cout << "fade out" << endl;
+//    cout << "fade out" << endl;
     
     drawSwitch(_lastState);
-    cout << "fade out alpha: " << _fadeAlpha << endl;
+//    cout << "fade out alpha: " << _fadeAlpha << endl;
 
     if (_fadeAlpha < 254)
     {
-        _fadeAlpha += (255 - _fadeAlpha) * 0.2;
+        _fadeAlpha += (255 - _fadeAlpha) * 0.1;
     } else
     {
         nextState();
@@ -993,14 +1008,14 @@ void ofApp::fadeOut()
 
 void ofApp::fadeIn()
 {
-    cout << "fade in" << ofGetFrameNum() << endl;
+//    cout << "fade in" << ofGetFrameNum() << endl;
     
     drawSwitch(_nextState);
     
     if (_fadeAlpha > 1)
     {
-        cout << "fade in alpha: " << _fadeAlpha << endl;
-        _fadeAlpha += (0 - _fadeAlpha) * 0.2;
+//        cout << "fade in alpha: " << _fadeAlpha << endl;
+        _fadeAlpha += (0 - _fadeAlpha) * 0.1;
         
     } else
     {
