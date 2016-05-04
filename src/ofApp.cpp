@@ -11,14 +11,7 @@ void ofApp::setup(){
     ppSetup();
     organismSetup();
     
-    // land layer
-    landBG1.load("LandBG_1.png");
-    landBG2.load("LandBG_1.png");
-    landFG1.load("LandFG_1.png");
-    landFG2.load("LandFG_2.png");
-    sky1.load("Sky_1.png");
-    sky2.load("Sky_2.png");
-    sky3.load("Sky_3.png");
+    setupImages();
     
 
     // kinect
@@ -31,8 +24,29 @@ void ofApp::setup(){
     
 //    ofSetFrameRate(1);
  
+    starSetup();
+    
+    dejaVuSans.load("DejaVuSans.ttf", 12);
+    dejaVuSansBold.load("DejaVuSans-Bold.ttf", 28);
     
     
+    _masterState = WELCOME_SCREEN;
+    _lastState = 0;
+    _nextState = 0;
+    
+    _fadeAlpha = 0;
+    
+    _stateTimer = 0;
+    _fadeAlpha = 0;
+    
+    welcomeBlock.init("DejaVuSans.ttf", 14);
+    welcomeStringA.push_back("Hi, my name is Dr. Anthony.");
+    welcomeStringA.push_back("I am a scientist, and my job is to see the effect of pollution and natural changes on the tiny organisms that live in the top layer of soil in an esturary.");
+    welcomeStringA.push_back("Would you like to help?");
+    welcomeStringA.push_back("Wave your hand to let me know when you're ready to get started.");
+
+    timer = 0;
+
 }
 
 
@@ -135,6 +149,8 @@ void ofApp::ppSetup() {
         benthicPoly.push_back(tempPoints);
         tempPoints.clear();
     }
+    
+    
 }
 
 
@@ -184,7 +200,9 @@ void ofApp::organismSetup() {
     CSVHeaders = {"env.cp", "z", "0.05", "0.95", "Phylum","Class","Order","Family","Genus","Final"};
     
     // random value for pH
-    phValue = ofRandom(2.6);
+    phValue = ofRandom(1.6);
+    
+    displayPh = ofToString(phValue + 6.8, 1);
     // this should be scaled to between  6.8 and 8.4
     cout << "starting organism setup" << endl;
     
@@ -284,6 +302,96 @@ map<string, string> ofApp::loadDataset(int type, int index) {
 
 
 
+// _____      draw stars for water quality rating __________ \\
+
+
+void ofApp::starSetup () {
+    //setup the star ratings
+    vector <ofVec3f> starPoints;
+    
+    starRadii.set(7.5, 10);
+    
+    // make a 5-sided star, i < 2*5
+    
+    for(int i = 0; i < 10; i++) {
+        float offset = starRadii.x + (starRadii.y * (i % 2));
+        
+        //        println(offset);
+        float posX = offset * sin(ofDegToRad(i*(360/(5*2))));
+        float posY = offset * cos(ofDegToRad(i*(360/(5*2))));
+        
+        starPoints.push_back(ofPoint(posX, posY, 0));
+    }
+    //    ofMesh tempStar;
+    //    tempStar.addVertices(starPoints);
+    for (int i = 0; i < 5; i++) {
+        ofMesh tempStar;
+        tempStar.addVertices(starPoints);
+        star.push_back(tempStar);
+        tempStar.clear();
+    }
+    starPoints.clear();
+    
+}
+
+
+// _____      retrieve data for organisms __________ \\
+
+void ofApp::setupImages() {
+    // land layer
+    landBG1.load("LandBG_1.png");
+    landBG2.load("LandBG_1.png");
+    landFG1.load("LandFG_1.png");
+    landFG2.load("LandFG_2.png");
+    sky1.load("Sky_1.png");
+    sky2.load("Sky_2.png");
+    sky3.load("Sky_3.png");
+//    
+//    // faces for feedback
+//    faceA.load("faceA.png");
+//    aHasSomethingToSay = false;
+//    faceK.load("faceK.png");
+//    kHasSomethingToSay = false;
+//    faceT.load("faceT.png");
+//    tHasSomethingToSay = false;
+    
+    // welcome page image
+    helloImage.load("welcomeA.png");
+    
+    
+}
+
+void ofApp::setupCharacters() {
+    dayTimer = 0;
+    talkingTimer = 0;
+    
+    // string imageLoc, float tempX, float tempY, float scaleX, float scaleY, int tempid
+//    Anthony = Character("faceA.png", ofGetWidth() - 100, 300,.5,.5, 0);
+//    Kate = Character("faceK.png", 20, 120, .5, .5, 1);
+//    Thomas = Character("faceT.png", 100, 120, .5, .5, 1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -301,7 +409,7 @@ map<string, string> ofApp::loadDataset(int type, int index) {
 
 
 //--------------------------------------------------------------
-void ofApp::update(){
+void ofApp::updateMain(){
     
     
 //    phValue = ofGetFrameNum() / 500.0;
@@ -371,6 +479,32 @@ void ofApp::update(){
 }
 
 
+void ofApp::updateCharacters() {
+    
+//    int t = ofGetElapsedTimeMillis();
+//    
+//    
+//    if (true) {
+//        aHasSomethingToSay = true;
+//        spokenMessage = "It's nearly time to go!";
+//        talkingTimer = t;
+//    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -393,7 +527,51 @@ void ofApp::update(){
 
 
 //--------------------------------------------------------------
-void ofApp::draw(){
+
+
+
+
+void ofApp::drawIntro() {
+    ofBackground(255);
+    drawHands();
+    ofSetColor(255, 255, 255);
+    helloImage.draw( ofGetWidth()/6, 50, helloImage.getWidth()/2, helloImage.getHeight()/2);
+    
+    float nextHeight = 0;
+    if (!userPresentAtIntro) {
+        for (int i = 0; i < welcomeStringA.size(); i++) {
+            //  welcomeBlock.setColor(0, 0, 0, 255);
+            welcomeBlock.setText(welcomeStringA.at(i));
+            welcomeBlock.wrapTextX(400);
+            welcomeBlock.draw(4*ofGetWidth()/8, 100 + nextHeight);
+            nextHeight += welcomeBlock.getHeight() + 8;
+        }
+        if (openNIDevice.getNumTrackedHands() > 0) {
+            if (timer == 0) timer = ofGetElapsedTimeMillis();
+            if (ofGetElapsedTimeMillis() - timer > 1000) {
+                userPresentAtIntro = true;
+                timer == 0;
+            }
+        }
+    }
+    else {
+        welcomeBlock.setText(welcomeStringB);
+        welcomeBlock.draw(ofGetWidth()/2, 100);
+        if (ofGetElapsedTimeMillis() - timer > 3000 && _masterState == WELCOME_SCREEN) {
+            nextState();
+//            userPresentAtIntro = false;
+        }
+    }
+    
+    
+}
+
+
+
+
+
+
+void ofApp::drawMain() {
 
     drawRiver();
     drawBenthic();
@@ -420,14 +598,23 @@ void ofApp::draw(){
     
     ofSetColor(255, 255, 255);
     ofFill();
-//    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
     
     
     landFG1.draw(0, 0);
     
-    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(-1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size()));
-    ofDrawBitmapString(msg, 20, 20);
     
+    
+    float averagePollution = -1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size());
+
+    drawStars(averagePollution);
+    
+    dejaVuSansBold.drawString(displayPh, 230, 55);
+    dejaVuSans.drawString("Estuary pH", 220, 70);
+    
+//    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(averagePollution/175);
+//    ofDrawBitmapString(msg, 20, 20);
+ 
+//    drawCharacters();
 }
 
 
@@ -590,6 +777,45 @@ void ofApp::drawBox2d() {
 
 }
 
+
+
+// _____      draw the star rating    __________ \\
+
+
+void ofApp::drawStars(float averagePollution) {
+    // draw star rating
+    
+    ofSetColor(200, 200, 10);
+    
+    for (int i = 0; i < 5; i++) {
+        if (averagePollution/175 > (i/4.7)+.1) {
+            star.at(i).setMode(OF_PRIMITIVE_LINE_LOOP);
+        }
+        else {
+            star.at(i).setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        }
+        ofPushMatrix();
+        ofTranslate(40 + ((starRadii.y * 3.5) * (4-i)), 40);
+        star.at(i).draw();
+        ofPopMatrix();
+    }
+    string msg = "Water Quality Grade";
+    
+    dejaVuSans.drawString(msg, 30, 70);
+    
+}
+
+
+void ofApp::drawCharacters() {
+//    Anthony.drawCharacter();
+//    Kate.drawCharacter();
+//    Thomas.drawCharacter();
+}
+
+
+
+
+
 ////--------------------------------------------------------------
 //void ofApp::keyPressed(int key){
 //    blendMode = key % 6;
@@ -656,4 +882,136 @@ void ofApp::drawBox2d() {
 //    // show user event messages in the console
 //    ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
 //}
+
+
+
+void ofApp::update() {
+    switch (_masterState) {
+        case WELCOME_SCREEN:
+            openNIDevice.update();
+            break;
+        case INTERACTIVE_PLAY_STATE:
+            // draw main display
+            updateMain();
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+}
+
+
+void ofApp::draw() {
+    drawSwitch(_masterState);
+
+}
+
+
+void ofApp::drawSwitch(int s) {
+    switch (s) {
+        case WELCOME_SCREEN:
+            // introduction
+            drawIntro();
+            break;
+            
+            
+        case INTERACTIVE_PLAY_STATE:
+            // draw main display
+            drawMain();
+            break;
+            
+        case FADE_OUT :
+            fadeOut();
+            break;
+    
+        case FADE_IN :
+            fadeIn();
+            break;
+            
+        default:
+            break;
+
+    }
+}
+
+
+void ofApp::nextState() {
+    cout << "selecting the next state" << endl;
+    switch(_masterState)
+    {
+        case WELCOME_SCREEN :
+            _lastState = WELCOME_SCREEN;
+            _nextState = INTERACTIVE_PLAY_STATE;
+            _masterState = FADE_OUT;
+            dayTimer = 0;
+            break;
+            
+        case INTERACTIVE_PLAY_STATE:
+            _nextState = WELCOME_SCREEN;
+            _lastState = INTERACTIVE_PLAY_STATE;
+            _masterState = FADE_OUT;
+            
+        case FADE_OUT :
+            _masterState = FADE_IN;
+            break;
+            
+        case FADE_IN :
+            _masterState = _nextState;
+            break;
+            default:
+            
+            break;
+    } // end switch
+} // end nextState
+
+
+
+void ofApp::fadeOut()
+{
+    cout << "fade out" << endl;
+    
+    drawSwitch(_lastState);
+    cout << "fade out alpha: " << _fadeAlpha << endl;
+
+    if (_fadeAlpha < 254)
+    {
+        _fadeAlpha += (255 - _fadeAlpha) * 0.2;
+    } else
+    {
+        nextState();
+    } // end alpha check
+
+    // fade interactive area
+    ofSetColor(255, 255, 255, _fadeAlpha);
+    ofFill();
+    ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+} // end fadeOut
+
+
+
+void ofApp::fadeIn()
+{
+    cout << "fade in" << ofGetFrameNum() << endl;
+    
+    drawSwitch(_nextState);
+    
+    if (_fadeAlpha > 1)
+    {
+        cout << "fade in alpha: " << _fadeAlpha << endl;
+        _fadeAlpha += (0 - _fadeAlpha) * 0.2;
+        
+    } else
+    {
+        
+        timer = ofGetElapsedTimeMillis();
+        nextState();
+    } // end alpha check
+
+    ofSetColor(255, 255, 255, _fadeAlpha);
+    ofFill();
+    ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+    
+} // end fadeIn
 

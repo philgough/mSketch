@@ -183,46 +183,6 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
     noisey += 0.005 * health;
     noiser += 0.0005 * health;
 }
-//float x = 200;
-//float y = 300;
-//float l = 100;
-//float h = 40*mouseY/height;
-//float k = l*mouseX/width; // env.cp (zVal)
-// i = x value
-
-
-float Organism::py(float j, float h, float k) {
-//    if (k == j) {cout << "derp" << endl;}
-    cout << k << " : " << j << endl;
-    float  ny = 0.5 - h -  logf(k - j);// - k * log(k-j);
-    return ny;
-}
-
-
-float Organism::qy(float j, float h, float k) {
-//    if (k == j) {cout << "derp" << endl;}
-    float  ny =  0.5 - h + logf(j - k);// + k * log(j-k);
-    return ny;
-}
-
-float Organism::ry(float j, float h, float k) {
-//    if (k == j) {cout << "derp" << endl;}
-    float  ny = 0.5 - h + logf(k - j);// + k * log(k-j);
-//    cout << ny << endl;
-    return ny;
-}
-
-
-float Organism::sy(float j, float h, float k) {
-//    if (k == j) {cout << "derp" << endl;}
-    float  ny = 0.5 - h - logf(j - k);// - k * log(j-k);
-//    cout << ny << endl;
-    return ny;
-}
-
-
-
-
 
 
 

@@ -11,6 +11,10 @@
 
 #include "ofxCsv.h"
 
+#include "ofxTextBlock.h"
+
+#include "character.hpp"
+
 class ofApp : public ofBaseApp{
 	public:
 //        ofApp();
@@ -117,5 +121,72 @@ class ofApp : public ofBaseApp{
     ofxCsv csvData;
 
     float phValue;
+    
+    
+    
+    
+    // interface elements
+    vector <ofMesh> star;
+    ofVec2f starRadii;
+    ofTrueTypeFont dejaVuSans;
+    ofTrueTypeFont dejaVuSansBold;
+    string displayPh;
+    void starSetup();
+    void drawStars(float averagePollution);
+    void setupImages();
+//    ofImage faceA, faceK, faceT;
+    ofImage helloImage;
+    bool aHasSomethingToSay, kHasSomethingToSay, tHasSomethingToSay;
+//    Character Anthony;
+//    Character Kate;
+//    Character Thomas;
+    
+    
+    // things the characters to/say to the user
+    void setupCharacters();
+    void updateCharacters();
+    void drawCharacters();
+    vector <string> aComments, kComments, tComments;
+    int talkingTimer;
+    int dayTimer;
+    string spokenMessage;
+    
+    
+    // drawing states
+    void updateMain();
+    void drawMain();
+    void drawIntro();
+    static const int WELCOME_SCREEN = 0;
+    static const int INTERACTIVE_PLAY_STATE = 1;
+    static const int FADE_IN = 2;
+    static const int FADE_OUT = 3;
+    static const int UPDATE_CYCLE = 4;
+
+    int _masterState;
+    int _lastState;
+    int _nextState;
+    
+    float _fadeAlpha;
+    
+    int _stateTimer;
+    
+    bool userPresentAtIntro = false;
+    
+    
+    
+    
+    // text
+    
+    ofxTextBlock welcomeBlock;
+    vector <string> welcomeStringA;
+    string welcomeStringB = "Great, let's get started!";
+
+    int timer;
+    
+    void drawSwitch(int s);
+    void nextState();
+    void lastState();
+    void fadeIn();
+    void fadeOut();
     
 };
