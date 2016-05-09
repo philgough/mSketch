@@ -88,7 +88,7 @@ void Organism::drawOrganism() {
     shape.draw();
     shape.clearColors();
     for (int i=0; i<shape.getNumVertices(); i++) {
-        float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 * i  + (1.0+type)  * 12.5 * ofGetFrameNum()/20.0));
+        float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 + (1.0+type)  * 12.5));
         shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
     }
     
@@ -191,7 +191,7 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
             break;
             
         case 3:
-            cout << "case : 3, health:" << health << endl;
+//            cout << "case : 3, health:" << health << endl;
             // phosphorus, positive reaction
             if (zVal < health) {
 //                health = 0.0;

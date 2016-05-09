@@ -62,6 +62,7 @@ void Character::updateCharacter() {
 
 void Character::describeOrganism(string name, int type) {
     drawNow = true;
+    
     string reaction;
     switch (type) {
         case 0:

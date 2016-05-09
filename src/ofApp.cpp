@@ -617,9 +617,23 @@ void ofApp::drawMain() {
     dejaVuSans.drawString("Estuary pH", 220, 70);
     
 //    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size()) + " Pollution: " + ofToString(averagePollution/175);
-//    ofDrawBitmapString(msg, 20, 20);
+    string msg = ofToString(ofGetFrameRate());
+    ofDrawBitmapString(msg, 20, 20);
     
 //    cout << "characters size: " << characters.size() << endl;
+    // if there's someone there
+    if (openNIDevice.getNumTrackedHands() > 0) {
+//        // reset the timer
+        _stateTimer = ofGetElapsedTimeMillis();
+    }
+    // if there's no one there
+    else {
+        // and there hasn't been for 15 seconds
+        if (ofGetElapsedTimeMillis() > _stateTimer + 15000) {
+            nextState();
+        }
+    }
+    
 }
 
 
@@ -708,7 +722,8 @@ void ofApp::drawHands() {
     lines.push_back(ofPolyline());
     
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
-        
+        _stateTimer = 0;
+
         // get a reference to this user
         ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
         
@@ -743,7 +758,6 @@ void ofApp::drawHands() {
         if (openNIDevice.getNumTrackedHands() < 2){
             for (int k = 0; k < organisms.size(); k++) {
                 float e = ofDist(organisms.at(k).location.x, organisms.at(k).location.y, x, y);
-//              cout << d << endl;
                 if (e < 40) {
                     organisms[k].callAnthony(&characters[0]);
                 }
@@ -830,6 +844,7 @@ void ofApp::drawCharacters() {
 ////--------------------------------------------------------------
 //void ofApp::keyPressed(int key){
 //    blendMode = key % 6;
+
 //}
 //
 ////--------------------------------------------------------------
@@ -845,14 +860,15 @@ void ofApp::drawCharacters() {
 //}
 
 //--------------------------------------------------------------
-//void ofApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button){
 ////    int xyToPixelArray = x + y * 1280;
 ////    cout << "pixelList: " << voronoiPixelAssignments.at(xyToPixelArray) << ", distLIst: " << distList.at(xyToPixelArray);
 ////    cout << ", satList: " << satList.at(xyToPixelArray) << ", hueLIst: " << hueList.at(xyToPixelArray) << endl;
 //    for (int i = 0; i < benthicPoly.size(); i++) {
 //        if (benthicPoly.at(i).inside(x, y)){cout<< "clicked: " << i << endl;}
 //    }
-//}
+    nextState();
+}
 //
 ////--------------------------------------------------------------
 //void ofApp::mouseReleased(int x, int y, int button){
@@ -930,7 +946,7 @@ void ofApp::drawSwitch(int s) {
             
         case INTERACTIVE_PLAY_STATE:
             // draw main display
-            updateMain();
+//            updateMain();
             drawMain();
             break;
             
@@ -952,6 +968,7 @@ void ofApp::drawSwitch(int s) {
 void ofApp::nextState() {
     cout << "selecting the next state" << endl;
     int t = ofGetElapsedTimeMillis();
+    _stateTimer = t;
     switch(_masterState)
     {
         case WELCOME_SCREEN :
