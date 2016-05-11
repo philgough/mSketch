@@ -31,6 +31,7 @@ void ofApp::setup(){
     
     
     _masterState = WELCOME_SCREEN;
+//    _masterState = INTERACTIVE_PLAY_STATE;
     _lastState = 0;
     _nextState = 0;
     
