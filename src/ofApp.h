@@ -162,7 +162,15 @@ class ofApp : public ofBaseApp{
     static const int FADE_IN = 2;
     static const int FADE_OUT = 3;
     static const int UPDATE_CYCLE = 4;
-
+    
+    // score screen states
+    static const int SCORE_SCREEN = 5;
+    bool location1Visited = false;
+    bool location2Visited = false;
+    bool location3Visited = false;
+    bool location4Visited = false;
+    void drawScoreScreen();
+    
     int _masterState;
     int _lastState;
     int _nextState;
@@ -170,6 +178,8 @@ class ofApp : public ofBaseApp{
     float _fadeAlpha;
     
     int _stateTimer;
+    int _noPlayerCheck;
+    int _noPlayerDuration;
     
     bool userPresentAtIntro = false;
     
@@ -189,5 +199,14 @@ class ofApp : public ofBaseApp{
     void lastState();
     void fadeIn();
     void fadeOut();
+    
+    
+    
+    // most of the interaction is timed, so make some timer functions
+    void mainTimer();
+    void scoreTimer();
+    int _drawMainDuration = 6000;
+    int _scoreScreenDuration = 3000;
+    
     
 };

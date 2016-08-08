@@ -30,13 +30,15 @@ void ofApp::setup(){
     dejaVuSansBold.load("DejaVuSans-Bold.ttf", 28);
     
     
-    _masterState = WELCOME_SCREEN;
-//    _masterState = INTERACTIVE_PLAY_STATE;
+//    _masterState = WELCOME_SCREEN;
+    _masterState = INTERACTIVE_PLAY_STATE;
     _lastState = 0;
     _nextState = 0;
     
     _fadeAlpha = 0;
     
+    _noPlayerCheck = 0;
+    _noPlayerDuration = 10000;
     _stateTimer = 0;
     _fadeAlpha = 0;
     
@@ -625,15 +627,63 @@ void ofApp::drawMain() {
     // if there's someone there
     if (openNIDevice.getNumTrackedHands() > 0) {
 //        // reset the timer
-        _stateTimer = ofGetElapsedTimeMillis();
+        _noPlayerCheck = ofGetElapsedTimeMillis();
     }
     // if there's no one there
     else {
-        // and there hasn't been for 15 seconds
-        if (ofGetElapsedTimeMillis() > _stateTimer + 15000) {
-            nextState();
+        // and there hasn't been for long enough
+        if (ofGetElapsedTimeMillis() > _noPlayerCheck + _noPlayerDuration) {
+            //            nextState();
+            // then go to the welcome screen.
+            cout << "nobody here, heading home" << endl;
+            int t = ofGetElapsedTimeMillis();
+            _noPlayerCheck = t;
+            _nextState = WELCOME_SCREEN;
+            _lastState = INTERACTIVE_PLAY_STATE;
+            _masterState = FADE_OUT;
+
         }
     }
+    
+    
+    
+    // check to see if it's time to go to the score screen
+    if (_stateTimer + _drawMainDuration < ofGetElapsedTimeMillis()) {
+        nextState();
+    }
+    
+    
+    // some feedback on the timer status
+    if (_masterState == INTERACTIVE_PLAY_STATE)
+    {
+        ofSetColor(200, 200, 10);
+        ofMesh mesh;
+        mesh.addVertex(ofPoint(0, 3));
+        mesh.addVertex(ofPoint(0, 0));
+        float x =  1.0 * (ofGetElapsedTimeMillis() - _stateTimer)/(1.0 * _drawMainDuration);
+        mesh.addVertex(ofPoint(ofGetWidth() * x, 0));
+        mesh.addVertex(ofPoint(ofGetWidth() * x, 3));
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        mesh.draw();
+        mesh.clear();
+    }
+//    else
+//    {
+//        
+//        ofSetColor(255, 0, 0);
+//        ofMesh mesh;
+//        mesh.addVertex(ofPoint(0, 3));
+//        mesh.addVertex(ofPoint(0, 0));
+//
+//        mesh.addVertex(ofPoint(ofGetWidth(), 0));
+//        mesh.addVertex(ofPoint(ofGetWidth(), 3));
+//        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+//        mesh.draw();
+//        mesh.clear();
+//        
+//    }
+
+
     
 }
 
@@ -723,7 +773,7 @@ void ofApp::drawHands() {
     lines.push_back(ofPolyline());
     
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
-        _stateTimer = 0;
+        _noPlayerCheck = 0;
 
         // get a reference to this user
         ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
@@ -861,7 +911,8 @@ void ofApp::drawCharacters() {
 //}
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button)
+{
 ////    int xyToPixelArray = x + y * 1280;
 ////    cout << "pixelList: " << voronoiPixelAssignments.at(xyToPixelArray) << ", distLIst: " << distList.at(xyToPixelArray);
 ////    cout << ", satList: " << satList.at(xyToPixelArray) << ", hueLIst: " << hueList.at(xyToPixelArray) << endl;
@@ -913,7 +964,8 @@ void ofApp::mousePressed(int x, int y, int button){
 
 
 
-void ofApp::update() {
+void ofApp::update()
+{
     switch (_masterState) {
         case WELCOME_SCREEN:
             openNIDevice.update();
@@ -922,7 +974,10 @@ void ofApp::update() {
             // draw main display
             updateMain();
             break;
-            
+        case SCORE_SCREEN:
+            // draw the score screen
+            openNIDevice.update();
+            break;
         default:
             break;
     }
@@ -958,6 +1013,10 @@ void ofApp::drawSwitch(int s) {
         case FADE_IN :
             fadeIn();
             break;
+        
+        case SCORE_SCREEN:
+            drawScoreScreen();
+            break;
             
         default:
             break;
@@ -983,7 +1042,7 @@ void ofApp::nextState() {
             break;
             
         case INTERACTIVE_PLAY_STATE:
-            _nextState = WELCOME_SCREEN;
+            _nextState = SCORE_SCREEN;
             _lastState = INTERACTIVE_PLAY_STATE;
             _masterState = FADE_OUT;
             
@@ -997,6 +1056,16 @@ void ofApp::nextState() {
             default:
             
             break;
+            
+        case SCORE_SCREEN :
+            _nextState = INTERACTIVE_PLAY_STATE;
+            _lastState = SCORE_SCREEN;
+            _masterState = FADE_OUT;
+            break;
+            
+            
+            
+            
     } // end switch
 } // end nextState
 
@@ -1048,4 +1117,48 @@ void ofApp::fadeIn()
     ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
     
 } // end fadeIn
+
+
+
+// draw the score screen
+void ofApp::drawScoreScreen()
+{
+    ofBackground(255, 255, 255);
+    // cout << "this is the score screen" << endl;
+    
+    if (_stateTimer + _scoreScreenDuration < ofGetElapsedTimeMillis())
+    {
+        nextState();
+    }
+    
+    if (_masterState == SCORE_SCREEN)
+    {
+        ofSetColor(200, 200, 10);
+        ofMesh mesh;
+        mesh.addVertex(ofPoint(0, 3));
+        mesh.addVertex(ofPoint(0, 0));
+        float x =  1.0 * (ofGetElapsedTimeMillis() - _stateTimer)/(1.0 * _scoreScreenDuration);
+//        cout << x << endl;
+        mesh.addVertex(ofPoint(ofGetWidth() * x, 0));
+        mesh.addVertex(ofPoint(ofGetWidth() * x, 3));
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        mesh.draw();
+        mesh.clear();
+    }
+    else
+    {
+        ofSetColor(200, 200, 10);
+        ofMesh mesh;
+        mesh.addVertex(ofPoint(0, 3));
+        mesh.addVertex(ofPoint(0, 0));
+        //        float x = ofGetWidth() * (ofGetElapsedTimeMillis()/(_stateTimer + _scoreScreenDuration));
+        //        cout << x << endl;
+        mesh.addVertex(ofPoint(ofGetWidth(), 0));
+        mesh.addVertex(ofPoint(ofGetWidth(), 3));
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        mesh.draw();
+        mesh.clear();
+        
+    }
+}
 
