@@ -30,8 +30,8 @@ void ofApp::setup(){
     dejaVuSansBold.load("DejaVuSans-Bold.ttf", 28);
     
     
-//    _masterState = WELCOME_SCREEN;
-    _masterState = INTERACTIVE_PLAY_STATE;
+    _masterState = WELCOME_SCREEN;
+//    _masterState = INTERACTIVE_PLAY_STATE;
     _lastState = 0;
     _nextState = 0;
     
@@ -344,14 +344,15 @@ void ofApp::starSetup () {
 
 void ofApp::setupImages() {
     // land layer
-    landBG1.load("LandBG_1.png");
-    landBG2.load("LandBG_1.png");
-    landFG1.load("LandFG_1.png");
-    landFG2.load("LandFG_2.png");
-    sky1.load("Sky_1.png");
-    sky2.load("Sky_2.png");
-    sky3.load("Sky_3.png");
-//    
+    
+//    landBG1.load("LandBG_1.png");
+//    landBG2.load("LandBG_1.png");
+//    landFG1.load("LandFG_1.png");
+//    landFG2.load("LandFG_2.png");
+//    sky1.load("Sky_1.png");
+//    sky2.load("Sky_2.png");
+//    sky3.load("Sky_3.png");
+//
 //    // faces for feedback
 //    faceA.load("faceA.png");
 //    aHasSomethingToSay = false;
@@ -359,6 +360,12 @@ void ofApp::setupImages() {
 //    kHasSomethingToSay = false;
 //    faceT.load("faceT.png");
 //    tHasSomethingToSay = false;
+    
+    
+    bush.load("background_bush.png");
+    city.load("background_city.png");
+    farm.load("background_farm.png");
+    
     
     // welcome page image
     helloImage.load("welcomeA.png");
@@ -607,7 +614,6 @@ void ofApp::drawMain() {
     ofFill();
     
     
-    landFG1.draw(0, 0);
     drawCharacters();
 
     
@@ -641,14 +647,25 @@ void ofApp::drawMain() {
             _nextState = WELCOME_SCREEN;
             _lastState = INTERACTIVE_PLAY_STATE;
             _masterState = FADE_OUT;
+            
+            // reset the locations visited
+//            location1Visited = false;
+//            location2Visited = false;
 
         }
     }
     
     
-    
+//    changeLocation = false;
     // check to see if it's time to go to the score screen
     if (_stateTimer + _drawMainDuration < ofGetElapsedTimeMillis()) {
+//        changeLocation = true;
+//        if (location1Visited == false) {
+//            location1Visited = true;
+//        }
+//        else {
+//            location2Visited = true;
+//        }
         nextState();
     }
     
@@ -753,9 +770,40 @@ void ofApp::drawBenthic() {
 // _____      draw the top layer    __________ \\
 
 void ofApp::drawLand() {
+//    if (_masterState != FADE_OUT) {
+//    
+//        if (!location1Visited) {
+//            bush.draw(0, 0);
+//        }
+//        else if (!location2Visited) {
+//            farm.draw(0, 0);
+//        }
+//        else {
+//        city.draw(0, 0);
+//        }
+//    }
+//    else {
+//        if (!location2Visited) {
+//            bush.draw(0, 0);
+//        }
+//        else if (<#condition#>)
+//    }
+    int loc = location % 3;
+    switch (loc) {
+        case 0:
+            bush.draw(0, 0);
+            break;
+            
+        case 1:
+            farm.draw(0, 0);
+            break;
+        case 2:
+            city.draw(0, 0);
+            break;
+        default:
+            break;
+    }
     
-    sky1.draw(0, 0);
-    landBG1.draw(0, 0);
 }
 
 
@@ -1046,11 +1094,21 @@ void ofApp::nextState() {
             _lastState = INTERACTIVE_PLAY_STATE;
             _masterState = FADE_OUT;
             
+            
+            break;
         case FADE_OUT :
             _masterState = FADE_IN;
             break;
             
         case FADE_IN :
+            // change the background image
+//            
+//            if (!location1Visited && changeLocation) {
+//                location1Visited = true;
+//            }
+//            else if (!location2Visited && changeLocation) {
+//                location2Visited = true;
+//            }
             _masterState = _nextState;
             break;
             default:
@@ -1058,6 +1116,8 @@ void ofApp::nextState() {
             break;
             
         case SCORE_SCREEN :
+            // go to the next location;
+            location++;
             _nextState = INTERACTIVE_PLAY_STATE;
             _lastState = SCORE_SCREEN;
             _masterState = FADE_OUT;

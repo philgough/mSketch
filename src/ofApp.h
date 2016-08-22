@@ -85,9 +85,12 @@ class ofApp : public ofBaseApp{
     
     // colours for changing background gradient on top level
 //    float sh1, ss1, sb1, sh2, ss2, sb2, eh1, es1, eb1, eh2, es2, eb2;
-    ofImage landBG1, landBG2;
-    ofImage landFG1, landFG2;
-    ofImage sky1, sky2, sky3, sky4;
+//    ofImage landBG1, landBG2;
+//    ofImage landFG1, landFG2;
+//    ofImage sky1, sky2, sky3, sky4;
+    
+    ofImage bush, city, farm;
+    
     
     // kinect
     void openniSetup();
@@ -165,10 +168,12 @@ class ofApp : public ofBaseApp{
     
     // score screen states
     static const int SCORE_SCREEN = 5;
-    bool location1Visited = false;
-    bool location2Visited = false;
-    bool location3Visited = false;
-    bool location4Visited = false;
+//    bool location1Visited = false;
+//    bool location2Visited = false;
+//    bool changeLocation = false;
+
+    int location = 0;
+    
     void drawScoreScreen();
     
     int _masterState;
@@ -205,8 +210,8 @@ class ofApp : public ofBaseApp{
     // most of the interaction is timed, so make some timer functions
     void mainTimer();
     void scoreTimer();
-    int _drawMainDuration = 6000;
-    int _scoreScreenDuration = 3000;
+    int _drawMainDuration = 12000;
+    int _scoreScreenDuration = 10000;
     
     
 };
