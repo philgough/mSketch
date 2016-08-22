@@ -168,13 +168,14 @@ class ofApp : public ofBaseApp{
     
     // score screen states
     static const int SCORE_SCREEN = 5;
-//    bool location1Visited = false;
-//    bool location2Visited = false;
-//    bool changeLocation = false;
 
+    // goodbye screen
+    static const int THANK_YOU_SCREEN = 6;
+    
     int location = 0;
     
     void drawScoreScreen();
+    void drawByeScreen();
     
     int _masterState;
     int _lastState;
@@ -210,8 +211,12 @@ class ofApp : public ofBaseApp{
     // most of the interaction is timed, so make some timer functions
     void mainTimer();
     void scoreTimer();
-    int _drawMainDuration = 12000;
+    int _drawMainDuration = 45000;
     int _scoreScreenDuration = 10000;
+    
+    
+    // variable for the pollution and pH values as a 2d vector
+    vector <ofVec2f> environmentVariables;
     
     
 };

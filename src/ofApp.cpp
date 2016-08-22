@@ -52,6 +52,15 @@ void ofApp::setup(){
     
     setupCharacters();
 
+    
+    
+    
+    // Set up variables for the different locations
+    // pollution goes first
+    environmentVariables.push_back(ofVec2f(5, 7.3));
+    environmentVariables.push_back(ofVec2f(20, 6.8));
+    environmentVariables.push_back(ofVec2f(30, 8.0));
+    
 }
 
 
@@ -345,22 +354,6 @@ void ofApp::starSetup () {
 void ofApp::setupImages() {
     // land layer
     
-//    landBG1.load("LandBG_1.png");
-//    landBG2.load("LandBG_1.png");
-//    landFG1.load("LandFG_1.png");
-//    landFG2.load("LandFG_2.png");
-//    sky1.load("Sky_1.png");
-//    sky2.load("Sky_2.png");
-//    sky3.load("Sky_3.png");
-//
-//    // faces for feedback
-//    faceA.load("faceA.png");
-//    aHasSomethingToSay = false;
-//    faceK.load("faceK.png");
-//    kHasSomethingToSay = false;
-//    faceT.load("faceT.png");
-//    tHasSomethingToSay = false;
-    
     
     bush.load("background_bush.png");
     city.load("background_city.png");
@@ -426,26 +419,28 @@ void ofApp::setupCharacters() {
 
 
 
+
+
 //--------------------------------------------------------------
 void ofApp::updateMain(){
     
-    
-//    phValue = ofGetFrameNum() / 500.0;
     
     // update the kinect position every second frame
 //    if (ofGetFrameNum() % 2 == 0) {
         openNIDevice.update();
 //    }
+    // x == pollution rate
+    int numCircles = environmentVariables.at(location%3).x;
+    
     
     // add some new circles
-    if((int)ofRandom(0, 40) == 0 && circles.size() < 25) {
+    if((int)ofRandom(0, 40) == 0 && circles.size() < numCircles) {
         shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
         c.get()->setPhysics(0.3, 0.6, 0.012);
         c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), 501, 10);
         c.get()->setVelocity(ofRandom(7)-3.5, ofRandom(3)); // shoot them down!
         circles.push_back(c);
     }
-    
     
     vector   <shared_ptr<ofxBox2dCircle> > tempCircles; // default box2d circles
 
@@ -493,6 +488,8 @@ void ofApp::updateMain(){
         // update the organism
         organisms[i].updateOrganism(&pollutionOffset[closestCellIndex], &phValue);
     }
+
+    
     updateCharacters();
 
 }
@@ -770,24 +767,7 @@ void ofApp::drawBenthic() {
 // _____      draw the top layer    __________ \\
 
 void ofApp::drawLand() {
-//    if (_masterState != FADE_OUT) {
-//    
-//        if (!location1Visited) {
-//            bush.draw(0, 0);
-//        }
-//        else if (!location2Visited) {
-//            farm.draw(0, 0);
-//        }
-//        else {
-//        city.draw(0, 0);
-//        }
-//    }
-//    else {
-//        if (!location2Visited) {
-//            bush.draw(0, 0);
-//        }
-//        else if (<#condition#>)
-//    }
+
     int loc = location % 3;
     switch (loc) {
         case 0:
@@ -1118,12 +1098,35 @@ void ofApp::nextState() {
         case SCORE_SCREEN :
             // go to the next location;
             location++;
-            _nextState = INTERACTIVE_PLAY_STATE;
+            
+            // reset the pollution
+            circles.clear();
+            for (int i = 0; i < pollutionOffset.size(); i++) {
+                pollutionOffset.at(i) = 0.0;
+            }
+            
+            if (location == 3){
+                _nextState = THANK_YOU_SCREEN;
+            }
+            else {
+                _nextState = INTERACTIVE_PLAY_STATE;
+            }
             _lastState = SCORE_SCREEN;
             _masterState = FADE_OUT;
             break;
             
+        case THANK_YOU_SCREEN :
+            // make sure we go back to the first location
+            location = 0;
             
+            circles.clear();
+            for (int i = 0; i < pollutionOffset.size(); i++) {
+                pollutionOffset.at(i) = 0.0;
+            }
+            
+            _nextState = INTERACTIVE_PLAY_STATE;
+            _lastState = THANK_YOU_SCREEN;
+            _masterState = FADE_OUT;
             
             
     } // end switch
@@ -1219,6 +1222,13 @@ void ofApp::drawScoreScreen()
         mesh.draw();
         mesh.clear();
         
+    }
+}
+
+void ofApp::drawByeScreen () {
+    if (_stateTimer + _scoreScreenDuration < ofGetElapsedTimeMillis())
+    {
+        nextState();
     }
 }
 
