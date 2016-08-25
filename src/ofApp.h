@@ -185,7 +185,7 @@ class ofApp : public ofBaseApp{
     
     int _stateTimer;
     int _noPlayerCheck;
-    int _noPlayerDuration;
+    int _noPlayerDuration = 30000;
     
     bool userPresentAtIntro = false;
     

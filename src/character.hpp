@@ -18,9 +18,9 @@
 
 class Character {
 public:
-    Character(string imageLoc, float tempX, float tempY, string textFileName, float textxpos, float textypos, float tempTextWidth);
+    Character(string imageLoc, float tempX, float tempY, string textFileName, int characterIndex, float textxpos, float textypos, float tempTextWidth);
     void updateCharacter();
-    void drawCharacter();
+    void drawCharacter(int timer, int location);
     void describeOrganism(string name, int type);
     int timer;
 //
@@ -41,6 +41,7 @@ private:
     float textWidth, textX, textY;
     ofxCsv messageList;
     
+
     vector <Trigger> autoTriggers;
     vector <Trigger> otherTriggers;
     

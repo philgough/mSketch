@@ -17,10 +17,10 @@
 class Trigger {
 public:
     Trigger(ofxCsvRow row);
-    
     int type;
     int wait;
     int duration;
+    int location;
     string text;
 };
 

@@ -7,11 +7,11 @@
 //
 
 #include "character.hpp"
+//#include <int>
 
 
 
-
-Character::Character(string imageLoc, float tempX, float tempY, string textFileName, float textxpos, float textypos, float tempTextWidth) {
+Character::Character(string imageLoc, float tempX, float tempY, string textFileName, int characterIndex, float textxpos, float textypos, float tempTextWidth) {
     face.load(imageLoc);
     x = tempX;
     y = tempY;
@@ -23,16 +23,18 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
     drawPoint.set(x, y);
     timer = 0;
     
-    // text data files
-    // int trigger type, time to trigger (if applicable), string, duration
-    // trigger conditions
-        // 0 = timed
-        // 1 = user triggered comment
+    // text data file
+    messageList.load(textFileName, ",", "#");
     
-    messageList.load(textFileName, ",");
-    
+    // in the text, get the data we want
     for (ofxCsvRow row : messageList) {
-        Trigger tempTrigger = Trigger(row);
+//        cout << row << endl;
+        if (characterIndex == stoi(row[0])) {
+            cout << "matched character to comment!" << endl;
+
+//            autoTriggers.push_back(new Trigger(row));
+            autoTriggers.push_back(Trigger(row));
+        }
     }
     
     textBox.init("dejaVuSans.ttf", 12);
@@ -42,7 +44,34 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 }
 
 
-void Character::drawCharacter() {
+void Character::drawCharacter(int timer, int location) {
+	// for (std::vector<Trigger>::iterator it = autoTriggers.begin(); it != autoTriggers.end(); ++it)
+	// {
+	// 	if (it->location == location)
+	// 	int start = timer + it->wait;
+	// 	int end = timer + it->wait + it->duration;
+	// 	if (start < timer < end) {
+	// 		drawNow = true;
+	// 		cout << it->text << endl;
+	// 	}
+	// }
+
+	for (int i = 0; i < autoTriggers.size(); ++i)
+	{
+//		cout << autoTriggers[i].location << ": " << location  << endl;
+		if (autoTriggers[i].location == location)
+		{
+			int start = timer + autoTriggers[i].wait * 1000;
+
+			int end = start + autoTriggers[i].duration * 1000;
+            cout << start << ": " << end <<endl;
+			if (start < ofGetElapsedTimeMillis() && ofGetElapsedTimeMillis() < end) {
+				drawNow = true;
+			}
+		} 
+	}
+
+
     if (drawNow) {
         face.draw(drawPoint, sx, sy);
         ofSetColor(255);
