@@ -31,7 +31,7 @@ private:
     // scales
     float sx, sy;
 //    int id;
-    bool drawNow;
+    // bool drawNow;
     
     string displayMessage;
 //    vector <string> messageList;
@@ -45,6 +45,12 @@ private:
     vector <Trigger> autoTriggers;
     vector <Trigger> otherTriggers;
     
+
+    // draw the character saying something
+
+    void drawNow(string text);
+
+
 };
 
 

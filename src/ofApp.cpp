@@ -374,8 +374,8 @@ void ofApp::setupCharacters() {
     // string imageLoc, float tempX, float tempY, float scaleX, float scaleY, int tempid
     
     Character Anthony = Character("faceA.png", ofGetWidth() - 200, 300, "script.csv", 0, 1500, 250, 200);
-    Character Kate = Character("faceK.png", 40, 80, "script.csv", 0, 200, 250, 200);
-    Character Thomas = Character("faceT.png", 210, 80, "script.csv", 0, 250, 250, 200);
+    Character Kate = Character("faceK.png", 40, 80, "script.csv", 1, 200, 250, 200);
+    Character Thomas = Character("faceT.png", 210, 80, "script.csv", 2, 250, 250, 200);
     characters.push_back(Anthony);
     characters.push_back(Kate);
     characters.push_back(Thomas);

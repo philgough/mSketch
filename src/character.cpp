@@ -18,7 +18,7 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
     sx = face.getWidth()*.4;
     sy = face.getHeight()*.4;
     
-    drawNow = true;
+//    drawNow = true;
     
     drawPoint.set(x, y);
     timer = 0;
@@ -45,20 +45,10 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 
 
 void Character::drawCharacter(int timer, int location) {
-	// for (std::vector<Trigger>::iterator it = autoTriggers.begin(); it != autoTriggers.end(); ++it)
-	// {
-	// 	if (it->location == location)
-	// 	int start = timer + it->wait;
-	// 	int end = timer + it->wait + it->duration;
-	// 	if (start < timer < end) {
-	// 		drawNow = true;
-	// 		cout << it->text << endl;
-	// 	}
-	// }
 
-	for (int i = 0; i < autoTriggers.size(); ++i)
+    // check the timer to see if they're saying something.
+    for (int i = 0; i < autoTriggers.size(); ++i)
 	{
-//		cout << autoTriggers[i].location << ": " << location  << endl;
 		if (autoTriggers[i].location == location)
 		{
 			int start = timer + autoTriggers[i].wait * 1000;
@@ -66,31 +56,33 @@ void Character::drawCharacter(int timer, int location) {
 			int end = start + autoTriggers[i].duration * 1000;
             cout << start << ": " << end <<endl;
 			if (start < ofGetElapsedTimeMillis() && ofGetElapsedTimeMillis() < end) {
-				drawNow = true;
+				drawNow(autoTriggers[i].text);
 			}
 		} 
 	}
 
 
-    if (drawNow) {
-        face.draw(drawPoint, sx, sy);
+}
+
+void Character::drawNow(string text) {
         ofSetColor(255);
+        face.draw(drawPoint, sx, sy);
         ofFill();
         ofDrawRectangle(textX - 10 , textY - 5, textWidth + 20, textBox.getHeight() + 10);
         ofSetColor(0);
+        ofSetColor(0);
+        textBox.setText(text);
+        textBox.wrapTextX(textWidth);
         textBox.draw(textX, textY);
-    }
-}
-
+}	
 
 void Character::updateCharacter() {
-    drawNow = false;
     
 }
 
 
 void Character::describeOrganism(string name, int type) {
-    drawNow = true;
+    // drawNow = true;
     
     string reaction;
     switch (type) {
@@ -111,7 +103,8 @@ void Character::describeOrganism(string name, int type) {
     }
     displayMessage = "This organism is called " + name + reaction;
     
-    textBox.setText(displayMessage);
-    textBox.wrapTextX(textWidth);
+    // textBox.setText(displayMessage);
 
+    // textBox.wrapTextX(textWidth);
+    drawNow(displayMessage);
 }
