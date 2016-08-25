@@ -185,7 +185,7 @@ class ofApp : public ofBaseApp{
     
     int _stateTimer;
     int _noPlayerCheck;
-    int _noPlayerDuration = 30000;
+    int _noPlayerDuration = 300000;
     
     bool userPresentAtIntro = false;
     
@@ -211,8 +211,8 @@ class ofApp : public ofBaseApp{
     // most of the interaction is timed, so make some timer functions
     void mainTimer();
     void scoreTimer();
-    int _drawMainDuration = 45000;
-    int _scoreScreenDuration = 10000;
+    int _drawMainDuration = 15000;
+    int _scoreScreenDuration = 3000;
     
     
     // variable for the pollution and pH values as a 2d vector

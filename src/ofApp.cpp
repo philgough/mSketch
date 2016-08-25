@@ -1081,14 +1081,6 @@ void ofApp::nextState() {
             break;
             
         case FADE_IN :
-            // change the background image
-//            
-//            if (!location1Visited && changeLocation) {
-//                location1Visited = true;
-//            }
-//            else if (!location2Visited && changeLocation) {
-//                location2Visited = true;
-//            }
             _masterState = _nextState;
             break;
             default:
@@ -1124,7 +1116,7 @@ void ofApp::nextState() {
                 pollutionOffset.at(i) = 0.0;
             }
             
-            _nextState = INTERACTIVE_PLAY_STATE;
+            _nextState = WELCOME_SCREEN;
             _lastState = THANK_YOU_SCREEN;
             _masterState = FADE_OUT;
             
