@@ -212,7 +212,7 @@ class ofApp : public ofBaseApp{
     // most of the interaction is timed, so make some timer functions
     void mainTimer();
     void scoreTimer();
-    int _drawMainDuration = 15000;
+    int _drawMainDuration = 40000;
     int _scoreScreenDuration = 3000;
     
     

@@ -69,10 +69,9 @@ void Character::drawNow(string text) {
         face.draw(drawPoint, sx, sy);
         ofFill();
         ofDrawRectangle(textX - 10 , textY - 5, textWidth + 20, textBox.getHeight() + 10);
-        ofSetColor(0);
-        ofSetColor(0);
         textBox.setText(text);
         textBox.wrapTextX(textWidth);
+        textBox.setColor(20, 20, 20, 255);
         textBox.draw(textX, textY);
 }	
 
