@@ -28,7 +28,7 @@ void ofApp::setup(){
     
     dejaVuSans.load("DejaVuSans.ttf", 12);
     dejaVuSansBold.load("DejaVuSans-Bold.ttf", 28);
-    
+    comic.load("comic.ttf", 18);
     
    _masterState = WELCOME_SCREEN;
     // _masterState = INTERACTIVE_PLAY_STATE;
@@ -42,7 +42,7 @@ void ofApp::setup(){
     _stateTimer = 0;
     _fadeAlpha = 0;
     
-    welcomeBlock.init("DejaVuSans.ttf", 14);
+    welcomeBlock.init("comic.ttf", 18);
     welcomeStringA.push_back("Hi, my name is Dr. Anthony.");
     welcomeStringA.push_back("I am a scientist, and my job is to see the effect of pollution and natural changes on the tiny organisms that live in the top layer of soil in an esturary.");
     welcomeStringA.push_back("Would you like to help?");
@@ -358,7 +358,7 @@ void ofApp::setupImages() {
     bush.load("background_bush.png");
     city.load("background_city.png");
     farm.load("background_farm.png");
-    
+    sky.load("Sky_1.jpg");
     
     // welcome page image
     helloImage.load("welcomeA.png");
@@ -554,7 +554,7 @@ void ofApp::drawIntro() {
             welcomeBlock.setText(welcomeStringA.at(i));
             welcomeBlock.wrapTextX(400);
             welcomeBlock.draw(4*ofGetWidth()/8, 100 + nextHeight);
-            nextHeight += welcomeBlock.getHeight() + 8;
+            nextHeight += welcomeBlock.getHeight() + 12;
         }
         if (openNIDevice.getNumTrackedHands() > 0) {
             if (timer == 0) timer = ofGetElapsedTimeMillis();
@@ -767,7 +767,7 @@ void ofApp::drawBenthic() {
 // _____      draw the top layer    __________ \\
 
 void ofApp::drawLand() {
-
+    sky.draw(0, 0);
     int loc = location % 3;
     switch (loc) {
         case 0:

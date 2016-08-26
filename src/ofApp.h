@@ -89,7 +89,7 @@ class ofApp : public ofBaseApp{
 //    ofImage landFG1, landFG2;
 //    ofImage sky1, sky2, sky3, sky4;
     
-    ofImage bush, city, farm;
+    ofImage bush, city, farm, sky;
     
     
     // kinect
@@ -133,6 +133,7 @@ class ofApp : public ofBaseApp{
     ofVec2f starRadii;
     ofTrueTypeFont dejaVuSans;
     ofTrueTypeFont dejaVuSansBold;
+    ofTrueTypeFont comic;
     string displayPh;
     void starSetup();
     void drawStars(float averagePollution);

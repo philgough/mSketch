@@ -37,7 +37,7 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
         }
     }
     
-    textBox.init("dejaVuSans.ttf", 12);
+    textBox.init("comic.ttf", 24);
     textWidth = tempTextWidth;
     textX = textxpos;
     textY = textypos;
