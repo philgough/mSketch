@@ -75,7 +75,7 @@
 //
 //void ofApp::ppSetup() {
 //
-//    PoissonPoints pp = PoissonPoints(5000, 12, 40, riv_w, riv_h);
+//    PoissonPoints pp = PoissonPoints(5000, 12, 40, _riv_w, _riv_h);
 //    
 //    widthScale = 9;
 //    
@@ -92,7 +92,7 @@
 //    vector<ofPoint> benthicPoints;
 //    
 //    for (int i = 0; i < numPoints; i++) {
-//        float mapx = ofMap(pointList.at(i).x, 0, riv_w, 0, riv_w * widthScale);
+//        float mapx = ofMap(pointList.at(i).x, 0, _riv_w, 0, _riv_w * widthScale);
 //        
 //        
 //        
@@ -110,7 +110,7 @@
 //    
 //    
 //    // set up the river voronoi mesh
-//    ofRectangle bounds = ofRectangle(0, 0, ofGetWidth(), riv_h);
+//    ofRectangle bounds = ofRectangle(0, 0, ofGetWidth(), _riv_h);
 //    
 //    voronoiRiver.setBounds(bounds);
 //    voronoiRiver.setPoints(riverPoints);
@@ -221,7 +221,7 @@
 //    cout << "starting organism setup" << endl;
 //    
 //    
-//    PoissonPoints tempPP = PoissonPoints(1000, 80, 40, riv_w, 180);
+//    PoissonPoints tempPP = PoissonPoints(1000, 80, 40, _riv_w, 180);
 //    cout << "number of organisms: " << tempPP.pp.size() << endl;
 //    
 ////    loadDataset();
@@ -1246,7 +1246,9 @@ void ofApp::setup()
     setupPP();
     setupImages();
     setupBox2d();
-    starSetup();
+    setupStars();
+    setupOpenni();
+    setupBug();
 }
 
 
@@ -1257,7 +1259,7 @@ void ofApp::setup()
 void ofApp::setupPP()
 {
     // Poisson distribution for the river
-    PoissonPoints pp = PoissonPoints(5000, 12, 40, riv_w, riv_h);
+    PoissonPoints pp = PoissonPoints(5000, 12, 40, _riv_w, _riv_h);
 
     // scale the distribution to make it appear more watery
     widthScale = 7;
@@ -1274,7 +1276,7 @@ void ofApp::setupPP()
     vector<ofPoint> riverPoints;
     // for each point we found
     for (int i = 0; i < numPoints; i++) {
-       float mapx = ofMap(pointList.at(i).x, 0, riv_w, 0, riv_w * widthScale);
+       float mapx = ofMap(pointList.at(i).x, 0, _riv_w, 0, _riv_w * widthScale);
        
        
        // add the ofxPoint from our first list to the second
@@ -1287,7 +1289,7 @@ void ofApp::setupPP()
 
 
     // set up the river voronoi mesh
-    ofRectangle bounds = ofRectangle(0, 0, ofGetWidth(), riv_h);
+    ofRectangle bounds = ofRectangle(0, 0, ofGetWidth(), _riv_h);
 
     voronoiRiver.setBounds(bounds);
     voronoiRiver.setPoints(riverPoints);
@@ -1308,7 +1310,7 @@ void ofApp::setupPP()
 
 
     // distribute some points for the benthic layer
-    pp = PoissonPoints(5000, 12, 40, riv_w, benth_h);
+    pp = PoissonPoints(5000, 12, 40, _riv_w, _benth_h);
 
     pointList.clear();
     numPoints = pp.pp.size();
@@ -1324,7 +1326,7 @@ void ofApp::setupPP()
     }
        
     // set up the benthic voronoi mesh
-    bounds = ofRectangle(0, 0, ofGetWidth(), benth_h);
+    bounds = ofRectangle(0, 0, ofGetWidth(), _benth_h);
 
     voronoiBenthic.setBounds(bounds);
     voronoiBenthic.setPoints(benthicPoints);
@@ -1371,7 +1373,7 @@ void ofApp::setupBox2d()
 }
 
 
-void ofApp::starSetup () {
+void ofApp::setupStars () {
     dejaVuSans.load("DejaVuSans.ttf", 12);
 
     //setup the star ratings
@@ -1402,10 +1404,48 @@ void ofApp::starSetup () {
 
 }
 
+void ofApp::setupOpenni() 
+{
+    openNIDevice.setup();
+    openNIDevice.addDepthGenerator();
+    openNIDevice.setRegister(true);
+    openNIDevice.setMirror(true);
 
 
 
+//
+//    openNIDevice.addHandsGenerator();
+//    openNIDevice.addAllHandFocusGestures();
+//    openNIDevice.setMaxNumHands(6);
+//
+//
+//    for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
+//       ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true, true);
+//       openNIDevice.addDepthThreshold(depthThreshold);
+//    }
+//
+//    openNIDevice.start();
 
+    openNIDevice.addUserGenerator();
+    openNIDevice.setMaxNumUsers(2);
+    
+    for (int i = 0; i < openNIDevice.getMaxNumUsers(); i++) 
+    {
+        ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true);
+        openNIDevice.addDepthThreshold(depthThreshold);
+    }
+    openNIDevice.start();
+}
+
+
+void ofApp::setupBug()
+{
+    numPlayers = 1;
+    for (int i  = 0; i < numPlayers; i++)
+    {
+        bugLocations.push_back(ofVec2f(ofGetWidth()/2, ofGetHeight() - (_benth_h/2)));
+    }
+}
 
 
 
@@ -1436,6 +1476,8 @@ void ofApp::update()
 void ofApp::updateMain()
 {
     updatePollution();
+    updateOpenNi();
+    updateBug();
 }
 void ofApp::updatePollution() 
 {
@@ -1444,7 +1486,7 @@ void ofApp::updatePollution()
     if((int)ofRandom(0, 40) == 0 && circles.size() < numCircles) {
        shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
        c.get()->setPhysics(0.3, 0.6, 0.012);
-       c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), ofGetHeight() - (benth_h + riv_h), 10);
+       c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), ofGetHeight() - (_benth_h + _riv_h), 10);
        c.get()->setVelocity(ofRandom(7)-3.5, ofRandom(3)); // shoot them down!
        circles.push_back(c);
     }
@@ -1456,7 +1498,7 @@ void ofApp::updatePollution()
        float y =circles[i].get() -> getPosition().y;
        if (y < ofGetHeight()) {
            tempCircles.push_back(circles.at(i));
-           if (y > ofGetHeight() - benth_h) {
+           if (y > ofGetHeight() - _benth_h) {
                for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
                    float x2 = benthicPoly[j].getCentroid2D().x;
                    float y2 = benthicPoly[j].getCentroid2D().y - (270); // this offset number is here because we adjusted the scales of the voronoi regions
@@ -1485,14 +1527,42 @@ void ofApp::updatePollution()
 
 
 
+void ofApp::updateOpenNi() 
+{
+    openNIDevice.update();
+}
 
+void ofApp::updateBug()
+{
+    float numUsers = openNIDevice.getNumTrackedUsers();
+    for (int i = 0; i < numUsers; i++)
+    {
 
+        // grab a point from each of their hands
+        ofPoint ptL = openNIDevice.getTrackedUser(i).getJoint(JOINT_LEFT_HAND).getWorldPosition();
+        ofPoint ptR = openNIDevice.getTrackedUser(i).getJoint(JOINT_RIGHT_HAND).getWorldPosition();
+        // convert it to the screen position
+        ofPoint drawMapL = ofPoint(ofMap(ptL.x, -820, 820, 0, ofGetWidth()),ofMap(ptL.y, -820, 820, ofGetHeight(), 0));
+        ofPoint drawMapR = ofPoint(ofMap(ptR.x, -820, 820, 0, ofGetWidth()),ofMap(ptR.y, -820, 820, ofGetHeight(), ofGetHeight() - _benth_h));
+        
+        // draw a circle there
+        // at the position half way between their hands
+        float x = ofLerp(drawMapL.x, drawMapR.x, .5);
+        float y = ofLerp(drawMapL.y, drawMapR.y, .5);
+        
 
-
-
-
-
-
+        bugTargetLocations.push_back(ofVec2f(x, y));
+    }
+    for (int i = 0; i < numPlayers; i++) 
+    {
+        if (numUsers > 0)
+        {
+            float x = ofLerp(bugLocations.at(i).x, bugTargetLocations.at(i).x, .05);
+            float y = ofLerp(bugLocations.at(i).y, bugTargetLocations.at(i).y, .05);
+            bugLocations.at(i).set(x, y);
+        }
+    }
+}
 
 
 
@@ -1511,10 +1581,11 @@ void ofApp::updatePollution()
 
 void ofApp::draw()
 {
-
     drawMain();
+    ofSetColor(255, 255, 0);
+    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size());
 
-
+    ofDrawBitmapString(msg, 10, 300);
 }
 
 void ofApp::drawMain()
@@ -1524,6 +1595,7 @@ void ofApp::drawMain()
     drawBenthic();
     drawBox2d();
     drawStars();
+    drawBug();
 }
 
 
@@ -1538,7 +1610,7 @@ void ofApp::drawRiver()
 {
    
    ofPushMatrix();
-   ofTranslate(0, (ofGetHeight() - benth_h) - riv_h);
+   ofTranslate(0, (ofGetHeight() - _benth_h) - _riv_h);
    ofRectangle bounds = voronoiRiver.getBounds();
    ofSetLineWidth(0);
    ofNoFill();
@@ -1570,7 +1642,7 @@ void ofApp::drawBenthic()
 {
    
    ofPushMatrix();
-   ofTranslate(0, ofGetHeight() - benth_h);
+   ofTranslate(0, ofGetHeight() - _benth_h);
    
    vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
    for(int i=0; i<cells.size(); i++) {
@@ -1617,7 +1689,8 @@ void ofApp::drawLand()
 
 
 
-void ofApp::drawBox2d() {
+void ofApp::drawBox2d() 
+{
 //    
     // some circles :)
     ofSetColor(151, 122, 93, 120);
@@ -1641,7 +1714,8 @@ void ofApp::drawBox2d() {
 
 
 
-void ofApp::drawStars() {
+void ofApp::drawStars() 
+{
     // draw star rating
     float averagePollution = -1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size());
 
@@ -1662,5 +1736,38 @@ void ofApp::drawStars() {
     string msg = "Water Quality Grade";
 
     dejaVuSans.drawString(msg, 30, 70);
-   
+}
+
+
+
+void ofApp::drawBug() 
+{
+    
+    ofSetColor(0, 0, 0);
+    ofFill();
+    ofDrawRectangle(1700, 20, 192, 144);
+    ofSetColor(255, 255, 255);
+    openNIDevice.drawDebug(1700, 20, 192, 144);
+    
+    
+    for (int i = 0; i < openNIDevice.getNumTrackedUsers(); i++)
+    {
+        ofSetColor(255, i * 255, 0);
+        ofDrawCircle(bugTargetLocations.at(i), 5);
+    }
+    
+
+    ofSetColor(0, 0, 255);
+
+    for (int i = 0; i < bugLocations.size(); i++) 
+    {
+            ofDrawCircle(bugLocations.at(i), 10); 
+    }
+
+    bugTargetLocations.clear();
+
+    ofNoFill();
+
+
+    
 }

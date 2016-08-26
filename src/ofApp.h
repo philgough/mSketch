@@ -71,9 +71,9 @@ class ofApp : public ofBaseApp{
     bool isBorder(ofPoint _pt);
     
     vector <float> pollutionOffset;
-    int riv_w = 1920;
-    int riv_h = 200;
-    int benth_h = 450;
+    int _riv_w = 1920;
+    int _riv_h = 200;
+    int _benth_h = 450;
     
     
     
@@ -93,10 +93,12 @@ class ofApp : public ofBaseApp{
     
     
     // kinect
-    void openniSetup();
+    void setupOpenni();
+    void updateOpenNi();
     void drawSkele();
     void drawHands();
     void userEvent(ofxOpenNIUserEvent & event);
+
     
     ofxOpenNI openNIDevice;
 
@@ -125,8 +127,13 @@ class ofApp : public ofBaseApp{
     ofxCsv csvData;
 
     float phValue;
-    
-    
+
+    void setupBug();
+    void updateBug();
+    void drawBug();
+    int numPlayers;
+    vector <ofVec2f> bugLocations;
+    vector <ofVec2f> bugTargetLocations;
     
     
     // interface elements
@@ -136,7 +143,7 @@ class ofApp : public ofBaseApp{
     ofTrueTypeFont dejaVuSansBold;
     ofTrueTypeFont comic;
     string displayPh;
-    void starSetup();
+    void setupStars();
     void drawStars();
     void setupImages();
 //    ofImage faceA, faceK, faceT;
