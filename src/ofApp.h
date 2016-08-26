@@ -35,7 +35,7 @@ class ofApp : public ofBaseApp{
 //		void gotMessage(ofMessage msg);
     
 
-
+        void variableSetup();
     
     
 //private:
@@ -133,6 +133,7 @@ class ofApp : public ofBaseApp{
     void drawBug();
     int numPlayers;
     vector <ofVec2f> bugLocations;
+    vector <float> bugHealth;
     vector <ofVec2f> bugTargetLocations;
     
     

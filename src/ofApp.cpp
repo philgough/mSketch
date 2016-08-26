@@ -1243,6 +1243,7 @@
 
 void ofApp::setup()
 {
+    variableSetup();
     setupPP();
     setupImages();
     setupBox2d();
@@ -1252,7 +1253,10 @@ void ofApp::setup()
 }
 
 
-
+void ofApp::variableSetup() 
+{
+    _masterState = WELCOME_SCREEN;
+}
 
 
 
@@ -1444,7 +1448,10 @@ void ofApp::setupBug()
     for (int i  = 0; i < numPlayers; i++)
     {
         bugLocations.push_back(ofVec2f(ofGetWidth()/2, ofGetHeight() - (_benth_h/2)));
+        bugHealth.push_back(1);
     }
+    
+    
 }
 
 
@@ -1542,8 +1549,8 @@ void ofApp::updateBug()
         ofPoint ptL = openNIDevice.getTrackedUser(i).getJoint(JOINT_LEFT_HAND).getWorldPosition();
         ofPoint ptR = openNIDevice.getTrackedUser(i).getJoint(JOINT_RIGHT_HAND).getWorldPosition();
         // convert it to the screen position
-        ofPoint drawMapL = ofPoint(ofMap(ptL.x, -820, 820, 0, ofGetWidth()),ofMap(ptL.y, -820, 820, ofGetHeight(), 0));
-        ofPoint drawMapR = ofPoint(ofMap(ptR.x, -820, 820, 0, ofGetWidth()),ofMap(ptR.y, -820, 820, ofGetHeight(), ofGetHeight() - _benth_h));
+        ofPoint drawMapL = ofPoint(ofMap(ptL.x, -820, 820, 0, ofGetWidth()),ofMap(ptL.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
+        ofPoint drawMapR = ofPoint(ofMap(ptR.x, -820, 820, 0, ofGetWidth()),ofMap(ptR.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
         
         // draw a circle there
         // at the position half way between their hands
@@ -1557,11 +1564,43 @@ void ofApp::updateBug()
     {
         if (numUsers > 0)
         {
-            float x = ofLerp(bugLocations.at(i).x, bugTargetLocations.at(i).x, .05);
-            float y = ofLerp(bugLocations.at(i).y, bugTargetLocations.at(i).y, .05);
-            bugLocations.at(i).set(x, y);
+            if (bugHealth.at(i) > 0)
+            {
+                float x = ofLerp(bugLocations.at(i).x, bugTargetLocations.at(i).x, .05);
+                float y = ofLerp(bugLocations.at(i).y, bugTargetLocations.at(i).y, .05);
+                bugLocations.at(i).set(x, y);
+            }
         }
     }
+    
+    
+    // update the organisms
+    for (int i = 0; i < numPlayers; i++) {
+        // figure out which location is closest
+        float nearestDistance = 9000000001;
+        int closestCellIndex = 0;
+
+        for (int j = 0; j < benthicPoly.size(); j++) {
+
+            ofPoint centroid = benthicPoly.at(j).getCentroid2D();
+            float distance = ofDist(centroid.x, centroid.y, bugLocations.at(i).x, bugLocations.at(i).y);
+            if(distance < nearestDistance) {
+                nearestDistance = distance;
+                closestCellIndex = j;
+            }
+        }
+
+        // the bug gains a little health back
+        if (bugHealth.at(i) > 0 && bugHealth.at(i) < 1 && pollutionOffset[closestCellIndex] >= -3 ) {bugHealth.at(i) *= 1.01;}
+    
+        // The bug looses health if it is over a polluted cell (add because the pollution value is negative)
+        bugHealth.at(i) +=  pollutionOffset[closestCellIndex]/(175 * 200);
+        cout << bugHealth.at(i) << "over" << pollutionOffset[closestCellIndex] << endl;
+        if (bugHealth.at(i) <= 0) {cout << "dead" << endl;}
+    }
+    
+    
+    
 }
 
 
@@ -1581,11 +1620,11 @@ void ofApp::updateBug()
 
 void ofApp::draw()
 {
-    drawMain();
+    drawSwitch(_masterState);
     ofSetColor(255, 255, 0);
     string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size());
 
-    ofDrawBitmapString(msg, 10, 300);
+    ofDrawBitmapString(msg, 10, 14);
 }
 
 void ofApp::drawMain()
@@ -1700,15 +1739,6 @@ void ofApp::drawBox2d()
        circles[i].get()->draw();
     }
 
-    ofSetHexColor(0x444342);
-    ofNoFill();
-    for (int i=0; i<lines.size(); i++) {
-       lines[i].draw();
-    }
-    for (int i=0; i<edges.size(); i++) {
-       edges[i].get()->draw();
-    }
-
 }
 
 
@@ -1752,6 +1782,13 @@ void ofApp::drawBug()
     
     for (int i = 0; i < openNIDevice.getNumTrackedUsers(); i++)
     {
+        if (bugHealth.at(i) > 0)
+        {
+            ofNoFill();
+            ofSetColor(60, 60, 60);
+            ofDrawLine(bugTargetLocations.at(i), bugLocations.at(i));
+        }
+        ofFill();
         ofSetColor(255, i * 255, 0);
         ofDrawCircle(bugTargetLocations.at(i), 5);
     }
@@ -1761,7 +1798,12 @@ void ofApp::drawBug()
 
     for (int i = 0; i < bugLocations.size(); i++) 
     {
-            ofDrawCircle(bugLocations.at(i), 10); 
+        if (bugHealth.at(i) <= 0)
+        {
+            ofSetColor(150, 150, 150);
+        }
+        ofDrawCircle(bugLocations.at(i), 10);
+
     }
 
     bugTargetLocations.clear();
@@ -1770,4 +1812,232 @@ void ofApp::drawBug()
 
 
     
+}
+
+
+
+
+
+void ofApp::drawSwitch(int s) {
+   switch (s) {
+       case WELCOME_SCREEN:
+           // introduction
+           drawIntro();
+           break;
+           
+           
+       case INTERACTIVE_PLAY_STATE:
+           // draw main display
+//            updateMain();
+           drawMain();
+           break;
+           
+       case FADE_OUT :
+           fadeOut();
+           break;
+   
+       case FADE_IN :
+           fadeIn();
+           break;
+       
+       case SCORE_SCREEN:
+           drawScoreScreen();
+           break;
+           
+       default:
+           break;
+
+   }
+}
+
+
+void ofApp::nextState() {
+   cout << "selecting the next state" << endl;
+   int t = ofGetElapsedTimeMillis();
+   _stateTimer = t;
+   switch(_masterState)
+   {
+       case WELCOME_SCREEN :
+           _lastState = WELCOME_SCREEN;
+           _nextState = INTERACTIVE_PLAY_STATE;
+           _masterState = FADE_OUT;
+           dayTimer = 0;
+           // for(int i = 0; i < characters.size(); i++) {
+           //     characters[i].timer = t;
+           // }
+           break;
+           
+       case INTERACTIVE_PLAY_STATE:
+           _nextState = SCORE_SCREEN;
+           _lastState = INTERACTIVE_PLAY_STATE;
+           _masterState = FADE_OUT;
+           
+           
+           break;
+       case FADE_OUT :
+           _masterState = FADE_IN;
+           break;
+           
+       case FADE_IN :
+           _masterState = _nextState;
+           break;
+           default:
+           
+           break;
+           
+       case SCORE_SCREEN :
+           // go to the next location;
+           location++;
+           
+           // reset the pollution
+           circles.clear();
+           for (int i = 0; i < pollutionOffset.size(); i++) {
+               pollutionOffset.at(i) = 0.0;
+           }
+
+           _nextState = WELCOME_SCREEN;
+           _lastState = SCORE_SCREEN;
+           _masterState = FADE_OUT;
+           break;
+           
+       case THANK_YOU_SCREEN :
+           // make sure we go back to the first location
+           location = 0;
+           
+           circles.clear();
+           for (int i = 0; i < pollutionOffset.size(); i++) {
+               pollutionOffset.at(i) = 0.0;
+           }
+           
+           _nextState = WELCOME_SCREEN;
+           _lastState = THANK_YOU_SCREEN;
+           _masterState = FADE_OUT;
+           
+           
+   } // end switch
+} // end nextState
+
+
+
+void ofApp::fadeOut()
+{
+//    cout << "fade out" << endl;
+   
+   drawSwitch(_lastState);
+//    cout << "fade out alpha: " << _fadeAlpha << endl;
+
+   if (_fadeAlpha < 254)
+   {
+       _fadeAlpha += (255 - _fadeAlpha) * 0.1;
+   } else
+   {
+       nextState();
+   } // end alpha check
+
+   // fade interactive area
+   ofSetColor(255, 255, 255, _fadeAlpha);
+   ofFill();
+   ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+} // end fadeOut
+
+
+
+void ofApp::fadeIn()
+{
+//    cout << "fade in" << ofGetFrameNum() << endl;
+   
+   drawSwitch(_nextState);
+   
+   if (_fadeAlpha > 1)
+   {
+//        cout << "fade in alpha: " << _fadeAlpha << endl;
+       _fadeAlpha += (0 - _fadeAlpha) * 0.1;
+       
+   } else
+   {
+       
+       timer = ofGetElapsedTimeMillis();
+       nextState();
+   } // end alpha check
+
+   ofSetColor(255, 255, 255, _fadeAlpha);
+   ofFill();
+   ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+   
+} // end fadeIn
+
+void ofApp::drawIntro()
+{
+    // update the number of players
+    ofSetColor(0, 0, 0);
+    ofFill();
+    ofDrawRectangle(1700, 20, 192, 144);
+    ofSetColor(255, 255, 255);
+    openNIDevice.drawDebug(1700, 20, 192, 144);
+    
+    
+    int foundPlayers = openNIDevice.getNumTrackedUsers();
+    for (int i = 0; i < foundPlayers; i++)
+    {
+        ofFill();
+        ofSetColor(255, i * 255, 0);
+        ofDrawCircle(bugTargetLocations.at(i), 5);
+    }
+    bugTargetLocations.clear();
+    ofNoFill();
+
+
+    /// add the selector
+
+    for (int i = 0; i < 3; i ++) 
+    {
+        ofSetColor(200, 255 * i/3, 150);
+        ofNoFill();
+        ofDrawRectangle(50, 50 + i * 200, 700, 150 + i * 200);
+    }
+
+
+
+}
+
+// draw the score screen
+void ofApp::drawScoreScreen()
+{
+   ofBackground(255, 255, 255);
+   // cout << "this is the score screen" << endl;
+   
+   if (_stateTimer + _scoreScreenDuration < ofGetElapsedTimeMillis())
+   {
+       nextState();
+   }
+   
+   if (_masterState == SCORE_SCREEN)
+   {
+       ofSetColor(200, 200, 10);
+       ofMesh mesh;
+       mesh.addVertex(ofPoint(0, 3));
+       mesh.addVertex(ofPoint(0, 0));
+       float x =  1.0 * (ofGetElapsedTimeMillis() - _stateTimer)/(1.0 * _scoreScreenDuration);
+//        cout << x << endl;
+       mesh.addVertex(ofPoint(ofGetWidth() * x, 0));
+       mesh.addVertex(ofPoint(ofGetWidth() * x, 3));
+       mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+       mesh.draw();
+       mesh.clear();
+   }
+   else
+   {
+       ofSetColor(200, 200, 10);
+       ofMesh mesh;
+       mesh.addVertex(ofPoint(0, 3));
+       mesh.addVertex(ofPoint(0, 0));
+       //        float x = ofGetWidth() * (ofGetElapsedTimeMillis()/(_stateTimer + _scoreScreenDuration));
+       //        cout << x << endl;
+       mesh.addVertex(ofPoint(ofGetWidth(), 0));
+       mesh.addVertex(ofPoint(ofGetWidth(), 3));
+       mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+       mesh.draw();
+       mesh.clear();
+       
+   }
 }
