@@ -1468,6 +1468,22 @@ void ofApp::setupBug()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //// _____      update functions    __________ \\
 
 
@@ -1476,7 +1492,22 @@ void ofApp::setupBug()
 
 void ofApp::update()
 {
-    updateMain();
+    switch (_masterState) {
+        case WELCOME_SCREEN:
+            openNIDevice.update();
+            updateBugTargetLocations();
+            break;
+        case INTERACTIVE_PLAY_STATE:
+            // draw main display
+            updateMain();
+            break;
+        case SCORE_SCREEN:
+            // draw the score screen
+            openNIDevice.update();
+            break;
+        default:
+            break;
+}
 }
 
 
@@ -1541,25 +1572,9 @@ void ofApp::updateOpenNi()
 
 void ofApp::updateBug()
 {
+    
     float numUsers = openNIDevice.getNumTrackedUsers();
-    for (int i = 0; i < numUsers; i++)
-    {
-
-        // grab a point from each of their hands
-        ofPoint ptL = openNIDevice.getTrackedUser(i).getJoint(JOINT_LEFT_HAND).getWorldPosition();
-        ofPoint ptR = openNIDevice.getTrackedUser(i).getJoint(JOINT_RIGHT_HAND).getWorldPosition();
-        // convert it to the screen position
-        ofPoint drawMapL = ofPoint(ofMap(ptL.x, -820, 820, 0, ofGetWidth()),ofMap(ptL.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
-        ofPoint drawMapR = ofPoint(ofMap(ptR.x, -820, 820, 0, ofGetWidth()),ofMap(ptR.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
-        
-        // draw a circle there
-        // at the position half way between their hands
-        float x = ofLerp(drawMapL.x, drawMapR.x, .5);
-        float y = ofLerp(drawMapL.y, drawMapR.y, .5);
-        
-
-        bugTargetLocations.push_back(ofVec2f(x, y));
-    }
+    
     for (int i = 0; i < numPlayers; i++) 
     {
         if (numUsers > 0)
@@ -1572,7 +1587,6 @@ void ofApp::updateBug()
             }
         }
     }
-    
     
     // update the organisms
     for (int i = 0; i < numPlayers; i++) {
@@ -1604,7 +1618,28 @@ void ofApp::updateBug()
 }
 
 
+void ofApp::updateBugTargetLocations()
+{
+    float numUsers = openNIDevice.getNumTrackedUsers();
+    for (int i = 0; i < numUsers; i++)
+    {
 
+        // grab a point from each of their hands
+        ofPoint ptL = openNIDevice.getTrackedUser(i).getJoint(JOINT_LEFT_HAND).getWorldPosition();
+        ofPoint ptR = openNIDevice.getTrackedUser(i).getJoint(JOINT_RIGHT_HAND).getWorldPosition();
+        // convert it to the screen position
+        ofPoint drawMapL = ofPoint(ofMap(ptL.x, -820, 820, 0, ofGetWidth()),ofMap(ptL.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
+        ofPoint drawMapR = ofPoint(ofMap(ptR.x, -820, 820, 0, ofGetWidth()),ofMap(ptR.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
+        
+        // draw a circle there
+        // at the position half way between their hands
+        float x = ofLerp(drawMapL.x, drawMapR.x, .5);
+        float y = ofLerp(drawMapL.y, drawMapR.y, .5);
+        
+
+        bugTargetLocations.push_back(ofVec2f(x, y));
+    }
+}
 
 
 
@@ -1968,6 +2003,7 @@ void ofApp::fadeIn()
 
 void ofApp::drawIntro()
 {
+    ofBackground(255);
     // update the number of players
     ofSetColor(0, 0, 0);
     ofFill();
@@ -1977,26 +2013,43 @@ void ofApp::drawIntro()
     
     
     int foundPlayers = openNIDevice.getNumTrackedUsers();
-    for (int i = 0; i < foundPlayers; i++)
+    for (int i = 0; i < bugTargetLocations.size(); i++)
     {
         ofFill();
         ofSetColor(255, i * 255, 0);
         ofDrawCircle(bugTargetLocations.at(i), 5);
     }
-    bugTargetLocations.clear();
     ofNoFill();
 
 
     /// add the selector
-
+    float selectorHeight = 100;
+    float selectorWidth = 700;
+    float selectorOffset = 550;
     for (int i = 0; i < 3; i ++) 
     {
         ofSetColor(200, 255 * i/3, 150);
         ofNoFill();
-        ofDrawRectangle(50, 50 + i * 200, 700, 150 + i * 200);
+        
+        ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth, selectorHeight);
     }
-
-
+    
+    if (foundPlayers > 0)
+    {
+        ofVec2f bl = bugTargetLocations.at(0);
+        if (selectorOffset < bl.x && bl.x < selectorOffset + selectorWidth)
+        {
+            cout << "win" << endl;
+            for (int i = 0; i < 3; i++)
+            {
+                if (selectorOffset + i * selectorHeight < bl.y && bl.y < selectorOffset + i * selectorHeight + selectorHeight)
+                {
+                    cout << i << endl;
+                }
+            }
+        }
+    }
+    bugTargetLocations.clear();
 
 }
 

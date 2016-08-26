@@ -130,6 +130,7 @@ class ofApp : public ofBaseApp{
 
     void setupBug();
     void updateBug();
+    void updateBugTargetLocations();
     void drawBug();
     int numPlayers;
     vector <ofVec2f> bugLocations;
