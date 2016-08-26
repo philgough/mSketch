@@ -26,7 +26,7 @@ class ofApp : public ofBaseApp{
 //		void keyReleased(int key);
 //		void mouseMoved(int x, int y );
 //		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
+		// void mousePressed(int x, int y, int button);
 //		void mouseReleased(int x, int y, int button);
 //		void mouseEntered(int x, int y);
 //		void mouseExited(int x, int y);
@@ -72,7 +72,7 @@ class ofApp : public ofBaseApp{
     
     vector <float> pollutionOffset;
     int riv_w = 1920;
-    int riv_h = 360;
+    int riv_h = 160;
     
     
     
