@@ -111,7 +111,7 @@ class ofApp : public ofBaseApp{
 
     void drawBox2d();
     void setupBox2d();
-    
+    void updatePollution();
 //    bool shouldRemove(ofxBox2dCircle c);
     
     
@@ -137,7 +137,7 @@ class ofApp : public ofBaseApp{
     ofTrueTypeFont comic;
     string displayPh;
     void starSetup();
-    void drawStars(float averagePollution);
+    void drawStars();
     void setupImages();
 //    ofImage faceA, faceK, faceT;
     ofImage helloImage;

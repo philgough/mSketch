@@ -1228,11 +1228,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+//// _____      setup functions    __________ \\
+
+
+
 void ofApp::setup()
 {
     setupPP();
     setupImages();
     setupBox2d();
+    starSetup();
 }
 
 
@@ -1357,6 +1371,61 @@ void ofApp::setupBox2d()
 }
 
 
+void ofApp::starSetup () {
+    dejaVuSans.load("DejaVuSans.ttf", 12);
+
+    //setup the star ratings
+    vector <ofVec3f> starPoints;
+
+    starRadii.set(7.5, 10);
+
+    // make a 5-sided star, i < 2*5
+
+    for(int i = 0; i < 10; i++) {
+       float offset = starRadii.x + (starRadii.y * (i % 2));
+       
+       //        println(offset);
+       float posX = offset * sin(ofDegToRad(i*(360/(5*2))));
+       float posY = offset * cos(ofDegToRad(i*(360/(5*2))));
+       
+       starPoints.push_back(ofPoint(posX, posY, 0));
+    }
+    //    ofMesh tempStar;
+    //    tempStar.addVertices(starPoints);
+    for (int i = 0; i < 5; i++) {
+       ofMesh tempStar;
+       tempStar.addVertices(starPoints);
+       star.push_back(tempStar);
+       tempStar.clear();
+    }
+    starPoints.clear();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// _____      update functions    __________ \\
+
+
+
+
 
 void ofApp::update()
 {
@@ -1366,7 +1435,11 @@ void ofApp::update()
 
 void ofApp::updateMain()
 {
-    int numCircles = 50;
+    updatePollution();
+}
+void ofApp::updatePollution() 
+{
+   int numCircles = 50;
     // add some new circles
     if((int)ofRandom(0, 40) == 0 && circles.size() < numCircles) {
        shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
@@ -1386,11 +1459,11 @@ void ofApp::updateMain()
            if (y > ofGetHeight() - benth_h) {
                for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
                    float x2 = benthicPoly[j].getCentroid2D().x;
-                   float y2 = benthicPoly[j].getCentroid2D().y;
+                   float y2 = benthicPoly[j].getCentroid2D().y - (270); // this offset number is here because we adjusted the scales of the voronoi regions
 
                    float dist = ofDist(x, y, x2, y2);
-                   if (dist < 40 && pollutionOffset.at(j) > -175) {
-                       pollutionOffset.at(j) -= 1;
+                   if (dist < 60 && pollutionOffset.at(j) > -175) {
+                       pollutionOffset.at(j) -= 15 - dist / 6;
                    }
                }
            }
@@ -1401,9 +1474,38 @@ void ofApp::updateMain()
 
     // update the physics engine
     box2d.update();
-
-
+    if (ofGetFrameNum() % 5 == 0)
+    {
+        for (int i = 0; i < pollutionOffset.size(); i++) 
+        {
+            pollutionOffset[i] *= 0.99;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// _____      draw functions    __________ \\
 
 
 
@@ -1421,7 +1523,7 @@ void ofApp::drawMain()
     drawRiver();
     drawBenthic();
     drawBox2d();
-    
+    drawStars();
 }
 
 
@@ -1534,4 +1636,31 @@ void ofApp::drawBox2d() {
        edges[i].get()->draw();
     }
 
+}
+
+
+
+
+void ofApp::drawStars() {
+    // draw star rating
+    float averagePollution = -1.0 * accumulate(pollutionOffset.begin(), pollutionOffset.end(), 0.0) / float(pollutionOffset.size());
+
+    ofSetColor(200, 200, 10);
+
+    for (int i = 0; i < 5; i++) {
+       if (averagePollution/175 > (i/4.7)+.1) {
+           star.at(i).setMode(OF_PRIMITIVE_LINE_LOOP);
+       }
+       else {
+           star.at(i).setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+       }
+       ofPushMatrix();
+       ofTranslate(40 + ((starRadii.y * 3.5) * (4-i)), 40);
+       star.at(i).draw();
+       ofPopMatrix();
+    }
+    string msg = "Water Quality Grade";
+
+    dejaVuSans.drawString(msg, 30, 70);
+   
 }
