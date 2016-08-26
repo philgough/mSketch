@@ -1230,98 +1230,99 @@
 
 void ofApp::setup()
 {
-    ppSetup();
-
+    setupPP();
     setupImages();
+    setupBox2d();
 }
 
 
 
 
 
-void ofApp::ppSetup()
-{
 
-   PoissonPoints pp = PoissonPoints(5000, 12, 40, riv_w, riv_h);
-   
-   widthScale = 7;
-   
-   numPoints = pp.pp.size();
-   for (int i = 0; i < numPoints; i++) {
+void ofApp::setupPP()
+{
+    // Poisson distribution for the river
+    PoissonPoints pp = PoissonPoints(5000, 12, 40, riv_w, riv_h);
+
+    // scale the distribution to make it appear more watery
+    widthScale = 7;
+
+    // push the points from the class to a list...
+    numPoints = pp.pp.size();
+    for (int i = 0; i < numPoints; i++) {
        pointList.push_back(pp.pp.at(i).location);
-   }
-   
-   cout << "setup river background" << endl;
-   
-   
-   
-   vector<ofPoint> riverPoints;
-   vector<ofPoint> benthicPoints;
-   
-   for (int i = 0; i < numPoints; i++) {
+    }
+
+    cout << "setup river background" << endl;
+
+    // list of points to hold the points of the river
+    vector<ofPoint> riverPoints;
+    // for each point we found
+    for (int i = 0; i < numPoints; i++) {
        float mapx = ofMap(pointList.at(i).x, 0, riv_w, 0, riv_w * widthScale);
        
        
-       
+       // add the ofxPoint from our first list to the second
        ofPoint pv = ofPoint(mapx, pointList.at(i).y);
        pv.set(mapx, pointList.at(i).y);
        if (mapx < ofGetWidth()) {
            riverPoints.push_back(pv);
-       }
-       
-       ofPoint bv = ofPoint(pointList.at(i).x, pointList.at(i).y);
-       benthicPoints.push_back(bv);
-       pollutionOffset.push_back(0.0);
-       
-   }
-   
-   
-   // set up the river voronoi mesh
-   ofRectangle bounds = ofRectangle(0, 0, ofGetWidth(), riv_h);
-   
-   voronoiRiver.setBounds(bounds);
-   voronoiRiver.setPoints(riverPoints);
-   
-   voronoiRiver.generate();
-   
-   riverPoints.clear();
-   
-   
-   
-   for (unsigned int i = 0; i < voronoiRiver.getCells().size(); i++ ) {
+       }       
+    }
+
+
+    // set up the river voronoi mesh
+    ofRectangle bounds = ofRectangle(0, 0, ofGetWidth(), riv_h);
+
+    voronoiRiver.setBounds(bounds);
+    voronoiRiver.setPoints(riverPoints);
+
+    voronoiRiver.generate();
+
+    riverPoints.clear();
+
+    // create the voronoi cells around each of the poisson points
+    for (unsigned int i = 0; i < voronoiRiver.getCells().size(); i++ ) {
        auto cell = voronoiRiver.getCells().at(i);
        riverPoints.push_back(cell.pt);
-   }
-   
-   cout << "river pionts:" << riverPoints.size() << endl;
-   
-   
-   // setup the riverbed (benthic) mesh
-   
-   voronoiBenthic.setBounds(bounds);
-   voronoiBenthic.setPoints(benthicPoints);
-   
-   voronoiBenthic.generate();
-   
-   benthicPoints.clear();
-   
-   
-   cout << "finish pp setup" << endl;
-   
-   
-   cout << "set up land layer" << endl;
-   
-   topBgA.load("LandBG_1.png");
-   topBgB.load("LandBg_2.png");
-   
+    }
 
-   
-   
-   // make a polyline for each cell
-   ofPolyline tempPoints;
-   
-   vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
-   for(int i=0; i<pointList.size(); i++) {
+    cout << "river pionts:" << riverPoints.size() << endl;
+
+    cout << "setup benthic background" << endl;
+
+
+    // distribute some points for the benthic layer
+    pp = PoissonPoints(5000, 12, 40, riv_w, benth_h);
+
+    pointList.clear();
+    numPoints = pp.pp.size();
+    cout << "benthic points created: " << numPoints << endl;
+    for (int i = 0; i < numPoints; i++) {
+       pointList.push_back(pp.pp.at(i).location);
+    }
+    vector<ofPoint> benthicPoints;
+    for (int i = 0; i < numPoints; i++) {
+       pollutionOffset.push_back(0);
+       ofPoint pv = ofPoint(pointList.at(i).x, pointList.at(i).y);
+       benthicPoints.push_back(pv);
+    }
+       
+    // set up the benthic voronoi mesh
+    bounds = ofRectangle(0, 0, ofGetWidth(), benth_h);
+
+    voronoiBenthic.setBounds(bounds);
+    voronoiBenthic.setPoints(benthicPoints);
+
+    voronoiBenthic.generate();
+
+    benthicPoints.clear();
+    // make a polyline for each cell
+    ofPolyline tempPoints;
+
+    vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
+    for(int i=0; i<pointList.size(); i++) {
        for (int j = 0; j < cells[i].pts.size(); j++) {
            // I have no idea why you need to take 860 off x here??
            tempPoints.addVertex(ofPoint(cells[i].pts[j].x - 860, cells[i].pts[j].y) + 860);
@@ -1329,19 +1330,18 @@ void ofApp::ppSetup()
        tempPoints.close();
        benthicPoly.push_back(tempPoints);
        tempPoints.clear();
-   }
-   
-   
+    }   
 }   
 
-void ofApp::setupImages() {
+void ofApp::setupImages() 
+{
    // land layer
-   
+    location = 0;
    
    bush.load("background_bush.png");
    city.load("background_city.png");
    farm.load("background_farm.png");
-   sky.load("Sky_1.jpg");
+   sky.load("Sky_1.png");
    
    // welcome page image
    helloImage.load("welcomeA.png");
@@ -1349,19 +1349,78 @@ void ofApp::setupImages() {
    
 }
 
-
+void ofApp::setupBox2d() 
+{
+// pollution particles
+    box2d.init();
+    box2d.setGravity(0, 3);
+}
 
 
 
 void ofApp::update()
 {
+    updateMain();
 }
+
+
+void ofApp::updateMain()
+{
+    int numCircles = 50;
+    // add some new circles
+    if((int)ofRandom(0, 40) == 0 && circles.size() < numCircles) {
+       shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
+       c.get()->setPhysics(0.3, 0.6, 0.012);
+       c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), ofGetHeight() - (benth_h + riv_h), 10);
+       c.get()->setVelocity(ofRandom(7)-3.5, ofRandom(3)); // shoot them down!
+       circles.push_back(c);
+    }
+
+    vector   <shared_ptr<ofxBox2dCircle> > tempCircles; // default box2d circles
+
+    for (int i  = 0; i < circles.size(); i++) {
+       float x =circles[i].get() -> getPosition().x;
+       float y =circles[i].get() -> getPosition().y;
+       if (y < ofGetHeight()) {
+           tempCircles.push_back(circles.at(i));
+           if (y > ofGetHeight() - benth_h) {
+               for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
+                   float x2 = benthicPoly[j].getCentroid2D().x;
+                   float y2 = benthicPoly[j].getCentroid2D().y;
+
+                   float dist = ofDist(x, y, x2, y2);
+                   if (dist < 40 && pollutionOffset.at(j) > -175) {
+                       pollutionOffset.at(j) -= 1;
+                   }
+               }
+           }
+       }
+    }
+    circles = tempCircles;
+    tempCircles.clear();
+
+    // update the physics engine
+    box2d.update();
+
+
+}
+
 
 
 void ofApp::draw()
 {
+
+    drawMain();
+
+
+}
+
+void ofApp::drawMain()
+{
+    drawLand();
     drawRiver();
     drawBenthic();
+    drawBox2d();
     
 }
 
@@ -1373,10 +1432,11 @@ void ofApp::draw()
 // _____      draw the background    __________ \\
 
 
-void ofApp::drawRiver() {
+void ofApp::drawRiver() 
+{
    
    ofPushMatrix();
-   ofTranslate(0, 500);
+   ofTranslate(0, (ofGetHeight() - benth_h) - riv_h);
    ofRectangle bounds = voronoiRiver.getBounds();
    ofSetLineWidth(0);
    ofNoFill();
@@ -1404,11 +1464,11 @@ void ofApp::drawRiver() {
 
 // _____      draw the riverbed    __________ \\
 
-void ofApp::drawBenthic() {
+void ofApp::drawBenthic() 
+{
    
    ofPushMatrix();
-   ofTranslate(0, 860);
-
+   ofTranslate(0, ofGetHeight() - benth_h);
    
    vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
    for(int i=0; i<cells.size(); i++) {
@@ -1431,7 +1491,9 @@ void ofApp::drawBenthic() {
 
 // _____      draw the top layer    __________ \\
 
-void ofApp::drawLand() {
+void ofApp::drawLand() 
+{
+    ofSetColor(255);
    sky.draw(0, 0);
    int loc = location % 3;
    switch (loc) {
@@ -1449,4 +1511,27 @@ void ofApp::drawLand() {
            break;
    }
    
+}
+
+
+
+void ofApp::drawBox2d() {
+//    
+    // some circles :)
+    ofSetColor(151, 122, 93, 120);
+    for (int i=0; i<circles.size(); i++) {
+       ofFill();
+    //        ofSetHexColor(0xc0dd3b);
+       circles[i].get()->draw();
+    }
+
+    ofSetHexColor(0x444342);
+    ofNoFill();
+    for (int i=0; i<lines.size(); i++) {
+       lines[i].draw();
+    }
+    for (int i=0; i<edges.size(); i++) {
+       edges[i].get()->draw();
+    }
+
 }

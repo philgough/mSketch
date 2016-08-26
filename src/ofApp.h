@@ -52,7 +52,7 @@ class ofApp : public ofBaseApp{
     
     
     
-    void ppSetup();
+    void setupPP();
     void setupRiverbed();
     void updateRiver();
     void drawRiver();
@@ -72,8 +72,8 @@ class ofApp : public ofBaseApp{
     
     vector <float> pollutionOffset;
     int riv_w = 1920;
-    int riv_h = 160;
-    
+    int riv_h = 200;
+    int benth_h = 450;
     
     
     
@@ -110,6 +110,7 @@ class ofApp : public ofBaseApp{
     vector <shared_ptr<ofxBox2dEdge> >      edges;
 
     void drawBox2d();
+    void setupBox2d();
     
 //    bool shouldRemove(ofxBox2dCircle c);
     
