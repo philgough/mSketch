@@ -1250,6 +1250,7 @@ void ofApp::setup()
     setupStars();
     setupOpenni();
     setupBug();
+    setupWelcomeScreen();
 }
 
 
@@ -1364,7 +1365,7 @@ void ofApp::setupImages()
    sky.load("Sky_1.png");
    
    // welcome page images
-   helloImage.load("welcomeA.png");
+   helloImage.load("welcomeA_small.png");
    introBush.load("introBush.png");
    selectionImages.push_back(introBush);
    introFarm.load("introFarm.png");
@@ -1453,7 +1454,15 @@ void ofApp::setupBug()
 
 
 
+void ofApp::setupWelcomeScreen() 
+{
 
+    welcomeBlock.init("comic.ttf", 18);
+    welcomeStringA.push_back("Hi, my name is Dr. Anthony.");
+    welcomeStringA.push_back("I am a scientist, and my job is to see the effect of pollution and natural changes on the tiny organisms that live in the top layer of soil in an esturary.");
+    welcomeStringA.push_back("Let's see how organisms survive in different conditions.");
+    welcomeStringA.push_back("Select a locaiton to see which organisms thrive there.");
+}
 
 
 
@@ -2144,14 +2153,14 @@ void ofApp::drawIntro()
     {
         ofSetColor(255);
         selectionImages.at(i).draw(50, selectorOffset + i * selectorHeight);
-        ofSetColor(200, 255 * i/3, 150, 20);
+        ofSetColor(255, 40);
         ofFill();
         if (i == selectedLevel) {
             ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth * selectionPercent, selectorHeight);
         }
 
         ofNoFill();
-        
+        ofSetColor(200, 255 * i/3, 150);
         ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth, selectorHeight);
     }
     for (int i = 0; i < bugTargetLocations.size(); i++)
@@ -2163,6 +2172,20 @@ void ofApp::drawIntro()
     ofNoFill();
     pSelectedLevel = selectedLevel;
     bugTargetLocations.clear();
+
+
+    ofFill();
+    ofSetColor(255);
+    float nextHeight = 0;
+    helloImage.draw(640, 80);
+    for (int i = 0; i < welcomeStringA.size(); i++) {
+        welcomeBlock.setText(welcomeStringA.at(i));
+        welcomeBlock.wrapTextX(400);
+        ofSetColor(0, 0, 0);
+        welcomeBlock.draw(4*ofGetWidth()/8, 100 + nextHeight);
+        nextHeight += welcomeBlock.getHeight() + 12;
+    }
+
 
 }
 

@@ -249,5 +249,7 @@ class ofApp : public ofBaseApp{
     void updateEndgame();
     int gameOutcome = 0;
 
+
+    void setupWelcomeScreen();
     
 };
