@@ -165,7 +165,7 @@ class ofApp : public ofBaseApp{
     void drawStars();
     void setupImages();
 //    ofImage faceA, faceK, faceT;
-    ofImage helloImage;
+    ofImage helloImage, goodbyeImage;
 //    bool aHasSomethingToSay, kHasSomethingToSay, tHasSomethingToSay;
 //    Character Anthony;
 //    Character Kate;
@@ -239,7 +239,7 @@ class ofApp : public ofBaseApp{
     void drawMainTimer();
     void scoreTimer();
     int _drawMainDuration = 40000;
-    int _scoreScreenDuration = 3000;
+    int _scoreScreenDuration = 20000;
     
     
     // variable for the pollution and pH values as a 2d vector
@@ -248,7 +248,7 @@ class ofApp : public ofBaseApp{
 
     void updateEndgame();
     int gameOutcome = 0;
-
+    ofxTextBlock goodbyeBlock;
 
     void setupWelcomeScreen();
     
