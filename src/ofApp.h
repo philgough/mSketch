@@ -131,13 +131,19 @@ class ofApp : public ofBaseApp{
     
     
     // organisms
-    // void organismSetup();
-    // vector <Organism> organisms;
-    // map<string, string> loadDataset(int type, int index);
-    // vector <string> CSVHeaders;
-    // ofxCsv csvData;
+    void setupOrganisms();
+    vector <Organism> organisms;
+    map<string, string> loadDataset(int type, int index);
+    vector <string> CSVHeaders;
+    ofxCsv csvData;
+    float phMin = 6.8;
+    float phMax = 8.5;
+    float phosMin = 0.0;
+    float phosMax = 0.3;
+    float phValue;
 
-    // float phValue;
+    void drawOrganism();
+
 
     void setupBug();
     void updateBug();

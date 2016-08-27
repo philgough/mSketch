@@ -60,13 +60,13 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
     }
     
     name = firstname + " " + lastname;
-    
+//     cout << name << endl;
     zVal = stof(data["env.cp"]);
     if (type < 2) {
         zVal = ofMap(zVal, 6.8, 8.4, 0, 1);
     }
     else {
-        zVal = ofMap(zVal, 0.0, 0.2, 0.0, 1.0);
+        zVal = ofMap(zVal, 0.0, 0.3, 0.0, 1.0);
     }
     brightness = 0;
 
