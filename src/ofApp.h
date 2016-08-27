@@ -78,8 +78,8 @@ class ofApp : public ofBaseApp{
     
     
     // land layer
-    ofImage topBgA;
-    ofImage topBgB;
+    // ofImage topBgA;
+    // ofImage topBgB;
     
     void drawLand();
     
@@ -90,8 +90,8 @@ class ofApp : public ofBaseApp{
 //    ofImage sky1, sky2, sky3, sky4;
     
     ofImage bush, city, farm, sky;
-    
-    
+    ofImage introBush, introCity, introFarm;
+    vector <ofImage> selectionImages;
     // kinect
     void setupOpenni();
     void updateOpenNi();
@@ -146,6 +146,11 @@ class ofApp : public ofBaseApp{
     int numPlayers;
     vector <ofVec2f> bugLocations;
     vector <float> bugHealth;
+    // health bar dimensions
+    float hb_w = 40;
+    float hb_h = 10;
+    float h_off = -20;
+    float hb_bo = 1;
     vector <ofVec2f> bugTargetLocations;
     
     

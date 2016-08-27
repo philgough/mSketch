@@ -1363,10 +1363,15 @@ void ofApp::setupImages()
    farm.load("background_farm.png");
    sky.load("Sky_1.png");
    
-   // welcome page image
+   // welcome page images
    helloImage.load("welcomeA.png");
-   
-   
+   introBush.load("introBush.png");
+   selectionImages.push_back(introBush);
+   introFarm.load("introFarm.png");
+   selectionImages.push_back(introFarm);
+   introCity.load("introCity.png");
+   selectionImages.push_back(introCity);
+
 }
 
 void ofApp::setupBox2d() 
@@ -1411,19 +1416,23 @@ void ofApp::setupStars () {
 void ofApp::setupOpenni() 
 {
     openNIDevice.setup();
+    openNIDevice.addImageGenerator();
     openNIDevice.addDepthGenerator();
     openNIDevice.setRegister(true);
     openNIDevice.setMirror(true);
 
     openNIDevice.addUserGenerator();
     openNIDevice.setMaxNumUsers(2);
-    
-    for (int i = 0; i < openNIDevice.getMaxNumUsers(); i++) 
-    {
-        ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true);
-        openNIDevice.addDepthThreshold(depthThreshold);
-    }
+
     openNIDevice.start();
+    
+    openNIDevice.setUseMaskTextureAllUsers(true);
+
+    // for (int i = 0; i < openNIDevice.getMaxNumUsers(); i++) 
+    // {
+    //     ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true);
+    //     openNIDevice.addDepthThreshold(depthThreshold);
+    // }
 }
 
 
@@ -1508,7 +1517,8 @@ void ofApp::updatePollution()
 {
    int numCircles = 50;
     // add some new circles
-    if((int)ofRandom(0, 40) == 0 && circles.size() < numCircles) {
+
+    if((int)ofRandom(0, 50 - location * 10) == 0 && circles.size() < numCircles) {
        shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
        c.get()->setPhysics(0.3, 0.6, 0.012);
        c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), ofGetHeight() - (_benth_h + _riv_h), 10);
@@ -1610,10 +1620,11 @@ void ofApp::updateBugTargetLocations()
     float numUsers = openNIDevice.getNumTrackedUsers();
     for (int i = 0; i < numUsers; i++)
     {
+        ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
 
         // grab a point from each of their hands
-        ofPoint ptL = openNIDevice.getTrackedUser(i).getJoint(JOINT_LEFT_HAND).getWorldPosition();
-        ofPoint ptR = openNIDevice.getTrackedUser(i).getJoint(JOINT_RIGHT_HAND).getWorldPosition();
+        ofPoint ptL = user.getJoint(JOINT_LEFT_HAND).getWorldPosition();
+        ofPoint ptR = user.getJoint(JOINT_RIGHT_HAND).getWorldPosition();
         // convert it to the screen position
         ofPoint drawMapL = ofPoint(ofMap(ptL.x, -820, 820, 0, ofGetWidth()),ofMap(ptL.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
         ofPoint drawMapR = ofPoint(ofMap(ptR.x, -820, 820, 0, ofGetWidth()),ofMap(ptR.y, -700, 820, ofGetHeight(), ofGetHeight() - _benth_h));
@@ -1627,7 +1638,7 @@ void ofApp::updateBugTargetLocations()
         bugTargetLocations.push_back(ofVec2f(x, y));
 
     }
-    cout << "number of hands to follow: "  << bugTargetLocations.size() << endl;
+    // cout << "number of hands to follow: "  << bugTargetLocations.size() << endl;
 }
 
 
@@ -1644,6 +1655,7 @@ void ofApp::updateEndgame()
     }
     if (numDeadPlayers == numPlayers) 
     {
+
         gameOutcome = -1;
         nextState();
     }
@@ -1848,16 +1860,19 @@ void ofApp::drawBug()
     
     for (int i = 0; i < openNIDevice.getNumTrackedUsers(); i++)
     {
+        // ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+
+        // user.drawMask();
         if (bugTargetLocations.size() > 0) {
-        if (bugHealth.at(i) > 0)
-        {
-            ofNoFill();
-            ofSetColor(60, 60, 60);
-            ofDrawLine(bugTargetLocations.at(i), bugLocations.at(i));
-        }
-        ofFill();
-        ofSetColor(255, i * 255, 0);
-        ofDrawCircle(bugTargetLocations.at(i), 5);
+            if (bugHealth.at(i) > 0)
+            {
+                ofNoFill();
+                ofSetColor(60, 60, 60);
+                ofDrawLine(bugTargetLocations.at(i), bugLocations.at(i));
+            }
+            ofFill();
+            ofSetColor(255, i * 255, 0);
+            ofDrawCircle(bugTargetLocations.at(i), 5);
         }
     }
     
@@ -1871,13 +1886,19 @@ void ofApp::drawBug()
             ofSetColor(150, 150, 150);
         }
         ofDrawCircle(bugLocations.at(i), 10);
-
+        // draw a health bar
+        ofPoint hb;
+        hb.set(bugLocations.at(i).x - hb_w/2, h_off + bugLocations.at(i).y - hb_h/2);
+        ofSetColor(200, 200, 10);
+        ofFill();
+        ofDrawRectangle(hb.x, hb.y, hb_w, hb_h);
+        ofSetColor(255, 0, 0);
+        ofDrawRectangle(hb.x + hb_w - hb_bo, hb.y + hb_bo, (-hb_w * (1-bugHealth.at(i))) + hb_bo*2, hb_h - (hb_bo *2));
     }
 
     bugTargetLocations.clear();
 
     ofNoFill();
-
 
     
 }
@@ -1886,37 +1907,37 @@ void ofApp::drawBug()
 
 
 void ofApp::drawMainTimer() {
-    if (_stateTimer + _drawMainDuration < ofGetElapsedTimeMillis()) {
-        nextState();
-    }
  
 
     // draw the timer bar
-   if (_masterState == INTERACTIVE_PLAY_STATE)
-   {
-       ofSetColor(200, 200, 10);
-       ofMesh mesh;
-       mesh.addVertex(ofPoint(0, 3));
-       mesh.addVertex(ofPoint(0, 0));
-       float x =  1.0 * (ofGetElapsedTimeMillis() - _stateTimer)/(1.0 * _scoreScreenDuration);
-//        cout << x << endl;
-       mesh.addVertex(ofPoint(ofGetWidth() * x, 0));
-       mesh.addVertex(ofPoint(ofGetWidth() * x, 3));
-       mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-       mesh.draw();
-       mesh.clear();
-   }
-   else
-   {
-       ofSetColor(200, 200, 10);
-       ofMesh mesh;
-       mesh.addVertex(ofPoint(0, 3));
-       mesh.addVertex(ofPoint(0, 0));
-       mesh.addVertex(ofPoint(ofGetWidth(), 0));
-       mesh.addVertex(ofPoint(ofGetWidth(), 3));
-       mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-       mesh.draw();
-       mesh.clear();
+    if (_masterState == INTERACTIVE_PLAY_STATE)
+    {
+        if (_stateTimer + _drawMainDuration < ofGetElapsedTimeMillis()) {
+            nextState();
+        }
+        ofSetColor(200, 200, 10);
+        ofMesh mesh;
+        mesh.addVertex(ofPoint(0, 3));
+        mesh.addVertex(ofPoint(0, 0));
+        float x =  1.0 * (ofGetElapsedTimeMillis() - _stateTimer)/(100 * _scoreScreenDuration);
+        // cout << x << endl;
+        mesh.addVertex(ofPoint(ofGetWidth() * x, 0));
+        mesh.addVertex(ofPoint(ofGetWidth() * x, 3));
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        mesh.draw();
+        mesh.clear();
+    }
+    else
+    {
+        ofSetColor(200, 200, 10);
+        ofMesh mesh;
+        mesh.addVertex(ofPoint(0, 3));
+        mesh.addVertex(ofPoint(0, 0));
+        mesh.addVertex(ofPoint(ofGetWidth(), 0));
+        mesh.addVertex(ofPoint(ofGetWidth(), 3));
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+        mesh.draw();
+        mesh.clear();
        
    }
 }
@@ -2121,7 +2142,9 @@ void ofApp::drawIntro()
 
     for (int i = 0; i < 3; i ++) 
     {
-        ofSetColor(200, 255 * i/3, 150);
+        ofSetColor(255);
+        selectionImages.at(i).draw(50, selectorOffset + i * selectorHeight);
+        ofSetColor(200, 255 * i/3, 150, 20);
         ofFill();
         if (i == selectedLevel) {
             ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth * selectionPercent, selectorHeight);
@@ -2183,4 +2206,10 @@ void ofApp::drawScoreScreen()
        mesh.clear();
        
    }
+
+
+
+
+
+
 }
