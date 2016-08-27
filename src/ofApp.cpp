@@ -1415,21 +1415,6 @@ void ofApp::setupOpenni()
     openNIDevice.setRegister(true);
     openNIDevice.setMirror(true);
 
-
-
-//
-//    openNIDevice.addHandsGenerator();
-//    openNIDevice.addAllHandFocusGestures();
-//    openNIDevice.setMaxNumHands(6);
-//
-//
-//    for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
-//       ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true, true);
-//       openNIDevice.addDepthThreshold(depthThreshold);
-//    }
-//
-//    openNIDevice.start();
-
     openNIDevice.addUserGenerator();
     openNIDevice.setMaxNumUsers(2);
     
@@ -1507,7 +1492,7 @@ void ofApp::update()
             break;
         default:
             break;
-}
+    }   
 }
 
 
@@ -1515,7 +1500,9 @@ void ofApp::updateMain()
 {
     updatePollution();
     updateOpenNi();
+    updateBugTargetLocations();
     updateBug();
+    updateEndgame();
 }
 void ofApp::updatePollution() 
 {
@@ -1579,7 +1566,7 @@ void ofApp::updateBug()
     {
         if (numUsers > 0)
         {
-            if (bugHealth.at(i) > 0)
+            if (bugHealth.at(i) > 0 && bugTargetLocations.size() > 0)
             {
                 float x = ofLerp(bugLocations.at(i).x, bugTargetLocations.at(i).x, .05);
                 float y = ofLerp(bugLocations.at(i).y, bugTargetLocations.at(i).y, .05);
@@ -1609,7 +1596,7 @@ void ofApp::updateBug()
     
         // The bug looses health if it is over a polluted cell (add because the pollution value is negative)
         bugHealth.at(i) +=  pollutionOffset[closestCellIndex]/(175 * 200);
-        cout << bugHealth.at(i) << "over" << pollutionOffset[closestCellIndex] << endl;
+        // cout << bugHealth.at(i) << "over" << pollutionOffset[closestCellIndex] << endl;
         if (bugHealth.at(i) <= 0) {cout << "dead" << endl;}
     }
     
@@ -1638,8 +1625,51 @@ void ofApp::updateBugTargetLocations()
         
 
         bugTargetLocations.push_back(ofVec2f(x, y));
+
+    }
+    cout << "number of hands to follow: "  << bugTargetLocations.size() << endl;
+}
+
+
+
+
+void ofApp::updateEndgame()
+{
+    int numDeadPlayers = 0;
+    for (int i = 0; i < bugHealth.size(); i++) {
+        if (bugHealth.at(i) <= 0) 
+        {
+            numDeadPlayers ++;
+        }
+    }
+    if (numDeadPlayers == numPlayers) 
+    {
+        gameOutcome = -1;
+        nextState();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1670,6 +1700,7 @@ void ofApp::drawMain()
     drawBox2d();
     drawStars();
     drawBug();
+    drawMainTimer();
 }
 
 
@@ -1817,6 +1848,7 @@ void ofApp::drawBug()
     
     for (int i = 0; i < openNIDevice.getNumTrackedUsers(); i++)
     {
+        if (bugTargetLocations.size() > 0) {
         if (bugHealth.at(i) > 0)
         {
             ofNoFill();
@@ -1826,6 +1858,7 @@ void ofApp::drawBug()
         ofFill();
         ofSetColor(255, i * 255, 0);
         ofDrawCircle(bugTargetLocations.at(i), 5);
+        }
     }
     
 
@@ -1852,6 +1885,44 @@ void ofApp::drawBug()
 
 
 
+void ofApp::drawMainTimer() {
+    if (_stateTimer + _drawMainDuration < ofGetElapsedTimeMillis()) {
+        nextState();
+    }
+ 
+
+    // draw the timer bar
+   if (_masterState == INTERACTIVE_PLAY_STATE)
+   {
+       ofSetColor(200, 200, 10);
+       ofMesh mesh;
+       mesh.addVertex(ofPoint(0, 3));
+       mesh.addVertex(ofPoint(0, 0));
+       float x =  1.0 * (ofGetElapsedTimeMillis() - _stateTimer)/(1.0 * _scoreScreenDuration);
+//        cout << x << endl;
+       mesh.addVertex(ofPoint(ofGetWidth() * x, 0));
+       mesh.addVertex(ofPoint(ofGetWidth() * x, 3));
+       mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+       mesh.draw();
+       mesh.clear();
+   }
+   else
+   {
+       ofSetColor(200, 200, 10);
+       ofMesh mesh;
+       mesh.addVertex(ofPoint(0, 3));
+       mesh.addVertex(ofPoint(0, 0));
+       mesh.addVertex(ofPoint(ofGetWidth(), 0));
+       mesh.addVertex(ofPoint(ofGetWidth(), 3));
+       mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+       mesh.draw();
+       mesh.clear();
+       
+   }
+}
+
+
+
 
 void ofApp::drawSwitch(int s) {
    switch (s) {
@@ -1863,7 +1934,7 @@ void ofApp::drawSwitch(int s) {
            
        case INTERACTIVE_PLAY_STATE:
            // draw main display
-//            updateMain();
+           updateMain();
            drawMain();
            break;
            
@@ -1921,8 +1992,8 @@ void ofApp::nextState() {
            break;
            
        case SCORE_SCREEN :
-           // go to the next location;
-           location++;
+           // // go to the next location;
+           // location++;
            
            // reset the pollution
            circles.clear();
@@ -1935,22 +2006,15 @@ void ofApp::nextState() {
            _masterState = FADE_OUT;
            break;
            
-       case THANK_YOU_SCREEN :
-           // make sure we go back to the first location
-           location = 0;
-           
-           circles.clear();
-           for (int i = 0; i < pollutionOffset.size(); i++) {
-               pollutionOffset.at(i) = 0.0;
-           }
-           
-           _nextState = WELCOME_SCREEN;
-           _lastState = THANK_YOU_SCREEN;
-           _masterState = FADE_OUT;
-           
            
    } // end switch
 } // end nextState
+
+
+
+
+
+
 
 
 
@@ -2013,6 +2077,60 @@ void ofApp::drawIntro()
     
     
     int foundPlayers = openNIDevice.getNumTrackedUsers();
+
+
+    /// add the selector
+    float selectorHeight = 100;
+    float selectorWidth = 1700;
+    float selectorOffset = 550;
+
+    if (foundPlayers > 0 && bugTargetLocations.size() > 0)
+    {
+        ofVec2f bl = bugTargetLocations.at(0);
+        if (selectorOffset < bl.x && bl.x < selectorOffset + selectorWidth)
+        {
+            // cout << "win" << endl;
+            // 3 is the number of locations we can choose from.
+            for (int i = 0; i < 3; i++)
+            {
+                if (selectorOffset + i * selectorHeight < bl.y && bl.y < selectorOffset + i * selectorHeight + selectorHeight)
+                {
+                    selectedLevel = i;
+                    break;
+                }
+                else {
+                    selectedLevel = -1;
+                }
+            }
+        }
+    }
+
+    
+    // ofNoFill();
+
+    if (selectedLevel == pSelectedLevel && selectedLevel >= 0) {
+        selectionPercent += 0.005;
+        if (selectionPercent >= 1) {
+            location = selectedLevel;
+            nextState();
+        }
+    }
+    else {
+        selectionPercent = 0;
+    }
+
+    for (int i = 0; i < 3; i ++) 
+    {
+        ofSetColor(200, 255 * i/3, 150);
+        ofFill();
+        if (i == selectedLevel) {
+            ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth * selectionPercent, selectorHeight);
+        }
+
+        ofNoFill();
+        
+        ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth, selectorHeight);
+    }
     for (int i = 0; i < bugTargetLocations.size(); i++)
     {
         ofFill();
@@ -2020,35 +2138,7 @@ void ofApp::drawIntro()
         ofDrawCircle(bugTargetLocations.at(i), 5);
     }
     ofNoFill();
-
-
-    /// add the selector
-    float selectorHeight = 100;
-    float selectorWidth = 700;
-    float selectorOffset = 550;
-    for (int i = 0; i < 3; i ++) 
-    {
-        ofSetColor(200, 255 * i/3, 150);
-        ofNoFill();
-        
-        ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth, selectorHeight);
-    }
-    
-    if (foundPlayers > 0)
-    {
-        ofVec2f bl = bugTargetLocations.at(0);
-        if (selectorOffset < bl.x && bl.x < selectorOffset + selectorWidth)
-        {
-            cout << "win" << endl;
-            for (int i = 0; i < 3; i++)
-            {
-                if (selectorOffset + i * selectorHeight < bl.y && bl.y < selectorOffset + i * selectorHeight + selectorHeight)
-                {
-                    cout << i << endl;
-                }
-            }
-        }
-    }
+    pSelectedLevel = selectedLevel;
     bugTargetLocations.clear();
 
 }

@@ -117,16 +117,27 @@ class ofApp : public ofBaseApp{
 //    bool shouldRemove(ofxBox2dCircle c);
     
     
+
+
+    // Welcome Screen Vars
+    int selectedLevel = -1;
+    int pSelectedLevel = 0;
+    float selectionPercent = 0;
+
+
+
+
+
     
     
     // organisms
-    void organismSetup();
-    vector <Organism> organisms;
-    map<string, string> loadDataset(int type, int index);
-    vector <string> CSVHeaders;
-    ofxCsv csvData;
+    // void organismSetup();
+    // vector <Organism> organisms;
+    // map<string, string> loadDataset(int type, int index);
+    // vector <string> CSVHeaders;
+    // ofxCsv csvData;
 
-    float phValue;
+    // float phValue;
 
     void setupBug();
     void updateBug();
@@ -220,7 +231,7 @@ class ofApp : public ofBaseApp{
     
     
     // most of the interaction is timed, so make some timer functions
-    void mainTimer();
+    void drawMainTimer();
     void scoreTimer();
     int _drawMainDuration = 40000;
     int _scoreScreenDuration = 3000;
@@ -229,5 +240,9 @@ class ofApp : public ofBaseApp{
     // variable for the pollution and pH values as a 2d vector
     vector <ofVec2f> environmentVariables;
     
+
+    void updateEndgame();
+    int gameOutcome = 0;
+
     
 };
