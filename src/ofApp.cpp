@@ -2153,7 +2153,7 @@ void ofApp::drawIntro()
     {
         ofSetColor(255);
         selectionImages.at(i).draw(50, selectorOffset + i * selectorHeight);
-        ofSetColor(255, 40);
+        ofSetColor(255, 140);
         ofFill();
         if (i == selectedLevel) {
             ofDrawRectangle(50, selectorOffset + i * selectorHeight, selectorWidth * selectionPercent, selectorHeight);
@@ -2192,9 +2192,24 @@ void ofApp::drawIntro()
 // draw the score screen
 void ofApp::drawScoreScreen()
 {
-   ofBackground(255, 255, 255);
+   // ofBackground(255, 255, 255);
    // cout << "this is the score screen" << endl;
-   
+   drawMain();
+   ofSetColor(255, 255, 255, 100);
+   ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+    
+    string msg;
+    if (gameOutcome < 0)
+    {
+        msg = "The organism has died.";
+    }
+    
+    else {
+        msg = "Finished";
+    }
+    
+    
+
    if (_stateTimer + _scoreScreenDuration < ofGetElapsedTimeMillis())
    {
        nextState();
@@ -2227,7 +2242,6 @@ void ofApp::drawScoreScreen()
        mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
        mesh.draw();
        mesh.clear();
-       
    }
 
 
