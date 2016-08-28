@@ -202,7 +202,6 @@ void ofApp::setupOpenni()
        openNIDevice.addDepthThreshold(depthThreshold);
    }
 
-
     openNIDevice.start();
     
     // openNIDevice.setUseMaskTextureAllUsers(true);
@@ -295,7 +294,7 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
                header = csvData.getRow(0).at(i);
 
                tempMap[header] = row.at(i);
-              cout << header << " : " << row.at(i) << endl;
+              // cout << header << " : " << row.at(i) << endl;
            }
 //            tempData.push_back(tempMap);
            break;
@@ -612,6 +611,7 @@ void ofApp::drawMain()
     // drawMainTimer();
     drawOrganism();
     drawSidebars();
+    drawHands();
 }
 
 
@@ -755,6 +755,27 @@ void ofApp::drawSidebars()
     ofNoFill();
     ofDrawRectangle(ofGetWidth() - (sidebarMargin + sidebarWidth), sidebarMargin, sidebarWidth, ofGetHeight() - (2*sidebarMargin));
 }
+
+
+
+void ofApp::drawHands()
+{
+     openNIDevice.drawDebug(1500, 20, 486, 144);
+    cout << openNIDevice.getNumTrackedHands() << endl;
+    for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++)
+    {
+        ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
+
+        ofPoint & handPosition = hand.getPosition();
+        
+//        ofPoint & handPosition = hand.getWorldPosition();
+        ofSetColor(25, 180, 95);
+        ofFill();
+        ofDrawCircle(handPosition.x, handPosition.y, 5);
+        cout << handPosition << endl;
+    }
+}
+
 
 
 
