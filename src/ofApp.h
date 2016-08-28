@@ -257,5 +257,15 @@ class ofApp : public ofBaseApp{
     ofxTextBlock goodbyeBlock;
 
     void setupWelcomeScreen();
+
+
+
+
+    float currentPollution = 0;
+    
+
+    void drawSidebars();
+    float sidebarMargin = 60;
+    float sidebarWidth = 80;
     
 };

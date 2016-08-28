@@ -69,7 +69,7 @@ void ofApp::setupPP()
     riverPoints.clear();
 
     // create the voronoi cells around each of the poisson points
-    for (unsigned int i = 0; i < voronoiRiver.getCells().size(); i++ ) {
+    for (int i = 0; i < voronoiRiver.getCells().size(); i++ ) {
        auto cell = voronoiRiver.getCells().at(i);
        riverPoints.push_back(cell.pt);
     }
@@ -193,9 +193,11 @@ void ofApp::setupOpenni()
 
     openNIDevice.addHandsGenerator();
     openNIDevice.addAllHandFocusGestures();
+
+    int maxNumHands = 6;
     openNIDevice.setMaxNumHands(6);
 
-    for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
+    for(int i = 0; i < maxNumHands; i++){
        ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true, true);
        openNIDevice.addDepthThreshold(depthThreshold);
    }
@@ -253,13 +255,13 @@ void ofApp::setupOrganisms()
    cout << "starting organism setup" << endl;
    
    
-   PoissonPoints tempPP = PoissonPoints(1000, 40, 20, _riv_w, _benth_h);
+   PoissonPoints tempPP = PoissonPoints(1000, 40, 20, _riv_w, _benth_h - sidebarMargin);
    cout << "number of organisms: " << tempPP.pp.size() << endl;
    
 //    loadDataset();
    
-   for (unsigned int i = 0; i < tempPP.pp.size(); i++) {
-       ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + 880);
+   for (int i = 0; i < tempPP.pp.size(); i++) {
+       ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + (sidebarMargin/2 + ofGetHeight() - (_benth_h)));
        
        int type = i % 4;
        
@@ -270,6 +272,8 @@ void ofApp::setupOrganisms()
    
    cout << "end organism setup" << endl;
 }
+
+
 
 map<string, string> ofApp::loadDataset(int type, int ind) {
    // some duplicates, so loop round and make sure we don't get out of bounds
@@ -396,6 +400,9 @@ void ofApp::updateMain()
 {
     // updatePollution();
     updateOpenNi();
+    for (Organism o: organisms) {
+        o.updateOrganism(&currentPollution, &phValue);
+    }
     // updateBugTargetLocations();
     // updateBug();
     // updateEndgame();
@@ -604,6 +611,7 @@ void ofApp::drawMain()
     // drawBug();
     // drawMainTimer();
     drawOrganism();
+    drawSidebars();
 }
 
 
@@ -695,12 +703,58 @@ void ofApp::drawLand()
 }
 
 
-void ofApp::drawOrganism() {
-    for (int i = 0; i < organisms.size(); i++ ) {
-       organisms.at(i).drawOrganism();
+void ofApp::drawOrganism() 
+{
+    for (auto o: organisms) 
+    {
+       o.drawOrganism();
     }
 }
 
+
+
+void ofApp::drawSidebars() 
+{
+    // draw left sidebar
+    ofMesh mesh;
+    mesh.enableColors();
+    ofColor col;
+    col.set(20, 20, 200);
+    mesh.addVertex(ofVec2f(sidebarMargin, ofGetHeight() - sidebarMargin));
+    mesh.addColor(col);
+    mesh.addVertex(ofVec2f(sidebarMargin + sidebarWidth, ofGetHeight() - sidebarMargin));
+    mesh.addColor(col);
+    
+    col.set(230, 230, 255);
+    mesh.addColor(col);
+    mesh.addVertex(ofVec2f(sidebarMargin + sidebarWidth, sidebarMargin));
+    mesh.addColor(col);
+    mesh.addVertex(ofVec2f(sidebarMargin, sidebarMargin));
+    mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+    mesh.draw();
+    ofSetColor(255);
+    ofNoFill();
+    ofDrawRectangle(sidebarMargin, sidebarMargin, sidebarWidth, ofGetHeight() - (2*sidebarMargin));
+    mesh.clear();
+    
+    // draw right sidebar
+    col.set(200, 20, 20);
+    mesh.addVertex(ofVec2f(ofGetWidth() - sidebarMargin, ofGetHeight() - sidebarMargin));
+    mesh.addColor(col);
+    mesh.addVertex(ofVec2f(ofGetWidth() - (sidebarMargin + sidebarWidth), ofGetHeight() - sidebarMargin));
+    mesh.addColor(col);
+    
+    col.set(255, 230, 230);
+    mesh.addColor(col);
+    mesh.addVertex(ofVec2f(ofGetWidth() - (sidebarMargin + sidebarWidth), sidebarMargin));
+    mesh.addColor(col);
+    mesh.addVertex(ofVec2f(ofGetWidth() - sidebarMargin, sidebarMargin));
+    mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+    mesh.draw();
+    ofSetColor(255);
+    ofNoFill();
+    ofDrawRectangle(ofGetWidth() - (sidebarMargin + sidebarWidth), sidebarMargin, sidebarWidth, ofGetHeight() - (2*sidebarMargin));
+}
 
 
 

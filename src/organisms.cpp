@@ -18,7 +18,7 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
     
     // draw the shape
     for (int i = 0; i < 360; i += 18) {
-        float radius = 25;
+        float radius = 12;
         float r = ofDegToRad(i);
         
         float x = sin(r) * radius;
