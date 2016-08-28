@@ -21,7 +21,10 @@ void ofApp::setup()
 
 void ofApp::variableSetup() 
 {
-    _masterState = SCORE_SCREEN;
+    // _masterState = SCORE_SCREEN;
+//    ofEnableSmoothing();
+    sidebarHeight = ofGetHeight() - (2*sidebarMargin);
+
 }
 
 
@@ -247,9 +250,9 @@ void ofApp::setupOrganisms()
    CSVHeaders = {"env.cp", "z", "0.05", "0.95", "Phylum","Class","Order","Family","Genus","Final"};
    
    // random value for pH
-   phValue = ofRandom(1.6);
+   currentpH = ofRandom(1.6);
    
-   // displayPh = ofToString(phValue + 6.8, 1);
+   // displayPh = ofToString(currentpH + 6.8, 1);
    // this should be scaled to between  6.8 and 8.4
    cout << "starting organism setup" << endl;
    
@@ -264,7 +267,7 @@ void ofApp::setupOrganisms()
        
        int type = i % 4;
        
-       Organism tempO = Organism(i, loc, type, loadDataset(type, int(i/4)+1), &phValue);
+       Organism tempO = Organism(i, loc, type, loadDataset(type, int(i/4)+1), &currentpH);
        organisms.push_back(tempO);
    }
 
@@ -399,13 +402,31 @@ void ofApp::updateMain()
 {
     // updatePollution();
     updateOpenNi();
+    updateEnvironment();
+
     for (Organism o: organisms) {
-        o.updateOrganism(&currentPollution, &phValue);
+        o.updateOrganism(&currentPollution, &currentpH);
     }
+
+
+
     // updateBugTargetLocations();
     // updateBug();
     // updateEndgame();
 }
+
+
+void ofApp::updateEnvironment() 
+{
+    float sinP = sin(ofGetFrameNum()/100.0) + 1;
+    float sinPh = sin(ofGetFrameNum()/300.0) + 1;
+    currentPollution = phosMax * sinP;
+    currentpH = phRange * sinPh;
+    cout << currentPollution << " : " << currentpH << endl;
+    sidebarIndicatorP = ((sidebarHeight/2) - indicatorHeight) * sinP + (indicatorHeight/2);
+    sidebarIndicatorPh = ((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2);
+}
+
 // void ofApp::updatePollution() 
 // {
 //    int numCircles = 50;
@@ -754,6 +775,24 @@ void ofApp::drawSidebars()
     ofSetColor(255);
     ofNoFill();
     ofDrawRectangle(ofGetWidth() - (sidebarMargin + sidebarWidth), sidebarMargin, sidebarWidth, ofGetHeight() - (2*sidebarMargin));
+
+
+    // draw LHS (pH) Indicator
+    ofSetColor(255);
+    ofFill();
+    ofDrawCircle(sidebarMargin + indicatorHeight, sidebarMargin + sidebarIndicatorPh + (indicatorHeight/2), indicatorHeight);
+    
+    // draw RHS (Phosphorus)
+    ofDrawCircle(ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2), indicatorHeight);
+    
+    // draw text values
+    ofSetColor(0);
+    float textoffset = -30;
+    string msg = "pH: " + ofToString(currentpH, 2);
+    ofDrawBitmapString(msg, textoffset +  sidebarMargin + indicatorHeight, sidebarMargin + sidebarIndicatorPh + (indicatorHeight/2));
+    msg = "P: " + ofToString(currentPollution, 2);
+    ofDrawBitmapString(msg, textoffset + ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2));
+    
 }
 
 
@@ -761,7 +800,7 @@ void ofApp::drawSidebars()
 void ofApp::drawHands()
 {
      openNIDevice.drawDebug(1500, 20, 486, 144);
-    cout << openNIDevice.getNumTrackedHands() << endl;
+//    cout << openNIDevice.getNumTrackedHands() << endl;
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++)
     {
         ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
@@ -772,7 +811,7 @@ void ofApp::drawHands()
         ofSetColor(25, 180, 95);
         ofFill();
         ofDrawCircle(handPosition.x, handPosition.y, 5);
-        cout << handPosition << endl;
+//        cout << handPosition << endl;
     }
 }
 

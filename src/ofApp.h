@@ -140,7 +140,8 @@ class ofApp : public ofBaseApp{
     float phMax = 8.5;
     float phosMin = 0.0;
     float phosMax = 0.3;
-    float phValue;
+    float phRange = 1.7;
+    float currentpH;
 
     void drawOrganism();
 
@@ -267,5 +268,10 @@ class ofApp : public ofBaseApp{
     void drawSidebars();
     float sidebarMargin = 60;
     float sidebarWidth = 80;
-    
+    float sidebarHeight;
+    void updateEnvironment();
+    float sidebarIndicatorP = 0;
+    float sidebarIndicatorPh = 0;
+    float indicatorHeight = 40;
+
 };
