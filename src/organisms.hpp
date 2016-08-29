@@ -25,6 +25,7 @@ public:
     void callAnthony(Character* Anthony);
     bool isBeingInspected;
     ofColor organismColor;
+    float organismYPos;
     
 private:
     int index;
@@ -45,7 +46,6 @@ private:
     float brightness;
 
     float chance;
-    float yPos;
 };
 
 #endif /* organisms_hpp */

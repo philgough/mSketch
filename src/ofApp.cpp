@@ -419,8 +419,8 @@ void ofApp::updateMain()
 
 void ofApp::updateEnvironment() 
 {
-    float sinP = sin(ofGetFrameNum()/-1500.0) + 1;
-    float sinPh = sin(ofGetFrameNum()/-1300.0) + 1;
+    float sinP = sin(ofGetFrameNum()/-150.0) + 1;
+    float sinPh = sin(ofGetFrameNum()/-130.0) + 1;
     currentPollution = phosMax * sinP;
     currentpH = phRange * sinPh;
     // cout << currentPollution << " : " << currentpH << endl;
@@ -733,11 +733,11 @@ void ofApp::drawLand()
 
 void ofApp::drawOrganism() 
 {
-    for (auto o: organisms) 
+    for (int i = 0; i < organisms.size(); i++) 
     {
        // cout << o.organismColor.getHue() << ": " << o.organismColor.getSaturation() << ": " << o.organismColor.getBrightness() << endl;
-        o.updateOrganism(&currentPollution, &currentpH);
-        o.drawOrganism();
+        organisms.at(i).updateOrganism(&currentPollution, &currentpH);
+        organisms.at(i).drawOrganism();
     }
 }
 

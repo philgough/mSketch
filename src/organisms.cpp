@@ -14,7 +14,7 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
     health = 1.0;
     location.set(tempLocation);
     startLocation.set(tempLocation);
-    yPos = tempLocation.y + 0.001;
+    organismYPos = 0.0;
     type = tempType;
     
     chance = ofRandom(0, 1);
@@ -231,28 +231,30 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 
     // cout << health << endl;
     
-    // float getYPos = ofGetHeight();
+    // float getorganismYPos = ofGetHeight();
 
-    // getYPos -= startLocation.y;
+    // getorganismYPos -= startLocation.y;
 
     // isdead = health == 0;
-
-    if (health < 0.3 && ofGetHeight() - yPos > 1) {
-        // yPos += 0.05 * (ofGetHeight() - yPos);
-        yPos += 0.01 *(float(ofGetHeight()) - yPos);
+    // float organismYPos = 0.0;
+    // organismYPos += ofGetFrameNum()/10;
+     // float yOffset;
+    // cout << organismYPos << endl;
+    if (health < 0.2 && ofGetHeight() - (location.y + organismYPos) > 1)
+    {
+        organismYPos =+ 0.03 * (ofGetHeight() - (organismYPos + location.y));
     }
-
-    else if (health > 0.3 && yPos - startLocation.y > 1) {
-        // yPos -= 0.1 * (yPos - startLocation.y);
-
-        yPos += 0.01 * (yPos - startLocation.y);
-
-
-
+    
+    if (health > 0.2 && (location.y + organismYPos) - startLocation.y > 1)
+    {
+        // cout << health << endl;
+        organismYPos =+ 0.03 * (startLocation.y - (organismYPos + location.y));
     }
+    // cout << "start: "<< organismYPos << " + " << yOffset; 
 
-    // location.set(startLocation.x + movementArea.x * ofNoise(noisex), yPos);// (startLocation.y + movementArea.y * ofNoise(noisey))));
-    location.set(startLocation.x, yPos);
+    // organismYPos += yOffset;
+    // cout << ", end: " << organismYPos << endl;
+    location.set(startLocation.x, location.y + organismYPos);
     // noisex += health;
     // noisey += health;
     noiser += 0.0005 * health;
