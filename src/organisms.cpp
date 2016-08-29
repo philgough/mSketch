@@ -222,6 +222,7 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
             break;
     }
     if (health < 0) {health = 0;}
+    if (health > 1) {health = 1;}
 
 //    float alpha = health * 255.0;
 

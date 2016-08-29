@@ -419,8 +419,8 @@ void ofApp::updateMain()
 
 void ofApp::updateEnvironment() 
 {
-    float sinP = sin(ofGetFrameNum()/-150.0) + 1;
-    float sinPh = sin(ofGetFrameNum()/-130.0) + 1;
+    sinP = sin(ofGetFrameNum()/-450.0) + 1;
+    sinPh = sin(ofGetFrameNum()/-430.0) + 1;
     currentPollution = phosMax * sinP;
     currentpH = phRange * sinPh;
     // cout << currentPollution << " : " << currentpH << endl;
@@ -744,7 +744,7 @@ void ofApp::drawOrganism()
 
 
 void ofApp::drawSidebars() 
-{
+{   cout << currentPollution << endl;
     // draw left sidebar
     ofMesh mesh;
     mesh.enableColors();
@@ -797,7 +797,7 @@ void ofApp::drawSidebars()
     // draw text values
     ofSetColor(0);
     float textoffset = -30;
-    string msg = "pH: " + ofToString(currentpH, 2);
+    string msg = "pH: " + ofToString(currentpH + phMin, 2);
     ofDrawBitmapString(msg, textoffset +  sidebarMargin + indicatorHeight, sidebarMargin + sidebarIndicatorPh + (indicatorHeight/2));
     msg = "P: " + ofToString(currentPollution, 2);
     ofDrawBitmapString(msg, textoffset + ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2));
