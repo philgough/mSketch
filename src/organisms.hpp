@@ -19,11 +19,12 @@ class Organism {
 public:
     
     Organism (int tempIndex, ofVec2f tempLocation, int tempType, map<string, string> tempData, float* phValue);
-    void updateOrganism(float* healthIndex, float *phVal);
+    void updateOrganism(float* pollutionVal, float *phVal);
     void drawOrganism();
     ofVec2f location;
     void callAnthony(Character* Anthony);
     bool isBeingInspected;
+    ofColor organismColor;
     
 private:
     int index;
@@ -42,7 +43,9 @@ private:
     // env.cp value;
     float zVal;
     float brightness;
- 
+
+    float chance;
+    float yPos;
 };
 
 #endif /* organisms_hpp */

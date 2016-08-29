@@ -273,5 +273,5 @@ class ofApp : public ofBaseApp{
     float sidebarIndicatorP = 0;
     float sidebarIndicatorPh = 0;
     float indicatorHeight = 40;
-
+    // void updateOrganism();
 };

@@ -14,8 +14,11 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
     health = 1.0;
     location.set(tempLocation);
     startLocation.set(tempLocation);
+    yPos = tempLocation.y + 0.001;
     type = tempType;
     
+    chance = ofRandom(0, 1);
+
     // draw the shape
     for (int i = 0; i < 360; i += 18) {
         float radius = 12;
@@ -78,19 +81,24 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
 
 
 void Organism::drawOrganism() {
-    shape.enableColors();
-    shape.clearColors();
-    addColours();
+    // shape.enableColors();
+    // shape.clearColors();
+    // // cout << health << endl;
+//    cout << organismColor.getHue() << endl;
+    // cout << health << ": " << organismColor.getHue() << ": " << organismColor.getSaturation() << ": " << organismColor.getBrightness() << endl;
+//    updateOrganism();
+    // addColours();
     ofPushMatrix();
     ofTranslate(location);
     ofRotate(startAngle + 720 * ofNoise(noiser));
     shape.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+    ofSetColor(organismColor);
     shape.draw();
-    shape.clearColors();
-    for (int i=0; i<shape.getNumVertices(); i++) {
-        float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 + (1.0+type)  * 12.5));
-        shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
-    }
+    // shape.clearColors();
+    // for (int i=0; i<shape.getNumVertices(); i++) {
+    //     float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 + (1.0+type)  * 12.5));
+    //     shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
+    // }
     
 //    if (isBeingInspected) {
 ////        cout << "inspecting this organism:" << index << endl;
@@ -107,6 +115,7 @@ void Organism::drawOrganism() {
 //        }
 //    }
     
+    ofSetColor(255);
     shape.setMode(OF_PRIMITIVE_LINE_LOOP);
     shape.draw();
     ofPopMatrix();
@@ -126,11 +135,9 @@ void Organism::addColours() {
 void Organism::updateOrganism(float* healthIndex, float *phVal) {
     
     // update health
-    health = ofMap(*healthIndex, -175.0, 0.0, 0.0, 1.0);
+    // health = ofMap(*healthIndex, -175.0, 0.0, 0.0, 1.0);
+    health = *healthIndex;
     
-    
-    // update position and rotation
-    location.set(startLocation.x + movementArea.x * ofNoise(noisex), startLocation.y + movementArea.y * ofNoise(noisey));
     
     
 
@@ -147,8 +154,8 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
                 health = 1-log(zVal - *phVal);
 //                cout<< "negative pH, z > phVal, " << zVal << ":" << phVal << ":" << health << endl;
             }
-            
 //            health = 0;
+            organismColor.setHsb(157, health * 150, 155);
             break;
             
             
@@ -170,8 +177,8 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //                cout<< "positive pH, z > phVal, " << zVal << " : " << *phVal << " : " << health << endl;
             }
 //            health = 0;
+            organismColor.setHsb(157, health * 150, 60);
             break;
-            
 //
         case 2:
             // phosphorus, negative reaction
@@ -187,7 +194,7 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //                cout<< "negative pollution, z > health, " << zVal << " : " << health << " : " << *healthIndex << endl;
 //                health = 0;
             }
-
+            organismColor.setHsb(73, health * 188, 219);
             break;
             
         case 3:
@@ -206,7 +213,7 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //                cout<< "positive pollution, z > health, " << zVal <<  " : " << health << endl;
                 
             }
-
+            organismColor.setHsb(73, health * 188, 92);
             break;
             
             
@@ -216,8 +223,38 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
     }
     if (health < 0) {health = 0;}
 
-    noisex += 0.005 * health;
-    noisey += 0.005 * health;
+//    float alpha = health * 255.0;
+
+//    cout << health << ": " << organismColor.getHue() << ": " << organismColor.getSaturation() << ": " << organismColor.getBrightness() << endl;
+    // organismColor.set(0);   
+    // update position and rotation
+
+    // cout << health << endl;
+    
+    // float getYPos = ofGetHeight();
+
+    // getYPos -= startLocation.y;
+
+    // isdead = health == 0;
+
+    if (health < 0.3 && ofGetHeight() - yPos > 1) {
+        // yPos += 0.05 * (ofGetHeight() - yPos);
+        yPos += 0.01 *(float(ofGetHeight()) - yPos);
+    }
+
+    else if (health > 0.3 && yPos - startLocation.y > 1) {
+        // yPos -= 0.1 * (yPos - startLocation.y);
+
+        yPos += 0.01 * (yPos - startLocation.y);
+
+
+
+    }
+
+    // location.set(startLocation.x + movementArea.x * ofNoise(noisex), yPos);// (startLocation.y + movementArea.y * ofNoise(noisey))));
+    location.set(startLocation.x, yPos);
+    // noisex += health;
+    // noisey += health;
     noiser += 0.0005 * health;
 }
 

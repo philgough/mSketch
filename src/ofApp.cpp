@@ -23,6 +23,7 @@ void ofApp::variableSetup()
 {
     // _masterState = SCORE_SCREEN;
 //    ofEnableSmoothing();
+    ofSetFrameRate(25);
     sidebarHeight = ofGetHeight() - (2*sidebarMargin);
 
 }
@@ -377,7 +378,6 @@ void ofApp::update()
 {
   updateMain();
   
-
     // switch (_masterState) {
     //     case WELCOME_SCREEN:
     //         openNIDevice.update();
@@ -404,9 +404,10 @@ void ofApp::updateMain()
     updateOpenNi();
     updateEnvironment();
 
-    for (Organism o: organisms) {
-        o.updateOrganism(&currentPollution, &currentpH);
-    }
+    // for (auto o: organisms) {
+        // o.updateOrganism(&currentPollution, &currentpH);
+        // cout << o.organismColor.getHue() << ": " << o.organismColor.getSaturation() << ": " << o.organismColor.getBrightness() << endl;
+    // }
 
 
 
@@ -418,11 +419,11 @@ void ofApp::updateMain()
 
 void ofApp::updateEnvironment() 
 {
-    float sinP = sin(ofGetFrameNum()/100.0) + 1;
-    float sinPh = sin(ofGetFrameNum()/300.0) + 1;
+    float sinP = sin(ofGetFrameNum()/-1500.0) + 1;
+    float sinPh = sin(ofGetFrameNum()/-1300.0) + 1;
     currentPollution = phosMax * sinP;
     currentpH = phRange * sinPh;
-    cout << currentPollution << " : " << currentpH << endl;
+    // cout << currentPollution << " : " << currentpH << endl;
     sidebarIndicatorP = ((sidebarHeight/2) - indicatorHeight) * sinP + (indicatorHeight/2);
     sidebarIndicatorPh = ((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2);
 }
@@ -575,8 +576,14 @@ void ofApp::updateOpenNi()
 //     }
 // }
 
-
-
+//void ofApp::updateOrganism()
+//{
+//    for (auto o : organisms)
+//    {
+//        o.updateOrganism(&currentPollution, &currentpH);
+//    }
+//}
+//
 
 
 
@@ -728,7 +735,9 @@ void ofApp::drawOrganism()
 {
     for (auto o: organisms) 
     {
-       o.drawOrganism();
+       // cout << o.organismColor.getHue() << ": " << o.organismColor.getSaturation() << ": " << o.organismColor.getBrightness() << endl;
+        o.updateOrganism(&currentPollution, &currentpH);
+        o.drawOrganism();
     }
 }
 
@@ -792,7 +801,6 @@ void ofApp::drawSidebars()
     ofDrawBitmapString(msg, textoffset +  sidebarMargin + indicatorHeight, sidebarMargin + sidebarIndicatorPh + (indicatorHeight/2));
     msg = "P: " + ofToString(currentPollution, 2);
     ofDrawBitmapString(msg, textoffset + ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2));
-    
 }
 
 
