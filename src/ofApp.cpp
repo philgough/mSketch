@@ -264,7 +264,7 @@ void ofApp::setupOrganisms()
 //    loadDataset();
    
    for (int i = 0; i < tempPP.pp.size(); i++) {
-       ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + (sidebarMargin/2 + ofGetHeight() - (_benth_h)));
+       ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + (sidebarMargin + ofGetHeight() - (_benth_h)));
        
        int type = i % 4;
        
@@ -419,13 +419,15 @@ void ofApp::updateMain()
 
 void ofApp::updateEnvironment() 
 {
-    sinP = sin(ofGetFrameNum()/-450.0) + 1;
-    sinPh = sin(ofGetFrameNum()/-430.0) + 1;
+    sinP = sin(ofGetFrameNum()/350.0) + 1;
+    sinPh = sin(ofGetFrameNum()/330.0) + 1;
     currentPollution = phosMax * sinP;
     currentpH = phRange * sinPh;
     // cout << currentPollution << " : " << currentpH << endl;
-    sidebarIndicatorP = ((sidebarHeight/2) - indicatorHeight) * sinP + (indicatorHeight/2);
-    sidebarIndicatorPh = ((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2);
+//    sidebarIndicatorP = ((sidebarHeight/2) - indicatorHeight) * sinP + (indicatorHeight/2);
+//    sidebarIndicatorPh = ((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2);
+    sidebarIndicatorPh = ofGetHeight() - (((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2)) - (sidebarMargin*2 + indicatorHeight/2)-(indicatorHeight/2);
+    sidebarIndicatorP = ofGetHeight() - (((sidebarHeight/2) - indicatorHeight) * sinP + (indicatorHeight/2)) - (sidebarMargin*2 + indicatorHeight/2)-(indicatorHeight/2);
 }
 
 // void ofApp::updatePollution() 
@@ -744,7 +746,8 @@ void ofApp::drawOrganism()
 
 
 void ofApp::drawSidebars() 
-{   cout << currentPollution << endl;
+{   
+    // cout << currentPollution << endl;
     // draw left sidebar
     ofMesh mesh;
     mesh.enableColors();

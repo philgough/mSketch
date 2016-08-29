@@ -21,7 +21,7 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
 
     // draw the shape
     for (int i = 0; i < 360; i += 18) {
-        float radius = 12;
+        radius = 12;
         float r = ofDegToRad(i);
         
         float x = sin(r) * radius;
@@ -69,7 +69,7 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
         zVal = ofMap(zVal, 6.8, 8.4, 0, 1);
     }
     else {
-        zVal = ofMap(zVal, 0.0, 0.3, 0.0, 1.0);
+        zVal = ofMap(zVal, 0.0, 0.3, 0.0, 0.30);
     }
     brightness = 0;
 
@@ -81,6 +81,7 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
 
 
 void Organism::drawOrganism() {
+    // if (type == 0) {
     // shape.enableColors();
     // shape.clearColors();
     // // cout << health << endl;
@@ -120,7 +121,7 @@ void Organism::drawOrganism() {
     shape.draw();
     ofPopMatrix();
     isBeingInspected = false;
-    
+    // }
 }
 
 
@@ -155,7 +156,8 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //                cout<< "negative pH, z > phVal, " << zVal << ":" << phVal << ":" << health << endl;
             }
 //            health = 0;
-            organismColor.setHsb(157, health * 150, 155);
+            organismColor.setHsb(157, health * 200, 155);
+            // organismColor.setHsb(0, 255, 255);
             break;
             
             
@@ -177,43 +179,55 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
 //                cout<< "positive pH, z > phVal, " << zVal << " : " << *phVal << " : " << health << endl;
             }
 //            health = 0;
-            organismColor.setHsb(157, health * 150, 60);
+            organismColor.setHsb(187, health * 230, 200);
             break;
 //
         case 2:
             // phosphorus, negative reaction
             if (zVal < health) {
 //                health = py(health, .5, zVal);
-//                cout<< "negative pollution, z < health, " << zVal << " : " << health << " : " << *healthIndex << endl;
                 health = 0.95 + log(health - zVal);
             }
             else {
 //                health = qy(health, .5, zVal);
-                health = 0.6 - log(zVal - health);
+                float lv = log(zVal - health);
+                health = 0;
+                if (lv > 0) {
+                    health = 0.6 - lv;
+                }
                 
 //                cout<< "negative pollution, z > health, " << zVal << " : " << health << " : " << *healthIndex << endl;
 //                health = 0;
             }
-            organismColor.setHsb(73, health * 188, 219);
+            organismColor.setHsb(53, health * 350, 119);
+            // cout << "negative pollution, zVal:" << zVal << "; healthValue: " << health << "; healthIndex: " << *healthIndex << endl;
             break;
             
         case 3:
 //            cout << "case : 3, health:" << health << endl;
             // phosphorus, positive reaction
             if (zVal < health) {
-//                health = 0.0;
-//                health = ry(health, .5, zVal);
-                health = 0.5+log(health - zVal)/3;
+               // health = 0.0;
+               // health = ry(health, .5, zVal);
+                float lv = log(health - zVal) / 3;
+                // cout << "lv: " << lv << endl;
+                health = 0;
+                if (lv > 0) {
+                    health = 0.5+lv;
+                }
 //                cout<< "positive pollution, z < health, " << zVal << " : " << health << endl;
+
+
             }
             else {
 //                health = 0.0;
 //                health = sy(health, .5, zVal);
                 health = 0.5-log(zVal - health)/3;
 //                cout<< "positive pollution, z > health, " << zVal <<  " : " << health << endl;
-                
             }
-            organismColor.setHsb(73, health * 188, 92);
+            organismColor.setHsb(43, health * 350, 152);
+            // organismColor.setHsb(0, 255, 255);
+            // cout << "negative pollution, zVal:" << zVal << "; healthValue: " << health << "; healthIndex: " << *healthIndex << endl;
             break;
             
             
@@ -241,15 +255,15 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
     // organismYPos += ofGetFrameNum()/10;
      // float yOffset;
     // cout << organismYPos << endl;
-    if (health < 0.2 && ofGetHeight() - (location.y + organismYPos) > 1)
+    if (health < 0.2 && (ofGetHeight() - radius) - (location.y + organismYPos) > 1)
     {
-        organismYPos =+ 0.03 * (ofGetHeight() - (organismYPos + location.y));
+        organismYPos =+ 0.05 * ((ofGetHeight() - radius) - (organismYPos + location.y));
     }
     
     if (health > 0.2 && (location.y + organismYPos) - startLocation.y > 1)
     {
         // cout << health << endl;
-        organismYPos =+ 0.03 * (startLocation.y - (organismYPos + location.y));
+        organismYPos =+ 0.05 * (startLocation.y - (organismYPos + location.y));
     }
     // cout << "start: "<< organismYPos << " + " << yOffset; 
 

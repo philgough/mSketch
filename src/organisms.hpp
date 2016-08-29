@@ -46,6 +46,7 @@ private:
     float brightness;
 
     float chance;
+    float radius;
 };
 
 #endif /* organisms_hpp */
