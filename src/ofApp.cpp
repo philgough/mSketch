@@ -11,10 +11,7 @@ void ofApp::setup()
     setupPP();
     setupImages();
     setupBox2d();
-    // setupStars();
     setupOpenni();
-    // setupBug();
-    // setupWelcomeScreen();
     setupOrganisms();
 }
 
@@ -23,7 +20,7 @@ void ofApp::variableSetup()
 {
     // _masterState = SCORE_SCREEN;
 //    ofEnableSmoothing();
-    ofSetFrameRate(25);
+    // ofSetFrameRate(25);
     sidebarHeight = ofGetHeight() - (2*sidebarMargin);
 
 }
@@ -125,9 +122,7 @@ void ofApp::setupPP()
 
 void ofApp::setupImages() 
 {
-   // land layer
-    location = 0;
-   
+   // land layer   
    bush.load("background_bush.png");
    city.load("background_city.png");
    farm.load("background_farm.png");
@@ -297,10 +292,6 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
 
 
 
-
-
-
-
 //// _____      update functions    __________ \\
 
 
@@ -309,16 +300,10 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
 
 void ofApp::update()
 {
-  updateMain();
-}
 
-
-void ofApp::updateMain()
-{
-    // updatePollution();
     updateOpenNi();
     updateEnvironment();
-
+    updateBox2d();
 }
 
 
@@ -341,6 +326,53 @@ void ofApp::updateOpenNi()
 }
 
 
+
+void ofApp::updateBox2d() 
+{
+   int numCircles = 50;
+    // add some new circles
+
+    if((int)ofRandom(0, 60 - (currentPollution * 100)) < 1.3 - currentPollution) {
+       shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
+       c.get()->setPhysics(0.3, 0.6, 0.012);
+       c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), ofGetHeight() - (_benth_h + _riv_h), 10);
+       c.get()->setVelocity(ofRandom(7)-3.5, ofRandom(3)); // shoot them down!
+       circles.push_back(c);
+    }
+
+    vector   <shared_ptr<ofxBox2dCircle> > tempCircles; // default box2d circles
+
+    for (int i  = 0; i < circles.size(); i++) {
+       float x =circles[i].get() -> getPosition().x;
+       float y =circles[i].get() -> getPosition().y;
+       if (y < ofGetHeight()) {
+           tempCircles.push_back(circles.at(i));
+           if (y > ofGetHeight() - _benth_h) {
+               for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
+                   float x2 = benthicPoly[j].getCentroid2D().x;
+                   float y2 = benthicPoly[j].getCentroid2D().y - (270); // this offset number is here because we adjusted the scales of the voronoi regions
+
+                   float dist = ofDist(x, y, x2, y2);
+                   if (dist < 60 && pollutionOffset.at(j) > -175) {
+                       pollutionOffset.at(j) -= 15 - dist / 6;
+                   }
+               }
+           }
+       }
+    }
+    circles = tempCircles;
+    tempCircles.clear();
+
+    // update the physics engine
+    box2d.update();
+    if (ofGetFrameNum() % 5 == 0)
+    {
+        for (int i = 0; i < pollutionOffset.size(); i++) 
+        {
+            pollutionOffset[i] *= 0.95;
+        }
+    }
+}
 
 
 
@@ -386,7 +418,7 @@ void ofApp::drawMain()
     drawLand();
     drawRiver();
     drawBenthic();
-    // drawBox2d();
+    drawBox2d();
     // drawStars();
     // drawBug();
     // drawMainTimer();
@@ -467,11 +499,11 @@ void ofApp::drawLand()
 {
     ofSetColor(255);
     sky.draw(0, 0);
-    cout << currentPollution << endl;
+    // cout << currentPollution << endl;
     
-    if (currentPollution > .1 && currentpH < .45)
+    if (currentPollution > .1 && currentPollution < .45)
     {
-        if (ofGetWidth() - landShiftX > .3)
+        if (abs(ofGetWidth() - landShiftX) > .3)
         {
             landShiftX += 0.05 * (ofGetWidth()- landShiftX);
         }
@@ -480,12 +512,12 @@ void ofApp::drawLand()
     else if (currentPollution > .45)
     {
         // landShiftX *= .3;
-        if (ofGetWidth()*2 - landShiftX > .3)
+        if (abs(ofGetWidth()*2 - landShiftX) > .3)
         {
             landShiftX += 0.05 * (ofGetWidth()*2 - landShiftX);
         }
     }
-    else if (landShiftX > .3)
+    else if (currentPollution < .1 && landShiftX > 0.3)
     {
         landShiftX -= 0.05 * landShiftX;
     }
@@ -663,3 +695,16 @@ void ofApp::drawSidebarIndicators()
 }
 
 
+
+void ofApp::drawBox2d() 
+{
+//    
+    // some circles :)
+    ofSetColor(151, 122, 93, 120);
+    for (int i=0; i<circles.size(); i++) {
+       ofFill();
+    //        ofSetHexColor(0xc0dd3b);
+       circles[i].get()->draw();
+    }
+
+}

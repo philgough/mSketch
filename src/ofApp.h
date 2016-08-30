@@ -279,7 +279,7 @@ class ofApp : public ofBaseApp{
     float sinP;
     float sinPh;
     int sidebarAlphaL, sidebarAlphaR;
-    // void updateOrganism();
+    void updateBox2d();
 
     float landShiftX = 0;
 };
