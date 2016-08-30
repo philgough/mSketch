@@ -14,6 +14,8 @@
 
 #include "ofxTextBlock.h"
 
+//#include "openni_motor.cpp"
+
 
 class ofApp : public ofBaseApp{
 	public:
@@ -266,6 +268,7 @@ class ofApp : public ofBaseApp{
     
 
     void drawSidebars();
+    void drawSidebarIndicators();
     float sidebarMargin = 60;
     float sidebarWidth = 80;
     float sidebarHeight;
@@ -275,5 +278,8 @@ class ofApp : public ofBaseApp{
     float indicatorHeight = 40;
     float sinP;
     float sinPh;
+    int sidebarAlphaL, sidebarAlphaR;
     // void updateOrganism();
+
+    float landShiftX = 0;
 };
