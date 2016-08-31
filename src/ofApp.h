@@ -14,7 +14,7 @@
 
 #include "ofxTextBlock.h"
 
-//#include "openni_motor.cpp"
+#include "ofxTuio.h"
 
 
 class ofApp : public ofBaseApp{
@@ -98,7 +98,7 @@ class ofApp : public ofBaseApp{
     void setupOpenni();
     void updateOpenNi();
     void drawSkele();
-    void drawHands();
+    void drawoOpenNi();
     void userEvent(ofxOpenNIUserEvent & event);
 
     
@@ -280,6 +280,19 @@ class ofApp : public ofBaseApp{
     float sinPh;
     int sidebarAlphaL, sidebarAlphaR;
     void updateBox2d();
-
+    bool usingOpenNI = false;
     float landShiftX = 0;
+
+    // TUIO functions etc
+    void setupTuio();
+    void tuioAdded(ofxTuioCursor & tuioCursor);
+    void tuioRemoved(ofxTuioCursor & tuioCursor);
+    void tuioUpdated(ofxTuioCursor & tuioCursor);
+
+    ofxTuioClient tuioClient;
+
+    void drawTuio();
+    vector <ofPoint> tuioLocations;
+    vector <float> tuioIndex;
+   vector <int> tuioLastUpdate;
 };

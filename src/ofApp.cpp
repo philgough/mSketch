@@ -11,7 +11,13 @@ void ofApp::setup()
     setupPP();
     setupImages();
     setupBox2d();
-    setupOpenni();
+    if (usingOpenNI) 
+    {
+        setupOpenni();
+    }
+    else {
+        setupTuio();
+    }
     setupOrganisms();
 }
 
@@ -278,7 +284,14 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
 }
 
 
+void ofApp::setupTuio()
+{
+    tuioClient.start(3333);
 
+    ofAddListener(tuioClient.cursorAdded, this, &ofApp::tuioAdded);
+    ofAddListener(tuioClient.cursorRemoved, this, &ofApp::tuioRemoved);
+    ofAddListener(tuioClient.cursorUpdated, this, &ofApp::tuioUpdated);
+}
 
 
 
@@ -300,8 +313,15 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
 
 void ofApp::update()
 {
-
-    updateOpenNi();
+    // update the hand tracking
+    if (usingOpenNI)
+    {
+        openNIDevice.update();
+    }    
+    else
+    {
+        tuioClient.getMessage();
+    }
     updateEnvironment();
     updateBox2d();
 }
@@ -313,16 +333,6 @@ void ofApp::updateEnvironment()
     sinPh = sin(ofGetFrameNum()/330.0) + 1;
     currentPollution = phosMax * sinP;
     currentpH = phRange * sinPh;
-    // cout << currentPollution << " : " << currentpH << endl;
-//    sidebarIndicatorP = ((sidebarHeight/2) - indicatorHeight) * sinP + (indicatorHeight/2);
-//    sidebarIndicatorPh = ((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2);
-}
-
-
-
-void ofApp::updateOpenNi() 
-{
-    openNIDevice.update();
 }
 
 
@@ -407,7 +417,7 @@ void ofApp::draw()
 
     // drawSwitch(_masterState);
     ofSetColor(200, 200, 20);
-    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate()) + " circles.size(): " + ofToString(circles.size());
+    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " circles.size(): " + ofToString(circles.size());
     ofDrawBitmapString(msg, 10, 14);
 
 
@@ -424,7 +434,14 @@ void ofApp::drawMain()
     // drawMainTimer();
     drawOrganism();
     drawSidebars();
-    drawHands();
+    if (usingOpenNI)
+    {
+        drawoOpenNi();
+    }
+    else 
+    {
+        drawTuio();
+    }
     drawSidebarIndicators();
 }
 
@@ -598,12 +615,13 @@ void ofApp::drawSidebars()
 
 
 
-void ofApp::drawHands()
+void ofApp::drawoOpenNi()
 {
     sidebarAlphaL = 100;
     sidebarAlphaR = 100;
 //     openNIDevice.drawDebug(1500, 20, 486, 144);
 //    cout << openNIDevice.getNumTrackedHands() << endl;
+
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++)
     {
         ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
@@ -665,6 +683,83 @@ void ofApp::drawHands()
 }
 
 
+
+void ofApp::drawTuio()
+{
+    sidebarAlphaL = 100;
+    sidebarAlphaR = 100;
+
+    ofFill();
+    ofSetColor(0);
+
+    for (int i = 0; i < tuioLocations.size(); i++)
+    {
+        // ofDrawCircle(tuioLocations.at(i).x,tuioLocations.at(i).y, 20);
+
+
+        ofPoint handPosition = tuioLocations.at(i);
+
+//        ofPoint & handPosition = hand.getWorldPosition();
+        ofSetColor(25, 180, 95);
+        ofFill();
+        ofDrawCircle(handPosition.x, handPosition.y, 10);
+//        cout << handPosition << endl;
+        // see if it's inside the left sidebar
+        ofVec2f insidePoint, cornerPoint;
+        insidePoint.set(sidebarMargin + sidebarWidth, ofGetHeight() - sidebarMargin);
+        // top left
+        cornerPoint.set(sidebarMargin, sidebarMargin);
+        if (handPosition.x < insidePoint.x && handPosition.y < insidePoint.y)
+        {
+            if (cornerPoint.x < handPosition.x && cornerPoint.y < handPosition.y) 
+            {
+
+                // sinPh = 2 - ofMap(hand.getPosition().y, 0, openNIDevice.getHeight(), 0, sidebarHeight)/(ofGetHeight());
+                sinPh = 2 - ofMap(handPosition.y, sidebarMargin, ofGetHeight() - sidebarMargin, 0, 2);
+                // cout << "over the lhs sidebar on frame " << ofGetFrameNum() << endl;
+                // sinPh = (handPosition.y - sidebarMargin)/indicatorHeight;
+                // cout << sinPh << endl;
+                sidebarAlphaL = 255;
+                currentpH = phRange * sinPh;
+                for (int i = 0; i < organisms.size(); i++) {
+                    organisms.at(i).updateOrganism(&currentPollution, &currentpH);
+                }
+            }
+        }
+        //
+        insidePoint.set(ofGetWidth() - (sidebarMargin + sidebarWidth), sidebarMargin);
+        cornerPoint.set(ofGetWidth() - sidebarMargin, ofGetHeight() - sidebarMargin);
+        if (handPosition.x > insidePoint.x && handPosition.y > insidePoint.y)
+        {
+            if (cornerPoint.x > handPosition.x && cornerPoint.y > handPosition.y)
+            {
+//                cout << "over the rhs sidebar on frame" << ofGetFrameNum() << endl;
+                // sinP = 0;
+                // sinP = 2 - ofMap(hand.getPosition().y, 0, openNIDevice.getHeight(), 0, sidebarHeight)/(ofGetHeight());
+                sinP = 2 - ofMap(handPosition.y, sidebarMargin, ofGetHeight() - sidebarMargin, 0, 2);
+                // cout << "over the lhs sidebar on frame " << ofGetFrameNum() << endl;
+                // sinPh = (handPosition.y - sidebarMargin)/indicatorHeight;
+                // cout << sinPh << endl;
+                sidebarAlphaR = 255;
+                currentPollution = phosMax * sinP;
+                for (int i = 0; i < organisms.size(); i++) {
+                    organisms.at(i).updateOrganism(&currentPollution, &currentpH);
+                }
+            }
+        }
+
+
+
+
+
+    }
+}
+
+
+
+
+
+
 void ofApp::drawSidebarIndicators()
 {
     sidebarIndicatorPh = ofGetHeight() - (((sidebarHeight/2) - indicatorHeight) * sinPh + (indicatorHeight/2)) - (sidebarMargin*2 + indicatorHeight/2)-(indicatorHeight/2);
@@ -708,3 +803,77 @@ void ofApp::drawBox2d()
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ofApp::tuioAdded(ofxTuioCursor &tuioCursor){
+    ofPoint loc = ofPoint(tuioCursor.getX()*ofGetWidth(),ofMap(tuioCursor.getY(), 0, 1, -150, 150 + ofGetHeight()));
+    tuioLocations.push_back(loc);
+    tuioIndex.push_back(tuioCursor.getSessionId());
+    tuioLastUpdate.push_back(ofGetElapsedTimeMillis());
+    // cout << "Point n" << tuioCursor.getSessionId() << " add at " << loc << endl;
+}
+
+void ofApp::tuioUpdated(ofxTuioCursor &tuioCursor){
+    ofPoint loc = ofPoint(tuioCursor.getX()*ofGetWidth(),ofMap(tuioCursor.getY(), 0, 1, -150, 150 + ofGetHeight()));
+    for (int i = 0; i < tuioLocations.size(); i++)
+    {
+        if (tuioCursor.getSessionId() == tuioIndex.at(i))
+        {
+            tuioLocations.at(i).set(loc);
+            tuioLastUpdate.at(i) = ofGetElapsedTimeMillis();
+        }
+    }
+    // cout << "Point n" << tuioCursor.getSessionId() << " updated at " << loc << endl;
+}
+
+void ofApp::tuioRemoved(ofxTuioCursor &tuioCursor){
+    ofPoint loc = ofPoint(tuioCursor.getX()*ofGetWidth(),tuioCursor.getY()*ofGetHeight());
+    
+    vector <ofPoint> tempLocations;
+    vector <float> tempIndex;
+        
+    for (int i = 0; i < tuioIndex.size(); i++)
+    {
+        if (tuioCursor.getSessionId() != tuioIndex.at(i) && tuioLastUpdate.at(i) + 2000 < ofGetElapsedTimeMillis())
+        {
+            tempLocations.push_back(tuioLocations.at(i));
+            tempIndex.push_back(tuioCursor.getSessionId());
+        }
+        else {
+            cout << tuioCursor.getSessionId() << endl;
+        }
+    }
+    cout << "locaitons: " << tuioLocations.size() << ", index: " << tuioIndex.size() << endl;
+    tuioLocations = tempLocations;
+    tuioIndex = tempIndex;
+    tempLocations.clear();
+    tempIndex.clear();
+    // cout << "Point n" << tuioCursor.getSessionId() << " remove at " << loc << endl;
+}
+
