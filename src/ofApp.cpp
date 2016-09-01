@@ -19,6 +19,7 @@ void ofApp::setup()
         setupTuio();
     }
     setupOrganisms();
+    setupCharacters();
 }
 
 
@@ -28,6 +29,11 @@ void ofApp::variableSetup()
 //    ofEnableSmoothing();
     // ofSetFrameRate(25);
     sidebarHeight = ofGetHeight() - (2*sidebarMargin);
+    sinRate = 450;
+    if (!usingOpenNI)
+    {
+        sinRate = sinRate * 2;
+    }
 
 }
 
@@ -294,6 +300,51 @@ void ofApp::setupTuio()
 }
 
 
+void ofApp::setupCharacters()
+{
+    Character anthony = Character("faceA.png", ofGetWidth() - 700, 260, "script.csv", 0, 600, 350, 600);
+    characters.push_back(anthony);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -324,13 +375,14 @@ void ofApp::update()
     }
     updateEnvironment();
     updateBox2d();
+    // UpdateCharacters();
 }
 
 
 void ofApp::updateEnvironment() 
 {
-    sinP = sin(ofGetFrameNum()/350.0) + 1;
-    sinPh = sin(ofGetFrameNum()/330.0) + 1;
+    sinP = sin(ofGetFrameNum()/sinRate) + 1;
+    sinPh = sin(ofGetFrameNum()/(sinRate *.89)) + 1;
     currentPollution = phosMax * sinP;
     currentpH = phRange * sinPh;
 }
@@ -385,7 +437,10 @@ void ofApp::updateBox2d()
 }
 
 
-
+// void ofApp::racters()
+// {
+//     characters.start().UpdateCharacter();
+// }UpdateCha
 
 
 
@@ -443,6 +498,7 @@ void ofApp::drawMain()
         drawTuio();
     }
     drawSidebarIndicators();
+    drawCharacters();
 }
 
 
@@ -805,6 +861,11 @@ void ofApp::drawBox2d()
 }
 
 
+void ofApp::drawCharacters()
+{
+    characters.at(0).drawCharacter(ofGetElapsedTimeMillis()%100, 0);
+}
+
 
 
 
@@ -866,10 +927,10 @@ void ofApp::tuioRemoved(ofxTuioCursor &tuioCursor){
             tempIndex.push_back(tuioCursor.getSessionId());
         }
         else {
-            cout << tuioCursor.getSessionId() << endl;
+            // cout << tuioCursor.getSessionId() << endl;
         }
     }
-    cout << "locaitons: " << tuioLocations.size() << ", index: " << tuioIndex.size() << endl;
+    // cout << "locaitons: " << tuioLocations.size() << ", index: " << tuioIndex.size() << endl;
     tuioLocations = tempLocations;
     tuioIndex = tempIndex;
     tempLocations.clear();

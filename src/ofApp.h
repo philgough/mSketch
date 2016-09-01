@@ -180,7 +180,7 @@ class ofApp : public ofBaseApp{
 //    Character Kate;
 //    Character Thomas;
     vector <Character> characters;
-    
+    // Character anthony;
     
     // things the characters to/say to the user
     void setupCharacters();
@@ -190,6 +190,7 @@ class ofApp : public ofBaseApp{
     int talkingTimer;
     int dayTimer;
     string spokenMessage;
+
     
     
     // drawing states
@@ -270,7 +271,7 @@ class ofApp : public ofBaseApp{
     void drawSidebars();
     void drawSidebarIndicators();
     float sidebarMargin = 60;
-    float sidebarWidth = 80;
+    float sidebarWidth = 80; 
     float sidebarHeight;
     void updateEnvironment();
     float sidebarIndicatorP = 0;
@@ -294,5 +295,7 @@ class ofApp : public ofBaseApp{
     void drawTuio();
     vector <ofPoint> tuioLocations;
     vector <float> tuioIndex;
-   vector <int> tuioLastUpdate;
+    vector <int> tuioLastUpdate;
+
+    float sinRate;
 };

@@ -3,8 +3,8 @@
 
 //========================================================================
 int main( ){
-    ofAppGlutWindow window;
-    window.setGlutDisplayString("rgba double samples>=4");
+//    ofAppGlutWindow window;
+//    window.setGlutDisplayString("rgba double samples>=4");
 	ofSetupOpenGL(1920,1040,OF_WINDOW);			// <-------- setup the GL context
 //    ofSetupOpenGL(1920, 1080,OF_FULLSCREEN);
 	// this kicks off the running of my app

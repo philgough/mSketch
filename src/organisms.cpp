@@ -257,22 +257,33 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
     // cout << organismYPos << endl;
     if (health < 0.2 && (ofGetHeight() - radius) - (location.y + organismYPos) > 1)
     {
-        organismYPos =+ 0.05 * ((ofGetHeight() - radius) - (organismYPos + location.y));
+        organismYPos =+ 0.03 * ((ofGetHeight() - radius) - (organismYPos + location.y));
     }
     
     if (health > 0.2 && (location.y + organismYPos) - startLocation.y > 1)
     {
         // cout << health << endl;
-        organismYPos =+ 0.05 * (startLocation.y - (organismYPos + location.y));
+        organismYPos =+ 0.03 * (startLocation.y - (organismYPos + location.y));
+    }
+    if (location.y + organismYPos > ofGetHeight()) 
+    {
+        location.set(startLocation.x, ofGetHeight());
+    }
+    else if (location.y + organismYPos < startLocation.y)
+    {
+        location.set(startLocation);
+    }
+    else 
+    {
+        location.set(startLocation.x, location.y + organismYPos);
     }
     // cout << "start: "<< organismYPos << " + " << yOffset; 
 
     // organismYPos += yOffset;
     // cout << ", end: " << organismYPos << endl;
-    location.set(startLocation.x, location.y + organismYPos);
     // noisex += health;
     // noisey += health;
-    noiser += 0.0005 * health;
+    noiser += 0.005 * health;
 }
 
 

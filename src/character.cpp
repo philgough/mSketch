@@ -11,7 +11,8 @@
 
 
 
-Character::Character(string imageLoc, float tempX, float tempY, string textFileName, int characterIndex, float textxpos, float textypos, float tempTextWidth) {
+Character::Character(string imageLoc, float tempX, float tempY, string textFileName, int characterIndex, float textxpos, float textypos, float tempTextWidth)
+{
     face.load(imageLoc);
     x = tempX;
     y = tempY;
@@ -44,7 +45,8 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 }
 
 
-void Character::drawCharacter(int timer, int location) {
+void Character::drawCharacter(int timer, int location) 
+{
 
     // check the timer to see if they're saying something.
     for (int i = 0; i < autoTriggers.size(); ++i)
@@ -64,7 +66,8 @@ void Character::drawCharacter(int timer, int location) {
 
 }
 
-void Character::drawNow(string text) {
+void Character::drawNow(string text) 
+{
         ofSetColor(255);
         face.draw(drawPoint, sx, sy);
         ofFill();
@@ -75,7 +78,8 @@ void Character::drawNow(string text) {
         textBox.draw(textX, textY);
 }	
 
-void Character::updateCharacter() {
+void Character::updateCharacter() 
+{
     
 }
 
