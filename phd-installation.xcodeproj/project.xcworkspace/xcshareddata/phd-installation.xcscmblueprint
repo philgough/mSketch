@@ -1,0 +1,93 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "3FE43ED65F7B5EBAC2A8462A30956907861C5676",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "16B7187201342D75D9906D4828F49146C0CBB89C" : 0,
+    "E405B7BB2A09A6AEBFC7DABE78D91B8B66657ADA" : 0,
+    "9E296B1AACC0B24F9D69D66CDC4D31D55E80D8AA" : 0,
+    "183C10D9A6076F06706513038F80CE3782D38B30" : 0,
+    "5F3EB398CBCF0203D8F1486A280F7CD4E01F5619" : 0,
+    "903165F9FDCB952EAE50578862E56DA722F43224" : 0,
+    "3FE43ED65F7B5EBAC2A8462A30956907861C5676" : 0,
+    "124CCB9B44A9FE82887AA6F64CCD17FE54B342A7" : 0,
+    "007FBC1B650388E1825ACF397000A981AADD7017" : 0,
+    "D8811CE32924E36E8903BAF4011407E4BAF64556" : 0,
+    "7D7EC3C29EF79929D82563AF7E4C175E0FC52A89" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "00BC2F2F-E313-4FDC-900F-A100BF081B6F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "16B7187201342D75D9906D4828F49146C0CBB89C" : "..\/..\/addons\/ofxKinectBlobFinder",
+    "E405B7BB2A09A6AEBFC7DABE78D91B8B66657ADA" : "mySketch\/ofxTuio\/",
+    "9E296B1AACC0B24F9D69D66CDC4D31D55E80D8AA" : "..\/..\/addons\/ofxVoronoi2D",
+    "183C10D9A6076F06706513038F80CE3782D38B30" : "..\/..\/addons\/ofxVoronoi",
+    "5F3EB398CBCF0203D8F1486A280F7CD4E01F5619" : "..\/..\/addons\/ofxVoronoiGL",
+    "903165F9FDCB952EAE50578862E56DA722F43224" : "..\/..\/addons\/ofxBox2d",
+    "3FE43ED65F7B5EBAC2A8462A30956907861C5676" : "mySketch\/",
+    "124CCB9B44A9FE82887AA6F64CCD17FE54B342A7" : "..\/..\/addons\/ofxCsv",
+    "007FBC1B650388E1825ACF397000A981AADD7017" : "mySketch\/ofxOsc\/",
+    "D8811CE32924E36E8903BAF4011407E4BAF64556" : "..\/..\/addons\/ofxOpenNI",
+    "7D7EC3C29EF79929D82563AF7E4C175E0FC52A89" : "..\/..\/addons\/ofxTextSuite"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "phd-installation",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "phd-installation.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/hideyukisaito\/ofxOsc.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "007FBC1B650388E1825ACF397000A981AADD7017"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/paulvollmer\/ofxCsv.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "124CCB9B44A9FE82887AA6F64CCD17FE54B342A7"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/dasaki\/ofxKinectBlobFinder.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "16B7187201342D75D9906D4828F49146C0CBB89C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/madc\/ofxVoronoi.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "183C10D9A6076F06706513038F80CE3782D38B30"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/philgough\/mSketch.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "3FE43ED65F7B5EBAC2A8462A30956907861C5676"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/fx-lange\/ofxVoronoiGL.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5F3EB398CBCF0203D8F1486A280F7CD4E01F5619"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Furkanzmc\/ofxTextSuite.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7D7EC3C29EF79929D82563AF7E4C175E0FC52A89"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/vanderlin\/ofxBox2d.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "903165F9FDCB952EAE50578862E56DA722F43224"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/xionluhnis\/ofxVoronoi2D.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9E296B1AACC0B24F9D69D66CDC4D31D55E80D8AA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gameoverhack\/ofxOpenNI.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D8811CE32924E36E8903BAF4011407E4BAF64556"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/patriciogonzalezvivo\/ofxTuio.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E405B7BB2A09A6AEBFC7DABE78D91B8B66657ADA"
+    }
+  ]
+}
