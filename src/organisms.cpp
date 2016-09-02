@@ -31,8 +31,8 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
     }
     
     // movement and rotation
-    noisex = ofRandom(.3);
-    noisey = ofRandom(.3);
+    // noisex = ofRandom(.3);
+    // noisey = ofRandom(.3);
     noiser = ofRandom(.3);
     movementArea.set(ofRandom(40), ofRandom(40));
     startAngle = ofRandom(720);
@@ -75,53 +75,26 @@ Organism::Organism(int tempIndex, ofVec2f tempLocation, int tempType, map<string
 
     
     
-    isBeingInspected = false;
+    // isBeingInspected = false;
 }
 
 
 
 void Organism::drawOrganism() {
-    // if (type == 0) {
-    // shape.enableColors();
-    // shape.clearColors();
-    // // cout << health << endl;
-//    cout << organismColor.getHue() << endl;
-    // cout << health << ": " << organismColor.getHue() << ": " << organismColor.getSaturation() << ": " << organismColor.getBrightness() << endl;
-//    updateOrganism();
-    // addColours();
+
     ofPushMatrix();
     ofTranslate(location);
     ofRotate(startAngle + 720 * ofNoise(noiser));
     shape.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
     ofSetColor(organismColor);
     shape.draw();
-    // shape.clearColors();
-    // for (int i=0; i<shape.getNumVertices(); i++) {
-    //     float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 + (1.0+type)  * 12.5));
-    //     shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
-    // }
-    
-//    if (isBeingInspected) {
-////        cout << "inspecting this organism:" << index << endl;
-//        for (int i=0; i<shape.getNumVertices(); i++) {
-//            shape.addColor(ofFloatColor::fromHsb(0, 1, 1));
-////            shape.addColor(ofFloatColor(0));
-//        }
-//    }
-//    else {
-//        for (int i=0; i<shape.getNumVertices(); i++) {
-////            shape.addColor(ofFloatColor(ofGetFrameNum()%255)/25.5);
-//            float h = (type+1.1 + index/100.0)/9.5+0.0125*sin(ofDegToRad(7.5 + type * 12.5));
-//            shape.addColor(ofFloatColor::fromHsb(h, 0.75, .6));
-//        }
-//    }
+
     
     ofSetColor(255);
     shape.setMode(OF_PRIMITIVE_LINE_LOOP);
     shape.draw();
     ofPopMatrix();
-    isBeingInspected = false;
-    // }
+    // isBeingInspected = false;
 }
 
 
@@ -238,23 +211,10 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
     if (health < 0) {health = 0;}
     if (health > 1) {health = 1;}
 
-//    float alpha = health * 255.0;
 
-//    cout << health << ": " << organismColor.getHue() << ": " << organismColor.getSaturation() << ": " << organismColor.getBrightness() << endl;
-    // organismColor.set(0);   
-    // update position and rotation
-
-    // cout << health << endl;
-    
-    // float getorganismYPos = ofGetHeight();
-
-    // getorganismYPos -= startLocation.y;
-
-    // isdead = health == 0;
-    // float organismYPos = 0.0;
-    // organismYPos += ofGetFrameNum()/10;
-     // float yOffset;
-    // cout << organismYPos << endl;
+    // noisex += 0.05 * health;
+    // noisey += 0.05 * health;
+    noiser += 0.005 * health;
     if (health < 0.2 && (ofGetHeight() - radius) - (location.y + organismYPos) > 1)
     {
         organismYPos =+ 0.03 * ((ofGetHeight() - radius) - (organismYPos + location.y));
@@ -277,13 +237,7 @@ void Organism::updateOrganism(float* healthIndex, float *phVal) {
     {
         location.set(startLocation.x, location.y + organismYPos);
     }
-    // cout << "start: "<< organismYPos << " + " << yOffset; 
 
-    // organismYPos += yOffset;
-    // cout << ", end: " << organismYPos << endl;
-    // noisex += health;
-    // noisey += health;
-    noiser += 0.005 * health;
 }
 
 

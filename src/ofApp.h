@@ -98,7 +98,7 @@ class ofApp : public ofBaseApp{
     void setupOpenni();
     void updateOpenNi();
     void drawSkele();
-    void drawoOpenNi();
+    void drawOpenNI();
     void userEvent(ofxOpenNIUserEvent & event);
 
     
@@ -236,7 +236,7 @@ class ofApp : public ofBaseApp{
     string welcomeStringB = "Great, let's get started!";
 
     int timer;
-    
+    int lastUserInput = 0;
     void drawSwitch(int s);
     void nextState();
     void lastState();
@@ -281,7 +281,7 @@ class ofApp : public ofBaseApp{
     float sinPh;
     int sidebarAlphaL, sidebarAlphaR;
     void updateBox2d();
-    bool usingOpenNI = false;
+    bool usingOpenNI = true;
     float landShiftX = 0;
 
     // TUIO functions etc
@@ -298,4 +298,6 @@ class ofApp : public ofBaseApp{
     vector <int> tuioLastUpdate;
 
     float sinRate;
+
+    void drawHands(ofPoint loc);
 };

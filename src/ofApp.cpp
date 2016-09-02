@@ -49,7 +49,8 @@ void ofApp::setupPP()
 
     // push the points from the class to a list...
     numPoints = pp.pp.size();
-    for (int i = 0; i < numPoints; i++) {
+    for (int i = 0; i < numPoints; i++) 
+    {
        pointList.push_back(pp.pp.at(i).location);
     }
 
@@ -58,14 +59,16 @@ void ofApp::setupPP()
     // list of points to hold the points of the river
     vector<ofPoint> riverPoints;
     // for each point we found
-    for (int i = 0; i < numPoints; i++) {
+    for (int i = 0; i < numPoints; i++) 
+    {
        float mapx = ofMap(pointList.at(i).x, 0, _riv_w, 0, _riv_w * widthScale);
        
        
        // add the ofxPoint from our first list to the second
        ofPoint pv = ofPoint(mapx, pointList.at(i).y);
        pv.set(mapx, pointList.at(i).y);
-       if (mapx < ofGetWidth()) {
+       if (mapx < ofGetWidth()) 
+       {
            riverPoints.push_back(pv);
        }       
     }
@@ -82,7 +85,8 @@ void ofApp::setupPP()
     riverPoints.clear();
 
     // create the voronoi cells around each of the poisson points
-    for (int i = 0; i < voronoiRiver.getCells().size(); i++ ) {
+    for (int i = 0; i < voronoiRiver.getCells().size(); i++ ) 
+    {
        auto cell = voronoiRiver.getCells().at(i);
        riverPoints.push_back(cell.pt);
     }
@@ -98,11 +102,13 @@ void ofApp::setupPP()
     pointList.clear();
     numPoints = pp.pp.size();
     cout << "benthic points created: " << numPoints << endl;
-    for (int i = 0; i < numPoints; i++) {
+    for (int i = 0; i < numPoints; i++) 
+    {
        pointList.push_back(pp.pp.at(i).location);
     }
     vector<ofPoint> benthicPoints;
-    for (int i = 0; i < numPoints; i++) {
+    for (int i = 0; i < numPoints; i++) 
+    {
        pollutionOffset.push_back(0);
        ofPoint pv = ofPoint(pointList.at(i).x, pointList.at(i).y);
        benthicPoints.push_back(pv);
@@ -121,8 +127,10 @@ void ofApp::setupPP()
     ofPolyline tempPoints;
 
     vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
-    for(int i=0; i<pointList.size(); i++) {
-       for (int j = 0; j < cells[i].pts.size(); j++) {
+    for(int i=0; i<pointList.size(); i++) 
+    {
+       for (int j = 0; j < cells[i].pts.size(); j++) 
+       {
            // I have no idea why you need to take 860 off x here??
            tempPoints.addVertex(ofPoint(cells[i].pts[j].x - 860, cells[i].pts[j].y) + 860);
        }
@@ -167,7 +175,7 @@ void ofApp::setupOpenni()
     openNIDevice.addDepthGenerator();
     openNIDevice.setRegister(true);
     openNIDevice.setMirror(true);
-
+    openNIDevice.setSpeed(60);
     // openNIDevice.addUserGenerator();
     // openNIDevice.setMaxNumUsers(2);
 
@@ -203,8 +211,9 @@ void ofApp::setupOrganisms()
    
 //    loadDataset();
    
-   for (int i = 0; i < tempPP.pp.size(); i++) {
-       ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + (sidebarMargin + ofGetHeight() - (_benth_h)));
+   for (int i = 0; i < tempPP.pp.size(); i++) 
+   {
+       ofVec2f loc = ofVec2f(tempPP.pp.at(i).location.x, tempPP.pp.at(i).location.y + (sidebarMargin/4 + ofGetHeight() - (_benth_h)));
        
        int type = i % 4;
        
@@ -218,7 +227,8 @@ void ofApp::setupOrganisms()
 
 
 
-map<string, string> ofApp::loadDataset(int type, int ind) {
+map<string, string> ofApp::loadDataset(int type, int ind) 
+{
    // some duplicates, so loop round and make sure we don't get out of bounds
    int index = 1 + ind % 19;
    
@@ -227,14 +237,16 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
    string header;
    map <string, string> tempMap;
    
-   switch (type) {
+   switch (type) 
+   {
            // case 0 will be negative pH reaction
        case 0:
            csvData.load("csvFiles/phNegZ.csv", ",");
            
            row = csvData.getRow(index);
            
-           for (int i = 0; i < csvData.getNumCols(); i++) {
+           for (int i = 0; i < csvData.getNumCols(); i++) 
+           {
                header = csvData.getRow(0).at(i);
 
                tempMap[header] = row.at(i);
@@ -248,7 +260,8 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
            csvData.load("csvFiles/phPosZ.csv", ",");
 
            row = csvData.getRow(index);
-           for (int i = 0; i < csvData.getNumCols(); i++) {
+           for (int i = 0; i < csvData.getNumCols(); i++) 
+           {
                header = csvData.getRow(0).at(i);
                tempMap[header] = row.at(i);
            }
@@ -260,7 +273,8 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
            csvData.load("csvFiles/phosNegZ.csv", ",");
            
            row = csvData.getRow(index);
-           for (int i = 0; i < csvData.getNumCols(); i++) {
+           for (int i = 0; i < csvData.getNumCols(); i++) 
+           {
                header = csvData.getRow(0).at(i);
                tempMap[header] = row.at(i);
            }
@@ -272,7 +286,8 @@ map<string, string> ofApp::loadDataset(int type, int ind) {
            csvData.load("csvFiles/phosPosZ.csv", ",");
            
            row = csvData.getRow(index);
-           for (int i = 0; i < csvData.getNumCols(); i++) {
+           for (int i = 0; i < csvData.getNumCols(); i++) 
+           {
                header = csvData.getRow(0).at(i);
                tempMap[header] = row.at(i);
            }
@@ -394,7 +409,8 @@ void ofApp::updateBox2d()
    int numCircles = 50;
     // add some new circles
 
-    if((int)ofRandom(0, 60 - (currentPollution * 100)) < 1.3 - currentPollution) {
+    if((int)ofRandom(0, 60 - (currentPollution * 100)) < 1.3 - currentPollution) 
+    {
        shared_ptr<ofxBox2dCircle> c = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
        c.get()->setPhysics(0.3, 0.6, 0.012);
        c.get()->setup(box2d.getWorld(), ofRandom(20, ofGetWidth()-20), ofGetHeight() - (_benth_h + _riv_h), 10);
@@ -404,18 +420,23 @@ void ofApp::updateBox2d()
 
     vector   <shared_ptr<ofxBox2dCircle> > tempCircles; // default box2d circles
 
-    for (int i  = 0; i < circles.size(); i++) {
+    for (int i  = 0; i < circles.size(); i++) 
+    {
        float x =circles[i].get() -> getPosition().x;
        float y =circles[i].get() -> getPosition().y;
-       if (y < ofGetHeight()) {
+       if (y < ofGetHeight()) 
+       {
            tempCircles.push_back(circles.at(i));
-           if (y > ofGetHeight() - _benth_h) {
-               for(int j=0; j<voronoiBenthic.getPoints().size(); j++) {
+           if (y > ofGetHeight() - _benth_h) 
+           {
+               for(int j=0; j<voronoiBenthic.getPoints().size(); j++) 
+               {
                    float x2 = benthicPoly[j].getCentroid2D().x;
                    float y2 = benthicPoly[j].getCentroid2D().y - (270); // this offset number is here because we adjusted the scales of the voronoi regions
 
                    float dist = ofDist(x, y, x2, y2);
-                   if (dist < 60 && pollutionOffset.at(j) > -175) {
+                   if (dist < 60 && pollutionOffset.at(j) > -175) 
+                   {
                        pollutionOffset.at(j) -= 15 - dist / 6;
                    }
                }
@@ -489,16 +510,16 @@ void ofApp::drawMain()
     // drawMainTimer();
     drawOrganism();
     drawSidebars();
+    drawCharacters();
     if (usingOpenNI)
     {
-        drawoOpenNi();
+        drawOpenNI();
     }
     else 
     {
         drawTuio();
     }
     drawSidebarIndicators();
-    drawCharacters();
 }
 
 
@@ -522,7 +543,8 @@ void ofApp::drawRiver()
    
    
    vector <ofxVoronoiCell> cells = voronoiRiver.getCells();
-   for(int i=0; i<cells.size(); i++) {
+   for(int i=0; i<cells.size(); i++) 
+   {
        float sinVar = sin(((i * 1.5) + ofGetFrameNum())*0.032);
        float h = 140 + sinVar * 5;
        float s = 170 + sinVar * 8;
@@ -548,7 +570,8 @@ void ofApp::drawBenthic()
    ofTranslate(0, ofGetHeight() - _benth_h);
    
    vector <ofxVoronoiCell> cells = voronoiBenthic.getCells();
-   for(int i=0; i<cells.size(); i++) {
+   for(int i=0; i<cells.size(); i++) 
+   {
        float h = 20 + sin(i) * 3;
        float s = 200 + pollutionOffset.at(i);
        float b = 130 + pollutionOffset.at(i) / 3;
@@ -614,7 +637,7 @@ void ofApp::drawOrganism()
     for (int i = 0; i < organisms.size(); i++) 
     {
        // cout << o.organismColor.getHue() << ": " << o.organismColor.getSaturation() << ": " << o.organismColor.getBrightness() << endl;
-        organisms.at(i).updateOrganism(&currentPollution, &currentpH);
+        // organisms.at(i).updateOrganism(&currentPollution, &currentpH);
         organisms.at(i).drawOrganism();
     }
 }
@@ -671,8 +694,10 @@ void ofApp::drawSidebars()
 
 
 
-void ofApp::drawoOpenNi()
+void ofApp::drawOpenNI()
 {
+    lastUserInput = ofGetElapsedTimeMillis();
+
     sidebarAlphaL = 100;
     sidebarAlphaR = 100;
 //     openNIDevice.drawDebug(1500, 20, 486, 144);
@@ -688,9 +713,10 @@ void ofApp::drawoOpenNi()
                 ofMap(handPosition.y, 0, openNIDevice.getHeight(), -150, ofGetHeight() + 150)
                 );
 //        ofPoint & handPosition = hand.getWorldPosition();
-        ofSetColor(25, 180, 95);
-        ofFill();
-        ofDrawCircle(handPosition.x, handPosition.y, 10);
+        // ofSetColor(25, 180, 95);
+        // ofFill();
+        // ofDrawCircle(handPosition.x, handPosition.y, 10);
+        drawHands(handPosition);
 //        cout << handPosition << endl;
         // see if it's inside the left sidebar
         ofVec2f insidePoint, cornerPoint;
@@ -709,9 +735,9 @@ void ofApp::drawoOpenNi()
                 // cout << sinPh << endl;
                 sidebarAlphaL = 255;
                 currentpH = phRange * sinPh;
-                for (int i = 0; i < organisms.size(); i++) {
-                    organisms.at(i).updateOrganism(&currentPollution, &currentpH);
-                }
+                // for (int i = 0; i < organisms.size(); i++) 
+                //     organisms.at(i).updateOrganism(&currentPollution, &currentpH);
+                // }
             }
         }
         //
@@ -730,11 +756,12 @@ void ofApp::drawoOpenNi()
                 // cout << sinPh << endl;
                 sidebarAlphaR = 255;
                 currentPollution = phosMax * sinP;
-                for (int i = 0; i < organisms.size(); i++) {
-                    organisms.at(i).updateOrganism(&currentPollution, &currentpH);
-                }
             }
         }
+    }
+    for (int i = 0; i < organisms.size(); i++) 
+    {
+        organisms.at(i).updateOrganism(&currentPollution, &currentpH);
     }
 }
 
@@ -756,9 +783,10 @@ void ofApp::drawTuio()
         ofPoint handPosition = tuioLocations.at(i);
 
 //        ofPoint & handPosition = hand.getWorldPosition();
-        ofSetColor(25, 180, 95);
-        ofFill();
-        ofDrawCircle(handPosition.x, handPosition.y, 10);
+        // ofSetColor(25, 180, 95);
+        // ofFill();
+        // ofDrawCircle(handPosition.x, handPosition.y, 10);
+        drawHands(handPosition);
 //        cout << handPosition << endl;
         // see if it's inside the left sidebar
         ofVec2f insidePoint, cornerPoint;
@@ -777,9 +805,9 @@ void ofApp::drawTuio()
                 // cout << sinPh << endl;
                 sidebarAlphaL = 255;
                 currentpH = phRange * sinPh;
-                for (int i = 0; i < organisms.size(); i++) {
-                    organisms.at(i).updateOrganism(&currentPollution, &currentpH);
-                }
+                // for (int i = 0; i < organisms.size(); i++) 
+                //     organisms.at(i).updateOrganism(&currentPollution, &currentpH);
+                // }
             }
         }
         //
@@ -798,9 +826,6 @@ void ofApp::drawTuio()
                 // cout << sinPh << endl;
                 sidebarAlphaR = 255;
                 currentPollution = phosMax * sinP;
-                for (int i = 0; i < organisms.size(); i++) {
-                    organisms.at(i).updateOrganism(&currentPollution, &currentpH);
-                }
             }
         }
 
@@ -808,6 +833,10 @@ void ofApp::drawTuio()
 
 
 
+    }
+    for (int i = 0; i < organisms.size(); i++) 
+    {
+        organisms.at(i).updateOrganism(&currentPollution, &currentpH);
     }
 }
 
@@ -829,7 +858,6 @@ void ofApp::drawSidebarIndicators()
     ofSetColor(255, sidebarAlphaR + 80);
     // draw RHS (Phosphorus)
     ofDrawCircle(ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2), indicatorHeight);
-    
     // draw text values
     ofSetColor(0, sidebarAlphaL + 80);
     float textoffset = -30;
@@ -842,7 +870,10 @@ void ofApp::drawSidebarIndicators()
     ofDrawBitmapString(msg, textoffset +  sidebarMargin, sidebarMargin*.75);
     msg = "Pollution level";
     ofDrawBitmapString(msg, textoffset + ofGetWidth() - (sidebarMargin + indicatorHeight*1.8), sidebarMargin*.7);
-       
+    ofNoFill();
+    ofDrawCircle(ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2), indicatorHeight);
+    ofDrawCircle(sidebarMargin + indicatorHeight, sidebarMargin + sidebarIndicatorPh + (indicatorHeight/2), indicatorHeight);
+    
 }
 
 
@@ -852,7 +883,8 @@ void ofApp::drawBox2d()
 //    
     // some circles :)
     ofSetColor(151, 122, 93, 120);
-    for (int i=0; i<circles.size(); i++) {
+    for (int i=0; i<circles.size(); i++) 
+    {
        ofFill();
     //        ofSetHexColor(0xc0dd3b);
        circles[i].get()->draw();
@@ -863,11 +895,19 @@ void ofApp::drawBox2d()
 
 void ofApp::drawCharacters()
 {
-    characters.at(0).drawCharacter(ofGetElapsedTimeMillis()%100, 0);
+    characters.at(0).drawCharacter(ofGetElapsedTimeMillis()%100, 0, lastUserInput);
 }
 
 
-
+void ofApp::drawHands(ofPoint loc)
+{
+    ofSetColor(25, 180, 95);
+    ofFill();
+    ofDrawCircle(loc, 15);
+    ofSetColor(0);
+    ofNoFill();
+    ofDrawCircle(loc, 15);
+}
 
 
 
@@ -897,6 +937,7 @@ void ofApp::tuioAdded(ofxTuioCursor &tuioCursor){
     tuioLocations.push_back(loc);
     tuioIndex.push_back(tuioCursor.getSessionId());
     tuioLastUpdate.push_back(ofGetElapsedTimeMillis());
+    lastUserInput = ofGetElapsedTimeMillis();
     // cout << "Point n" << tuioCursor.getSessionId() << " add at " << loc << endl;
 }
 
@@ -910,6 +951,7 @@ void ofApp::tuioUpdated(ofxTuioCursor &tuioCursor){
             tuioLastUpdate.at(i) = ofGetElapsedTimeMillis();
         }
     }
+    lastUserInput = ofGetElapsedTimeMillis();
     // cout << "Point n" << tuioCursor.getSessionId() << " updated at " << loc << endl;
 }
 
@@ -935,6 +977,7 @@ void ofApp::tuioRemoved(ofxTuioCursor &tuioCursor){
     tuioIndex = tempIndex;
     tempLocations.clear();
     tempIndex.clear();
+    lastUserInput = ofGetElapsedTimeMillis();
     // cout << "Point n" << tuioCursor.getSessionId() << " remove at " << loc << endl;
 }
 

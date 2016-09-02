@@ -20,7 +20,7 @@ class Character {
 public:
     Character(string imageLoc, float tempX, float tempY, string textFileName, int characterIndex, float textxpos, float textypos, float tempTextWidth);
     void updateCharacter();
-    void drawCharacter(int timer, int location);
+    void drawCharacter(int timer, int location, int lastUI);
     void describeOrganism(string name, int type);
     int timer;
 //
@@ -50,8 +50,13 @@ private:
 
     void drawNow(string text);
 
-
-};
+    bool alreadyTalking = false;
+    void isAnyoneThere();
+    ofImage welcome;
+    int noUserWaitTime = 5000;
+    int waveX, waveY;
+    string welcomeString;
+};  
 
 
 #endif /* characters_hpp */
