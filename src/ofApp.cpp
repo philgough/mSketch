@@ -492,9 +492,9 @@ void ofApp::draw()
     drawMain();
 
     // drawSwitch(_masterState);
-    ofSetColor(200, 200, 20);
-    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " circles.size(): " + ofToString(circles.size());
-    ofDrawBitmapString(msg, 10, 14);
+//    ofSetColor(200, 200, 20);
+//    string msg = " Runtime: " + ofToString(ofGetElapsedTimeMillis()/1000) + "s FPS: " + ofToString(ofGetFrameRate()) + " circles.size(): " + ofToString(circles.size());
+//    ofDrawBitmapString(msg, 10, 14);
 
 
 }
