@@ -53,7 +53,7 @@ private:
     bool alreadyTalking = false;
     void isAnyoneThere();
     ofImage welcome;
-    int noUserWaitTime = 10;
+    int noUserWaitTime = 20;
     int waveX, waveY;
     string welcomeString;
 };  

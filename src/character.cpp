@@ -52,9 +52,9 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 void Character::drawCharacter(int location, int lastUI) 
 {
     int numSeconds = (ofGetElapsedTimeMillis() / 1000) % 110;
-    cout << numSeconds << endl;
+//    cout << numSeconds << endl;
 //    cout << lastUI + noUserWaitTime << " : " << ofGetElapsedTimeMillis() << endl;
-    if (lastUI + noUserWaitTime > ofGetElapsedTimeMillis())
+    if (lastUI + noUserWaitTime * 1000 > ofGetElapsedTimeMillis())
     {
         // check the timer to see if they're saying something.
         for (int i = 0; i < autoTriggers.size(); ++i)
@@ -75,6 +75,7 @@ void Character::drawCharacter(int location, int lastUI)
     }
     else 
     {
+        cout << "hello, world" << endl;
         isAnyoneThere() ;
     }
 }

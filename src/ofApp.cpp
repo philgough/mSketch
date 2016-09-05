@@ -885,12 +885,15 @@ void ofApp::drawBox2d()
 {
 //    
     // some circles :)
-    ofSetColor(151, 122, 93, 120);
+    ofSetColor(151, 122, 93, 200);
     for (int i=0; i<circles.size(); i++) 
     {
        ofFill();
     //        ofSetHexColor(0xc0dd3b);
        circles[i].get()->draw();
+//        auto c = circles[i];
+//        c.get();
+//        (circles[i].get()->bodyDef.position.x;
     }
 
 }
