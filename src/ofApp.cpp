@@ -696,15 +696,16 @@ void ofApp::drawSidebars()
 
 void ofApp::drawOpenNI()
 {
-    lastUserInput = ofGetElapsedTimeMillis();
 
     sidebarAlphaL = 100;
     sidebarAlphaR = 100;
 //     openNIDevice.drawDebug(1500, 20, 486, 144);
 //    cout << openNIDevice.getNumTrackedHands() << endl;
+    lastUserInput = ofGetElapsedTimeMillis();
 
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++)
     {
+
         ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
 
         ofPoint & handPosition = hand.getPosition();
@@ -866,10 +867,12 @@ void ofApp::drawSidebarIndicators()
     ofSetColor(0, sidebarAlphaR + 80);
     msg = "P: " + ofToString(currentPollution, 2);
     ofDrawBitmapString(msg, textoffset + ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2));
+    ofSetColor(255);
     msg = "pH (acidity) level";
     ofDrawBitmapString(msg, textoffset +  sidebarMargin, sidebarMargin*.75);
     msg = "Pollution level";
     ofDrawBitmapString(msg, textoffset + ofGetWidth() - (sidebarMargin + indicatorHeight*1.8), sidebarMargin*.7);
+    ofSetColor(0, 80);
     ofNoFill();
     ofDrawCircle(ofGetWidth() - (sidebarMargin + indicatorHeight), sidebarMargin + sidebarIndicatorP + (indicatorHeight/2), indicatorHeight);
     ofDrawCircle(sidebarMargin + indicatorHeight, sidebarMargin + sidebarIndicatorPh + (indicatorHeight/2), indicatorHeight);
@@ -895,7 +898,7 @@ void ofApp::drawBox2d()
 
 void ofApp::drawCharacters()
 {
-    characters.at(0).drawCharacter(ofGetElapsedTimeMillis()%100, 0, lastUserInput);
+    characters.at(0).drawCharacter(0, lastUserInput);
 }
 
 

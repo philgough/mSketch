@@ -22,7 +22,7 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 //    drawNow = true;
     drawPoint.set(x, y);
     timer = 0;
-    welcomeString = "Hi, my name\n is Dr. Anthony. I am a scientist, and my job is to see the effect of pollution and natural changes on the tiny organisms that live in the top layer of soil in an esturary. Would you like to help? Wave your hand to let me know when you're ready to get started.";
+    welcomeString = "Hi, my name is Dr. Anthony. I am a scientist, and my job is to see the effect of pollution and natural changes on the tiny organisms that live in the top layer of soil in an esturary. Would you like to help? Wave your hand to let me know when you're ready to get started.";
     
     // text data file 
     messageList.load(textFileName, ",", "#");
@@ -49,20 +49,24 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 }
 
 
-void Character::drawCharacter(int timer, int location, int lastUI) 
+void Character::drawCharacter(int location, int lastUI) 
 {
+    int numSeconds = (ofGetElapsedTimeMillis() / 1000) % 110;
+    cout << numSeconds << endl;
+//    cout << lastUI + noUserWaitTime << " : " << ofGetElapsedTimeMillis() << endl;
     if (lastUI + noUserWaitTime > ofGetElapsedTimeMillis())
     {
         // check the timer to see if they're saying something.
         for (int i = 0; i < autoTriggers.size(); ++i)
     	{
+            
     		if (autoTriggers[i].location == location)
     		{
-    			int start = timer + autoTriggers[i].wait * 1000;
+    			int start = timer + autoTriggers[i].wait;
 
-    			int end = start + autoTriggers[i].duration * 1000;
+    			int end = start + autoTriggers[i].duration;
                 // cout << start << ": " << end <<endl;
-    			if (start < ofGetElapsedTimeMillis() && ofGetElapsedTimeMillis() < end) 
+    			if (start < numSeconds && numSeconds < end)
                 {
     				drawNow(autoTriggers[i].text);
     			}

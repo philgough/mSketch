@@ -34,7 +34,8 @@ int main()
     settings.decorated = false;
     settings.width = 1920;
     settings.height = 1040;
-    settings.setPosition(ofVec2f(1920,0));
+//    settings.setPosition(ofVec2f(1920,0));
+    settings.setPosition(ofVec2f(0,0));
     settings.resizable = false;
     
     ofCreateWindow(settings);

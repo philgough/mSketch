@@ -48,7 +48,6 @@ void Cogs::drawCogs(float x, float y) {
     fbo.end();
     fbo.draw(x, y);
 }
- 	
 
 void Cogs::drawOneCog (float r) {
 
