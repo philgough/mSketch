@@ -75,7 +75,6 @@ void Character::drawCharacter(int location, int lastUI)
     }
     else 
     {
-        cout << "hello, world" << endl;
         isAnyoneThere() ;
     }
 }
@@ -143,7 +142,7 @@ void Character::isAnyoneThere()
     ofDrawRectangle(waveX - 10 , waveY - 5, textWidth + 20, textBox.getHeight() + 30);
     ofSetColor(0);
     ofNoFill();
-    ofDrawRectangle(waveX - 5 , waveY, textWidth + 10, textBox.getHeight() + 10);
+    ofDrawRectangle(waveX - 5 , waveY, textWidth + 10, textBox.getHeight() + 20);
     textBox.setText(welcomeString);
     textBox.wrapTextX(textWidth);
     textBox.setColor(20, 20, 20, 255);

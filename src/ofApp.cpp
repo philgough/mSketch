@@ -701,10 +701,10 @@ void ofApp::drawOpenNI()
     sidebarAlphaR = 100;
 //     openNIDevice.drawDebug(1500, 20, 486, 144);
 //    cout << openNIDevice.getNumTrackedHands() << endl;
-    lastUserInput = ofGetElapsedTimeMillis();
 
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++)
     {
+        lastUserInput = ofGetElapsedTimeMillis();
 
         ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
 
