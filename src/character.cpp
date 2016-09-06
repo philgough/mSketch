@@ -22,7 +22,7 @@ Character::Character(string imageLoc, float tempX, float tempY, string textFileN
 //    drawNow = true;
     drawPoint.set(x, y);
     timer = 0;
-    welcomeString = "Hi, my name is Dr. Anthony. I am a scientist, and my job is to see the effect of pollution and natural changes on the tiny organisms that live in the top layer of soil in an esturary. Would you like to help? Wave your hand to let me know when you're ready to get started.";
+    welcomeString = "Hi, I'm Dr. Anthony. I'm researching pollution and natural changes esturaries. Would you like to help? Wave your hand to let me know when you're ready to get started.";
     
     // text data file 
     messageList.load(textFileName, ",", "#");

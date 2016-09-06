@@ -593,6 +593,7 @@ void ofApp::drawBenthic()
 
 void ofApp::drawLand() 
 {
+    openNIDevice.drawDebug(1500, 20, 486, 144);
     ofSetColor(255);
     sky.draw(0, 0);
     // cout << currentPollution << endl;
@@ -699,7 +700,7 @@ void ofApp::drawOpenNI()
 
     sidebarAlphaL = 100;
     sidebarAlphaR = 100;
-//     openNIDevice.drawDebug(1500, 20, 486, 144);
+    //openNIDevice.drawDebug(1500, 20, 486, 144);
 //    cout << openNIDevice.getNumTrackedHands() << endl;
 
     for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++)
